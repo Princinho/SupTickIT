@@ -7,7 +7,7 @@ import { Layout } from './Layout.jsx'
 import { createTheme } from '@mui/material'
 import { themeOptions } from './ThemeOptions.jsx'
 import { ThemeProvider } from '@emotion/react'
-import { Applications } from './Pages/Applications.jsx'
+import { Applications } from './Pages/Applications/Applications.jsx'
 const theme = createTheme(themeOptions)
 const router = createBrowserRouter(
   createRoutesFromElements(

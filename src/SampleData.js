@@ -1,4 +1,4 @@
-export const data = {
+export const sampleData = {
 
     applications: [
         {
@@ -11,7 +11,7 @@ export const data = {
             id: 2, title: 'VLC',
             description: 'Multi platform media player',
             dateCreated: new Date().toISOString(),
-            createdBy: 1
+            createdBy: 2
         },
         {
             id: 3, title: 'Google chrome',
@@ -23,7 +23,12 @@ export const data = {
             id: 4, title: 'MS Office',
             description: 'Document processing software with a plethora of customization options and tools for collaborative work',
             dateCreated: new Date().toISOString(),
-            createdBy: 1
+            createdBy: 3
         },
+    ],
+    users: [
+        { id: 1, name: 'GATIEN GNAKOU' },
+        { id: 2, name: 'Clement LOTSU' },
+        { id: 3, name: 'Abraham GNAWOLOU' }
     ]
 }

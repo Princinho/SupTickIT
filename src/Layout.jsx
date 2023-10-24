@@ -3,6 +3,7 @@ import { AppBar, Avatar, Box, Button, CssBaseline, Divider, Drawer, IconButton, 
 import React from 'react'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { stringAvatar } from './utils';
+import { sampleData } from './SampleData';
 
 const drawerWidth = 240;
 
@@ -109,6 +110,7 @@ export const Layout = (props) => {
                     ml: { md: `${drawerWidth}px` },
                     backgroundColor: 'white'
                 }}
+                elevation={2}
             >
                 <Toolbar>
                     <IconButton
@@ -120,7 +122,7 @@ export const Layout = (props) => {
                         <Menu />
                     </IconButton>
                     <Stack direction='row' sx={{ width: '100%' }} justifyContent='flex-end'>
-                        <Avatar {...stringAvatar('GNAKOU GATIEN ESSOR')} />
+                        <Avatar {...stringAvatar(sampleData.users[0].name)} />
                     </Stack>
                 </Toolbar>
             </AppBar>

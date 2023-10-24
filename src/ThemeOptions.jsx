@@ -1,7 +1,7 @@
 
 
 export const themeOptions = {
-   
+
     palette: {
         mode: 'light',
         primary: {
@@ -13,8 +13,8 @@ export const themeOptions = {
         secondary: {
             main: '#FA1A32',
         },
-        menu:{
-            main:'#0090D7'
+        menu: {
+            main: '#0090D7'
         },
         background: {
             default: '#f5f5f5',
@@ -22,6 +22,7 @@ export const themeOptions = {
     },
     typography: {
         fontFamily: '"Urbanist", "Roboto", "Arial", sans-serif',
+        fontSize: 16,
     },
     props: {
         MuiAppBar: {
