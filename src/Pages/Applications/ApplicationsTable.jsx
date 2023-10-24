@@ -1,10 +1,8 @@
-import { Avatar, Box, Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
-import React from 'react'
+import { Avatar, Button,  Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 import { sampleData } from '../../SampleData'
 import { stringAvatar } from '../../utils'
 
 export const ApplicationsTable = () => {
-    const hideOnXSStyles = { display: { xs: 'none', sm: 'flex' } }
     return (
         <TableContainer>
 
@@ -14,7 +12,7 @@ export const ApplicationsTable = () => {
                         <TableCell>Id</TableCell>
                         <TableCell align="left">Aperçu</TableCell>
                         <TableCell align="left">Ajouté par</TableCell>
-                        <TableCell align="left">Date d'ajout</TableCell>
+                        <TableCell align="left">{"Date d'ajout"}</TableCell>
                         <TableCell align="left">Actions</TableCell>
                     </TableRow>
                 </TableHead>

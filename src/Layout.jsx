@@ -1,7 +1,8 @@
-import { Inbox, ListAlt as ListAltIcon, Mail, Menu } from '@mui/icons-material';
-import { AppBar, Avatar, Box, Button, CssBaseline, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Toolbar, Typography } from '@mui/material';
+/* eslint-disable react/prop-types */
+import { ListAlt as ListAltIcon, Menu } from '@mui/icons-material';
+import { AppBar, Avatar, Box, Button, CssBaseline, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Toolbar } from '@mui/material';
 import React from 'react'
-import { Link, Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { stringAvatar } from './utils';
 import { sampleData } from './SampleData';
 

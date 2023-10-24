@@ -1,10 +1,8 @@
 import { ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
-import React from 'react'
 import { ApplicationsTable } from './ApplicationsTable'
 
 export const Applications = () => {
-
   return (
 
     <Paper sx={{ padding: '1em', paddingRight: 0,flexGrow:1 }} elevation={2}>
