@@ -1,5 +1,5 @@
 import { ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-material'
-import { Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
+import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
 import React from 'react'
 import { ApplicationsTable } from './ApplicationsTable'
 
@@ -7,7 +7,7 @@ export const Applications = () => {
 
   return (
 
-    <Paper sx={{ padding: '1em', paddingRight: 0 }} elevation={2}>
+    <Paper sx={{ padding: '1em', paddingRight: 0,flexGrow:1 }} elevation={2}>
       <Typography variant='h5' component='span' sx={{ fontWeight: 'bold' }}>Applications</Typography>
       <Stack direction='row'><Typography color='text.secondary' sx={{ fontWeight: 'bold' }}>Menu /</Typography><Typography color='primary.light' sx={{ fontWeight: 'bold' }}>Applications</Typography></Stack>
 
@@ -36,7 +36,7 @@ export const Applications = () => {
 
         </Grid>
         <Grid item xs={12} sm={7}>
-          <Stack direction='row' width='100%' spacing={2} justifyContent={{ xs: 'flex-start', sm: 'flex-end' }}>
+          <Stack direction='row' width='100%' spacing={{xs:1,sm:2}} justifyContent={{ xs: 'flex-start', sm: 'flex-end' }}>
             <TextField
               id="input-with-icon-textfield" size='small'
               sx={{ minWidth: '30%' }}
@@ -86,7 +86,10 @@ export const Applications = () => {
           </Stack>
         </Grid>
       </Grid>
-      <ApplicationsTable />
+      <Box sx={{ marginRight:'1em',mt:2 }}>
+
+        <ApplicationsTable />
+      </Box>
     </Paper>
 
   )

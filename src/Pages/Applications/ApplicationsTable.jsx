@@ -4,11 +4,11 @@ import { sampleData } from '../../SampleData'
 import { stringAvatar } from '../../utils'
 
 export const ApplicationsTable = () => {
-    
+    const hideOnXSStyles = { display: { xs: 'none', sm: 'flex' } }
     return (
-        <TableContainer component={Box}>
-            <Typography variant='h6' sx={{ my: '1em', fontWeight: 'bold' }}>Liste des applications</Typography>
-            <Table sx={{ minWidth: 650 }} size='small' aria-label="list of applications">
+        <TableContainer>
+
+            <Table sx={{ minWidth: 320 }} size='small' aria-label="list of applications">
                 <TableHead>
                     <TableRow>
                         <TableCell>Id</TableCell>
@@ -28,12 +28,12 @@ export const ApplicationsTable = () => {
                                 {app.id}
                             </TableCell>
                             <TableCell align="left">
-                                <Typography variant='span' sx={{ my: 0,fontWeight:'bold',  }}>{app.title}</Typography>
+                                <Typography variant='span' sx={{ my: 0, fontWeight: 'bold', }}>{app.title}</Typography>
                                 <br />
-                                <Typography color='text.secondary'  sx={{
+                                <Typography color='text.secondary' sx={{
                                     overflow: "hidden",
                                     textOverflow: "ellipsis",
-                                    display: "-webkit-box",fontSize:'.9em',
+                                    display: "-webkit-box", fontSize: '.9em',
                                     "-webkit-line-clamp": '1',
                                     "-webkit-box-orient": "vertical"
                                 }}

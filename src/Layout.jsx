@@ -153,6 +153,7 @@ export const Layout = (props) => {
                 </Drawer>
                 <Drawer
                     variant="permanent"
+                    open
                     sx={{
                         display: { xs: 'none', md: 'block' },
                         '& .MuiDrawer-paper': {
@@ -160,22 +161,17 @@ export const Layout = (props) => {
                             color: (theme) => theme.palette.primary.light
                         },
                     }}
-                    open
                 >
                     {drawerContents}
                 </Drawer>
             </Box>
             <Box
                 component="main"
-                sx={{ flexGrow: 1, p: 3, width: { md: `calc(100% - ${drawerWidth}px)` } }}
+                sx={{ flexGrow: 1, p: 3, width: { xs:'95vw', md: `calc(100% - ${drawerWidth}px)` },flexDirection:'column' }}
             >
-                <Toolbar >
+                <Toolbar />
 
-                </Toolbar>
-
-                <Typography paragraph>
-                    <Outlet />
-                </Typography>
+                <Outlet />
             </Box>
         </Box>
     );

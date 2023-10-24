@@ -22,7 +22,7 @@ export const themeOptions = {
     },
     typography: {
         fontFamily: '"Urbanist", "Roboto", "Arial", sans-serif',
-        fontSize: 16,
+        // fontSize: 16,
     },
     props: {
         MuiAppBar: {
