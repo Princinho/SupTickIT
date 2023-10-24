@@ -1,8 +1,10 @@
-import { Avatar, Button,  Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
+import { Avatar, Button, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 import { sampleData } from '../../SampleData'
 import { stringAvatar } from '../../utils'
+import PropTypes from 'prop-types'
 
-export const ApplicationsTable = () => {
+export const ApplicationsTable = ({ applications }) => {
+    console.log(applications)
     return (
         <TableContainer>
 
@@ -17,7 +19,7 @@ export const ApplicationsTable = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {sampleData.applications.map((app) => (
+                    {applications?.map((app) => (
                         <TableRow
                             key={'appli' + app.id}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -63,4 +65,7 @@ export const ApplicationsTable = () => {
             </Table>
         </TableContainer>
     )
+}
+ApplicationsTable.propTypes = {
+    applications: PropTypes.array.isRequired
 }

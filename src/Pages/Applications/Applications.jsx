@@ -1,22 +1,39 @@
 import { ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
 import { ApplicationsTable } from './ApplicationsTable'
+import { useState } from 'react'
+import { CreateDialog } from './CreateDialog'
+import { sampleData } from '../../SampleData'
 
 export const Applications = () => {
-  return (
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [applications, setApplications] = useState([...sampleData.applications
+  ])
+  function createApplication(data) {
+    setApplications(prev => {
+      console.log(prev)
+      console.log(data)
+      let result = [{ ...data, id: applications.length + 1, dateCreated: new Date().toISOString(), createdBy: 3 }, ...prev]
+      console.log(result)
+      return result
+    })
+  }
 
-    <Paper sx={{ padding: '1em', paddingRight: 0,flexGrow:1 }} elevation={2}>
+  return (
+    <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
       <Typography variant='h5' component='span' sx={{ fontWeight: 'bold' }}>Applications</Typography>
       <Stack direction='row'><Typography color='text.secondary' sx={{ fontWeight: 'bold' }}>Menu /</Typography><Typography color='primary.light' sx={{ fontWeight: 'bold' }}>Applications</Typography></Stack>
 
       <Grid container spacing={2}>
         <Grid item xs={12} sm={5}>
           <Stack direction='row' alignItems='center' spacing={2}>
-            <Button variant='contained' sx={{
-              color: 'white',
-              background: (theme) => theme.palette.primary.light,
-              textTransform: 'none'
-            }}>Ajouter</Button>
+            <Button variant='contained'
+              onClick={() => setIsCreateDialogOpen(true)}
+              sx={{
+                color: 'white',
+                background: (theme) => theme.palette.primary.light,
+                textTransform: 'none'
+              }}>Ajouter</Button>
 
             <FormControl sx={{ minWidth: '40%' }} size='small'>
               <InputLabel id="demo-simple-select-label">Trier par</InputLabel>
@@ -34,7 +51,7 @@ export const Applications = () => {
 
         </Grid>
         <Grid item xs={12} sm={7}>
-          <Stack direction='row' width='100%' spacing={{xs:1,sm:2}} justifyContent={{ xs: 'flex-start', sm: 'flex-end' }}>
+          <Stack direction='row' width='100%' spacing={{ xs: 1, sm: 2 }} justifyContent={{ xs: 'flex-start', sm: 'flex-end' }}>
             <TextField
               id="input-with-icon-textfield" size='small'
               sx={{ minWidth: '30%' }}
@@ -84,11 +101,16 @@ export const Applications = () => {
           </Stack>
         </Grid>
       </Grid>
-      <Box sx={{ marginRight:'1em',mt:2 }}>
-
-        <ApplicationsTable />
+      <Box sx={{ marginRight: '1em', mt: 2 }}>
+        <ApplicationsTable applications={applications} />
       </Box>
+      <CreateDialog open={isCreateDialogOpen} handleClose={(data) => {
+        console.log(data)
+        if (data) {
+          createApplication(data)
+        }
+        setIsCreateDialogOpen(false)
+      }} />
     </Paper>
-
   )
 }
