@@ -5,20 +5,28 @@ import { useState } from 'react'
 import { CreateDialog } from './CreateDialog'
 import { sampleData } from '../../SampleData'
 import { EditDialog } from './EditDialog'
+import { DeleteDialog } from './DeleteDialog'
 
 export const Applications = () => {
   //TODO: Faire bosser la pagination
-  //TODO: Afficher des icones aulieu de boutons sur mobile
-  //TODO: Faire bosser la suppression
+  //TODO: Faire bosser la recherche
+  //TODO: Faire bosser le tri
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-  const [editedApplication, setEditedApplication] = useState(null)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [applicationToEdit, setApplicationToEdit] = useState(null)
+  const [applicationToDelete, setApplicationToDelete] = useState(null)
   const [applications, setApplications] = useState([...sampleData.applications])
   function showEditDialog(application) {
     setIsEditDialogOpen(true)
-    setEditedApplication(application)
+    setApplicationToEdit(application)
   }
-  console.log(editedApplication)
+  function showDeleteDialog(application) {
+    setIsDeleteDialogOpen(true)
+    setApplicationToDelete(application)
+  }
+  console.log(applicationToEdit)
   function createApplication(data) {
     setApplications(prev => {
       console.log(prev)
@@ -32,6 +40,15 @@ export const Applications = () => {
     setApplications(prev => prev.map(
       prevApp => prevApp.id == app.id ? { ...prevApp, ...app } : prevApp
     ))
+  }
+  function deleteApplication(application) {
+    setApplications(prev => prev.filter(app => app.id != application.id))
+  }
+  function sortAndFilterData(applications) {
+    let result = applications
+    if (searchTerm)
+      result = result.filter(a => a.title?.toLowerCase().includes(searchTerm.toLowerCase()))
+    return result
   }
   return (
     <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
@@ -67,8 +84,9 @@ export const Applications = () => {
         <Grid item xs={12} sm={7}>
           <Stack direction='row' width='100%' spacing={{ xs: 1, sm: 2 }} justifyContent={{ xs: 'flex-start', sm: 'flex-end' }}>
             <TextField
-              id="input-with-icon-textfield" size='small'
+              id="applications-index-search-box" size='small'
               sx={{ minWidth: '30%' }}
+              onChange={(event) => setSearchTerm(event.target.value)}
               aria-label='search'
               InputProps={{
                 startAdornment: (
@@ -116,7 +134,7 @@ export const Applications = () => {
         </Grid>
       </Grid>
       <Box sx={{ marginRight: '1em', mt: 2 }}>
-        <ApplicationsTable applications={applications} showEditDialog={showEditDialog} />
+        <ApplicationsTable applications={sortAndFilterData(applications)} showEditDialog={showEditDialog} showDeleteDialog={showDeleteDialog} />
       </Box>
       <CreateDialog open={isCreateDialogOpen} handleClose={(app) => {
         console.log(app)
@@ -125,13 +143,21 @@ export const Applications = () => {
         }
         setIsCreateDialogOpen(false)
       }} />
-      {editedApplication&& <EditDialog open={isEditDialogOpen} application={editedApplication}
+      {applicationToEdit && <EditDialog open={isEditDialogOpen} application={applicationToEdit}
         handleClose={(app) => {
           if (app) { editApplication(app) }
           setIsEditDialogOpen(false)
         }}
 
       />}
+      {applicationToDelete && <DeleteDialog open={isDeleteDialogOpen} application={applicationToDelete}
+        handleClose={(app) => {
+          if (app) { deleteApplication(app) }
+          setIsDeleteDialogOpen(false)
+        }}
+
+      />}
+
     </Paper>
   )
 }

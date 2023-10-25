@@ -1,9 +1,10 @@
-import { Avatar, Button, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
+import { Avatar, Button, Hidden, IconButton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 import { sampleData } from '../../SampleData'
 import { stringAvatar } from '../../utils'
 import PropTypes from 'prop-types'
+import { Delete, Edit } from '@mui/icons-material'
 
-export const ApplicationsTable = ({ applications, showEditDialog }) => {
+export const ApplicationsTable = ({ applications, showEditDialog, showDeleteDialog }) => {
     console.log(applications)
     return (
         <TableContainer>
@@ -54,12 +55,35 @@ export const ApplicationsTable = ({ applications, showEditDialog }) => {
                                 {new Date().toLocaleDateString()}
                             </TableCell>
                             <TableCell>
+                                <Hidden lgDown>
+                                    <Stack direction='row'>
+                                        <Button color='warning' size='small' variant='contained'
+                                            sx={{ textTransform: 'none', mr: '.5em', mb: '.5em' }}
+                                            onClick={() => showEditDialog(app)}>
+                                            Modifier
+                                        </Button>
+                                        <Button color='error' size='small' variant='contained'
+                                            sx={{ textTransform: 'none', mr: '.5em', mb: '.5em' }}
+                                            onClick={() => showDeleteDialog(app)}>
+                                            Supprimer
+                                        </Button>
+                                    </Stack>
 
-                                <Button color='warning' size='small' variant='contained'
-                                    sx={{ textTransform: 'none', mr: '.5em', mb: '.5em' }}
-                                    onClick={()=>showEditDialog(app)}
-                                >Modifier</Button>
-                                <Button color='error' size='small' variant='contained' sx={{ textTransform: 'none', mr: '.5em', mb: '.5em' }}>Supprimer</Button>
+                                </Hidden>
+                                <Hidden lgUp>
+                                    <Stack direction='row'>
+                                        <IconButton color='warning' size='small' aria-label='Modifier'
+                                            sx={{ mr: '.5em', mb: '.5em' }}
+                                            onClick={() => showEditDialog(app)}>
+                                            <Edit />
+                                        </IconButton>
+                                        <IconButton color='error' size='small' aria-label='Supprimer'
+                                            sx={{ mr: '.5em', mb: '.5em' }}
+                                            onClick={() => showDeleteDialog(app)}>
+                                            <Delete />
+                                        </IconButton>
+                                    </Stack>
+                                </Hidden>
 
                             </TableCell>
                         </TableRow>
@@ -71,5 +95,6 @@ export const ApplicationsTable = ({ applications, showEditDialog }) => {
 }
 ApplicationsTable.propTypes = {
     applications: PropTypes.array.isRequired,
-    showEditDialog: PropTypes.func.isRequired
+    showEditDialog: PropTypes.func.isRequired,
+    showDeleteDialog: PropTypes.func.isRequired
 }
