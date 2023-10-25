@@ -3,7 +3,7 @@ import { sampleData } from '../../SampleData'
 import { stringAvatar } from '../../utils'
 import PropTypes from 'prop-types'
 
-export const ApplicationsTable = ({ applications }) => {
+export const ApplicationsTable = ({ applications, showEditDialog }) => {
     console.log(applications)
     return (
         <TableContainer>
@@ -34,8 +34,8 @@ export const ApplicationsTable = ({ applications }) => {
                                     overflow: "hidden",
                                     textOverflow: "ellipsis",
                                     display: "-webkit-box", fontSize: '.9em',
-                                    "-webkit-line-clamp": '1',
-                                    "-webkit-box-orient": "vertical"
+                                    "WebkitLineClamp": '1',
+                                    "WebkitBoxOrient": "vertical"
                                 }}
                                     variant='span'
                                 >
@@ -55,7 +55,10 @@ export const ApplicationsTable = ({ applications }) => {
                             </TableCell>
                             <TableCell>
 
-                                <Button color='warning' size='small' variant='contained' sx={{ textTransform: 'none', mr: '.5em', mb: '.5em' }}>Modifier</Button>
+                                <Button color='warning' size='small' variant='contained'
+                                    sx={{ textTransform: 'none', mr: '.5em', mb: '.5em' }}
+                                    onClick={()=>showEditDialog(app)}
+                                >Modifier</Button>
                                 <Button color='error' size='small' variant='contained' sx={{ textTransform: 'none', mr: '.5em', mb: '.5em' }}>Supprimer</Button>
 
                             </TableCell>
@@ -67,5 +70,6 @@ export const ApplicationsTable = ({ applications }) => {
     )
 }
 ApplicationsTable.propTypes = {
-    applications: PropTypes.array.isRequired
+    applications: PropTypes.array.isRequired,
+    showEditDialog: PropTypes.func.isRequired
 }

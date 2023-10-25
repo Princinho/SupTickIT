@@ -4,11 +4,21 @@ import { ApplicationsTable } from './ApplicationsTable'
 import { useState } from 'react'
 import { CreateDialog } from './CreateDialog'
 import { sampleData } from '../../SampleData'
+import { EditDialog } from './EditDialog'
 
 export const Applications = () => {
+  //TODO: Faire bosser la pagination
+  //TODO: Afficher des icones aulieu de boutons sur mobile
+  //TODO: Faire bosser la suppression
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const [applications, setApplications] = useState([...sampleData.applications
-  ])
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [editedApplication, setEditedApplication] = useState(null)
+  const [applications, setApplications] = useState([...sampleData.applications])
+  function showEditDialog(application) {
+    setIsEditDialogOpen(true)
+    setEditedApplication(application)
+  }
+  console.log(editedApplication)
   function createApplication(data) {
     setApplications(prev => {
       console.log(prev)
@@ -18,7 +28,11 @@ export const Applications = () => {
       return result
     })
   }
-
+  function editApplication(app) {
+    setApplications(prev => prev.map(
+      prevApp => prevApp.id == app.id ? { ...prevApp, ...app } : prevApp
+    ))
+  }
   return (
     <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
       <Typography variant='h5' component='span' sx={{ fontWeight: 'bold' }}>Applications</Typography>
@@ -102,15 +116,22 @@ export const Applications = () => {
         </Grid>
       </Grid>
       <Box sx={{ marginRight: '1em', mt: 2 }}>
-        <ApplicationsTable applications={applications} />
+        <ApplicationsTable applications={applications} showEditDialog={showEditDialog} />
       </Box>
-      <CreateDialog open={isCreateDialogOpen} handleClose={(data) => {
-        console.log(data)
-        if (data) {
-          createApplication(data)
+      <CreateDialog open={isCreateDialogOpen} handleClose={(app) => {
+        console.log(app)
+        if (app) {
+          createApplication(app)
         }
         setIsCreateDialogOpen(false)
       }} />
+      {editedApplication&& <EditDialog open={isEditDialogOpen} application={editedApplication}
+        handleClose={(app) => {
+          if (app) { editApplication(app) }
+          setIsEditDialogOpen(false)
+        }}
+
+      />}
     </Paper>
   )
 }

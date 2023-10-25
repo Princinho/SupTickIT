@@ -1,20 +1,24 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material"
 import PropTypes from 'prop-types'
-import { useState } from "react"
-export const CreateDialog = ({ open, handleClose }) => {
-    //TODO: Faire bosser la pagination
-    //TODO: Afficher des icones aulieu de boutons sur mobile
-    //TODO: Faire bosser la modification
-    //TODO: Faire bosser la suppression
-    const [formData, setFormData] = useState({})
+import { useEffect, useState } from "react"
+export const EditDialog = ({ open, handleClose, application }) => {
+    const [formData, setFormData] = useState({ ...application })
+    useEffect(() => {
+        setFormData(application)
+    }, [application]);
+    // newFormData();
+    
+    console.log(application)
+    console.log(formData)
     return (
         <Box>
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Nouvelle application</DialogTitle>
+                <DialogTitle>Modifier l&apos;application</DialogTitle>
                 <DialogContent>
                     <TextField
                         autoFocus
                         margin="dense"
+                        id="title"
                         label="Nom"
                         type="text"
                         value={formData.title}
@@ -25,6 +29,7 @@ export const CreateDialog = ({ open, handleClose }) => {
                     <TextField
                         autoFocus
                         margin="dense"
+                        id="description"
                         label="Description"
                         type="text"
                         value={formData.description}
@@ -41,7 +46,8 @@ export const CreateDialog = ({ open, handleClose }) => {
         </Box>
     )
 }
-CreateDialog.propTypes = {
+EditDialog.propTypes = {
     open: PropTypes.bool.isRequired,
-    handleClose: PropTypes.func.isRequired
+    handleClose: PropTypes.func.isRequired,
+    application: PropTypes.object.isRequired
 }
