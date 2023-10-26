@@ -48,11 +48,11 @@ export const Login = () => {
               </Box>
 
               <Stack direction='column' width='100%' spacing={2} alignItems='center'>
-                <TextField variant="outlined" error={error} label="Email"
+                <TextField variant="outlined" error={error} label="Email (Utilisez spadmin@gmail.com)"
                   sx={{ minWidth: '60%' }}
                   onChange={event => setCredentials(prev => ({ ...prev, email: event.target.value }))}
                 ></TextField>
-                <TextField variant="outlined" error={error} label="Mot de passe" type="password" sx={{ minWidth: '60%' }}
+                <TextField variant="outlined" error={error} label="Mot de passe(Utilisez Admin123#)" type="password" sx={{ minWidth: '60%' }}
                   onChange={event => setCredentials(prev => ({ ...prev, password: event.target.value }))}></TextField>
                 <Button variant="contained" sx={{ fontWeight: 'bold' }}
                   onClick={login}
