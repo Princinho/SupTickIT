@@ -104,7 +104,7 @@ export const sampleData = {
         }
     ],
     users: [
-        { id: 1, name: 'GATIEN GNAKOU' },
+        { id: 1, name: 'GATIEN GNAKOU', email: 'princegnakou@gmail.com', password: 'Aadminss2', roles: ['admin'] },
         { id: 2, name: 'Clement LOTSU' },
         { id: 3, name: 'Abraham GNAWOLOU' }
     ]
