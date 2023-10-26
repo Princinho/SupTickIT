@@ -1,14 +1,16 @@
 /* eslint-disable react/prop-types */
 import { ListAlt as ListAltIcon, Menu } from '@mui/icons-material';
 import { AppBar, Avatar, Box, Button, CssBaseline, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Toolbar } from '@mui/material';
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { stringAvatar } from './utils';
 import { sampleData } from './SampleData';
+import { UserContext } from './Contexts';
 
 const drawerWidth = 240;
 
 export const Layout = (props) => {
+    const { user } = useContext(UserContext)
     const navigate = useNavigate()
     const { window } = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -101,6 +103,12 @@ export const Layout = (props) => {
 
     const container = window !== undefined ? () => window().document.body : undefined;
 
+    useEffect(() => {
+
+        if (!user) {
+            navigate('/login')
+        }
+    })
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
@@ -168,7 +176,7 @@ export const Layout = (props) => {
             </Box>
             <Box
                 component="main"
-                sx={{ flexGrow: 1, p: 3, width: { xs:'95vw', md: `calc(100% - ${drawerWidth}px)` },flexDirection:'column' }}
+                sx={{ flexGrow: 1, p: 3, width: { xs: '95vw', md: `calc(100% - ${drawerWidth}px)` }, flexDirection: 'column' }}
             >
                 <Toolbar />
 

@@ -1,15 +1,13 @@
 import { ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
 import { ApplicationsTable } from './ApplicationsTable'
-import { useContext, useEffect, useState } from 'react'
+import {  useState } from 'react'
 import { CreateDialog } from './CreateDialog'
 import { sampleData } from '../../SampleData'
 import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from './utils'
 import { DetailsDialog } from './DetailsDialog'
-import { UserContext } from '../../Contexts'
-import { useNavigate } from 'react-router-dom'
 
 export const Applications = () => {
   //TODO: Ajouter un popup de details qui s'affiche quand on clique sur le nom de l'application
@@ -23,8 +21,6 @@ export const Applications = () => {
   const [applicationToDelete, setApplicationToDelete] = useState(null)
   const [sortOption, setSortOption] = useState(null)
   const [applications, setApplications] = useState([...sampleData.applications])
-  const { user } = useContext(UserContext)
-  const navigate = useNavigate()
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
@@ -68,13 +64,6 @@ export const Applications = () => {
   function deleteApplication(application) {
     setApplications(prev => prev.filter(app => app.id != application.id))
   }
-  useEffect(() => {
-
-    if (!user) {
-      navigate('/login')
-    }
-  })
-  console.log(user)
   return (
     <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
       <Typography variant='h5' component='span' sx={{ fontWeight: 'bold' }}>Applications</Typography>
