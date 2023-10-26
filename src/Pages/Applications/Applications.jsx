@@ -6,18 +6,32 @@ import { CreateDialog } from './CreateDialog'
 import { sampleData } from '../../SampleData'
 import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
+import { sortAndFilterData } from './utils'
 
+//TODO: Faire bosser le tri
 export const Applications = () => {
+  //TODO: Corriger le bug quand on clique sur annuler sur le popup de creation
+  //TODO: Ajouter un popup de details qui s'affiche quand on clique sur le nom de l'application
   //TODO: Faire bosser la pagination
-  //TODO: Faire bosser la recherche
-  //TODO: Faire bosser le tri
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [applicationToEdit, setApplicationToEdit] = useState(null)
   const [applicationToDelete, setApplicationToDelete] = useState(null)
+  const [sortOption, setSortOption] = useState(null)
   const [applications, setApplications] = useState([...sampleData.applications])
+  const [tableOptions, setTableOptions] = useState({
+    rowsPerPage: 5,
+    page: 0,
+    count: sampleData.applications.length,
+    handlePageChange: setCurrentPage,
+    handleRowsPerPageChange: changeRowsPerPage
+  })
+  function changeRowsPerPage(rowsPerPage) {
+    setRowsPerPage(rowsPerPage)
+    setCurrentPage(0)
+  }
   function showEditDialog(application) {
     setIsEditDialogOpen(true)
     setApplicationToEdit(application)
@@ -26,15 +40,18 @@ export const Applications = () => {
     setIsDeleteDialogOpen(true)
     setApplicationToDelete(application)
   }
-  console.log(applicationToEdit)
   function createApplication(data) {
     setApplications(prev => {
-      console.log(prev)
-      console.log(data)
       let result = [{ ...data, id: applications.length + 1, dateCreated: new Date().toISOString(), createdBy: 3 }, ...prev]
-      console.log(result)
       return result
     })
+  }
+  function setRowsPerPage(rowsPerPage) {
+    setTableOptions(prev => ({ ...prev, rowsPerPage }))
+  }
+  function setCurrentPage(page) {
+    console.log(page)
+    setTableOptions(prev => ({ ...prev, page }))
   }
   function editApplication(app) {
     setApplications(prev => prev.map(
@@ -44,12 +61,9 @@ export const Applications = () => {
   function deleteApplication(application) {
     setApplications(prev => prev.filter(app => app.id != application.id))
   }
-  function sortAndFilterData(applications) {
-    let result = applications
-    if (searchTerm)
-      result = result.filter(a => a.title?.toLowerCase().includes(searchTerm.toLowerCase()))
-    return result
-  }
+
+  console.log(sortOption)
+
   return (
     <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
       <Typography variant='h5' component='span' sx={{ fontWeight: 'bold' }}>Applications</Typography>
@@ -72,9 +86,12 @@ export const Applications = () => {
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 label="Options"
+                value={sortOption?.option}
+                onChange={event => setSortOption({ option: event.target.value })}
               >
-                <MenuItem value={10}>Nom</MenuItem>
-                <MenuItem value={10}>Date</MenuItem>
+                <MenuItem value={'title'}>Nom</MenuItem>
+                <MenuItem value={'id'}>Id</MenuItem>
+                <MenuItem value={'dateCreated'}>Date</MenuItem>
 
               </Select>
             </FormControl>
@@ -103,17 +120,28 @@ export const Applications = () => {
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 label="Options"
-                value={10}
+                value={tableOptions.rowsPerPage}
+                onChange={event => changeRowsPerPage(event.target.value)}
               >
+                <MenuItem value={-1}>All</MenuItem>
+                <MenuItem value={5}>5</MenuItem>
                 <MenuItem value={10}>10</MenuItem>
-                <MenuItem value={20}>20</MenuItem>
+                <MenuItem value={25}>25</MenuItem>
 
               </Select>
             </FormControl>
+            {/* TODO: Synchroniser avec la pagniation du table footer */}
 
             <ButtonGroup variant="outlined" aria-label="outlined primary button group">
-              <Button sx={{ backgroundColor: 'white', color: (theme) => theme.palette.text.secondary }}><ArrowBack /></Button>
-              <Button sx={{ backgroundColor: 'white', color: (theme) => theme.palette.text.secondary }}><ArrowForward /></Button>
+              <Button
+                disabled={tableOptions.page == 0}
+                sx={{ backgroundColor: 'white', color: (theme) => theme.palette.text.secondary }}
+                onClick={() => setCurrentPage(tableOptions.page - 1)}
+              ><ArrowBack /></Button>
+              <Button
+                disabled={tableOptions.page >= Math.ceil(tableOptions.count / tableOptions.rowsPerPage) - 1}
+                onClick={() => setCurrentPage(tableOptions.page + 1)}
+                sx={{ backgroundColor: 'white', color: (theme) => theme.palette.text.secondary }}><ArrowForward /></Button>
             </ButtonGroup>
 
             <Button sx={{
@@ -134,7 +162,11 @@ export const Applications = () => {
         </Grid>
       </Grid>
       <Box sx={{ marginRight: '1em', mt: 2 }}>
-        <ApplicationsTable applications={sortAndFilterData(applications)} showEditDialog={showEditDialog} showDeleteDialog={showDeleteDialog} />
+        <ApplicationsTable
+          options={tableOptions}
+          applications={sortAndFilterData(applications, searchTerm, sortOption)}
+
+          showEditDialog={showEditDialog} showDeleteDialog={showDeleteDialog} />
       </Box>
       <CreateDialog open={isCreateDialogOpen} handleClose={(app) => {
         console.log(app)
@@ -143,21 +175,25 @@ export const Applications = () => {
         }
         setIsCreateDialogOpen(false)
       }} />
-      {applicationToEdit && <EditDialog open={isEditDialogOpen} application={applicationToEdit}
-        handleClose={(app) => {
-          if (app) { editApplication(app) }
-          setIsEditDialogOpen(false)
-        }}
+      {
+        applicationToEdit && <EditDialog open={isEditDialogOpen} application={applicationToEdit}
+          handleClose={(app) => {
+            if (app) { editApplication(app) }
+            setIsEditDialogOpen(false)
+          }}
 
-      />}
-      {applicationToDelete && <DeleteDialog open={isDeleteDialogOpen} application={applicationToDelete}
-        handleClose={(app) => {
-          if (app) { deleteApplication(app) }
-          setIsDeleteDialogOpen(false)
-        }}
+        />
+      }
+      {
+        applicationToDelete && <DeleteDialog open={isDeleteDialogOpen} application={applicationToDelete}
+          handleClose={(app) => {
+            if (app) { deleteApplication(app) }
+            setIsDeleteDialogOpen(false)
+          }}
 
-      />}
+        />
+      }
 
-    </Paper>
+    </Paper >
   )
 }

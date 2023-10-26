@@ -1,12 +1,13 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material"
 import PropTypes from 'prop-types'
 import { useState } from "react"
+//TODO: Afficher des icones aulieu de boutons sur mobile
+//TODO: Faire bosser la modification
+//TODO: Faire bosser la suppression
 export const CreateDialog = ({ open, handleClose }) => {
     //TODO: Faire bosser la pagination
-    //TODO: Afficher des icones aulieu de boutons sur mobile
-    //TODO: Faire bosser la modification
-    //TODO: Faire bosser la suppression
     const [formData, setFormData] = useState({})
+    const [titleError, setTitleError] = useState(false)
     return (
         <Box>
             <Dialog open={open} onClose={handleClose}>
@@ -15,7 +16,8 @@ export const CreateDialog = ({ open, handleClose }) => {
                     <TextField
                         autoFocus
                         margin="dense"
-                        label="Nom"
+                        label="Nom *"
+                        error={titleError}
                         type="text"
                         value={formData.title}
                         onChange={(event) => setFormData(prev => ({ ...prev, title: event.target.value }))}
@@ -34,8 +36,19 @@ export const CreateDialog = ({ open, handleClose }) => {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Annuler</Button>
-                    <Button onClick={() => handleClose(formData)}>Enregistrer</Button>
+                    <Button onClick={() => {
+                        setTitleError(false)
+                        handleClose()
+                    }}>Annuler</Button>
+                    <Button onClick={() => {
+                        if (!formData.title) {
+                            setTitleError(true)
+                            return
+                        } else {
+                            setTitleError(false)
+                            handleClose(formData)
+                        }
+                    }}>Enregistrer</Button>
                 </DialogActions>
             </Dialog>
         </Box>

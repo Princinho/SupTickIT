@@ -1,5 +1,6 @@
 
 
+import {frFR} from '@mui/material/locale'
 export const themeOptions = {
 
     palette: {
@@ -29,5 +30,6 @@ export const themeOptions = {
             color: 'secondary',
         },
     },
+    frFR
 
 };
