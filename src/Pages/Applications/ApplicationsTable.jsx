@@ -4,9 +4,10 @@ import { stringAvatar } from '../../utils'
 import PropTypes from 'prop-types'
 import { Delete, Edit } from '@mui/icons-material'
 
-export const ApplicationsTable = ({ applications, showEditDialog, showDeleteDialog, options }) => {
+
+export const ApplicationsTable = ({ applications, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
     const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } = options
-    console.log(applications)
+    // TODO: Cacher les options de suppression et modification dans un dropdown (... ou more)
     return (
         <TableContainer>
 
@@ -29,11 +30,16 @@ export const ApplicationsTable = ({ applications, showEditDialog, showDeleteDial
                             <TableRow
                                 key={'appli' + app.id}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                hover
+
                             >
                                 <TableCell component="th" scope="row">
                                     {app.id}
                                 </TableCell>
-                                <TableCell align="left">
+                                <TableCell align="left" sx={{ cursor: 'pointer', maxWidth: '30%' }} width='30%'
+                                    onClick={() => showDetailsDialog(app)}
+                                >
+
                                     <Typography variant='span' sx={{ my: 0, fontWeight: 'bold', }}>{app.title}</Typography>
                                     <br />
                                     <Typography color='text.secondary' sx={{
@@ -48,6 +54,7 @@ export const ApplicationsTable = ({ applications, showEditDialog, showDeleteDial
 
                                         {app.description}
                                     </Typography>
+
                                 </TableCell>
                                 <TableCell align="left">
                                     <Stack direction='row' alignItems='center' spacing={2}>
@@ -128,5 +135,6 @@ ApplicationsTable.propTypes = {
     applications: PropTypes.array.isRequired,
     showEditDialog: PropTypes.func.isRequired,
     options: PropTypes.object.isRequired,
+    showDetailsDialog: PropTypes.func.isRequired,
     showDeleteDialog: PropTypes.func.isRequired
 }

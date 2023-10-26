@@ -18,6 +18,5 @@ export function sortAndFilterData(applications, searchTerm, sortOption) {
             return a.id - b.id
         })
     }
-    console.log(result)
     return result
 }

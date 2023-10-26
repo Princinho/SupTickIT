@@ -7,17 +7,17 @@ import { sampleData } from '../../SampleData'
 import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from './utils'
+import { DetailsDialog } from './DetailsDialog'
 
-//TODO: Faire bosser le tri
 export const Applications = () => {
-  //TODO: Corriger le bug quand on clique sur annuler sur le popup de creation
   //TODO: Ajouter un popup de details qui s'affiche quand on clique sur le nom de l'application
-  //TODO: Faire bosser la pagination
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [applicationToEdit, setApplicationToEdit] = useState(null)
+  const [applicationToDetail, setApplicationToDetail] = useState(null)
   const [applicationToDelete, setApplicationToDelete] = useState(null)
   const [sortOption, setSortOption] = useState(null)
   const [applications, setApplications] = useState([...sampleData.applications])
@@ -40,6 +40,10 @@ export const Applications = () => {
     setIsDeleteDialogOpen(true)
     setApplicationToDelete(application)
   }
+  function showDetailsDialog(application) {
+    setIsDetailsDialogOpen(true)
+    setApplicationToDetail(application)
+  }
   function createApplication(data) {
     setApplications(prev => {
       let result = [{ ...data, id: applications.length + 1, dateCreated: new Date().toISOString(), createdBy: 3 }, ...prev]
@@ -50,7 +54,6 @@ export const Applications = () => {
     setTableOptions(prev => ({ ...prev, rowsPerPage }))
   }
   function setCurrentPage(page) {
-    console.log(page)
     setTableOptions(prev => ({ ...prev, page }))
   }
   function editApplication(app) {
@@ -62,7 +65,6 @@ export const Applications = () => {
     setApplications(prev => prev.filter(app => app.id != application.id))
   }
 
-  console.log(sortOption)
 
   return (
     <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
@@ -130,7 +132,6 @@ export const Applications = () => {
 
               </Select>
             </FormControl>
-            {/* TODO: Synchroniser avec la pagniation du table footer */}
 
             <ButtonGroup variant="outlined" aria-label="outlined primary button group">
               <Button
@@ -165,11 +166,11 @@ export const Applications = () => {
         <ApplicationsTable
           options={tableOptions}
           applications={sortAndFilterData(applications, searchTerm, sortOption)}
-
-          showEditDialog={showEditDialog} showDeleteDialog={showDeleteDialog} />
+          showDetailsDialog={showDetailsDialog}
+          showEditDialog={showEditDialog}
+          showDeleteDialog={showDeleteDialog} />
       </Box>
       <CreateDialog open={isCreateDialogOpen} handleClose={(app) => {
-        console.log(app)
         if (app) {
           createApplication(app)
         }
@@ -180,6 +181,14 @@ export const Applications = () => {
           handleClose={(app) => {
             if (app) { editApplication(app) }
             setIsEditDialogOpen(false)
+          }}
+
+        />
+      }
+      {
+        applicationToDetail && <DetailsDialog open={isDetailsDialogOpen} application={applicationToDetail}
+          handleClose={() => {
+            setIsDetailsDialogOpen(false)
           }}
 
         />
