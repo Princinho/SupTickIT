@@ -103,6 +103,10 @@ export const sampleData = {
             createdBy: 3
         }
     ],
+    companies: [
+        { id: '1', name: 'Cognitive Factory', description: 'Software edition company focused on makin businesses more efficient through high quality and high impact software.' },
+        { id: '2', name: 'Solimi', description: 'FinTech company with the goal of making digital money transactions mainstream and more affordable' },
+    ],
     users: [
         { id: 1, name: 'GATIEN GNAKOU', email: 'spadmin@gmail.com', password: 'Admin123#', roles: ['admin'] },
         { id: 2, name: 'Clement LOTSU' },

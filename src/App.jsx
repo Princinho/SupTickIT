@@ -10,6 +10,7 @@ import { Applications } from './Pages/Applications/Applications.jsx'
 import { Login } from './Pages/Login/Login'
 import { useState } from 'react'
 import { UserContext } from './Contexts.js'
+import { Companies } from './Pages/Companies/Companies.jsx'
 
 function App() {
   const [user, setUser] = useState(null)
@@ -20,6 +21,7 @@ function App() {
         <Route path='login' element={<Login />} />
         <Route path='/' element={<Layout />} >
           <Route path='applications' element={<Applications />} />
+          <Route path='companies' element={<Companies />} />
 
         </Route>
       </Route>

@@ -10,7 +10,7 @@ import { UserContext } from './Contexts';
 const drawerWidth = 240;
 
 export const Layout = (props) => {
-    // TODO: Add logout capability
+    // TODO: Add icon to open drawer on small screens
     const { user, setUser } = useContext(UserContext)
     const navigate = useNavigate()
     const { window } = props;
@@ -25,7 +25,7 @@ export const Layout = (props) => {
     }
     const menuIconWidth = '32px'
     const menuItemColor = '#0090D7'
-    const selectedMenuItemColor = 'white'
+    // const selectedMenuItemColor = 'white'
     const listItemStyles = { color: menuItemColor, '& .MuiListItemText-primary': { fontWeight: '400' } }
     const drawerContents = (
         <Box >
@@ -37,18 +37,22 @@ export const Layout = (props) => {
                 <List sx={{ paddingBlock: '0' }}>
 
                     <ListItem disablePadding  >
-                        {/* <Link to="applications"> */}
                         <ListItemButton onClick={() => navigate('applications')} >
                             <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
-                                <ListAltIcon sx={{ color: selectedMenuItemColor }} />
+                                <ListAltIcon sx={{ color: menuItemColor }} />
                             </ListItemIcon>
-                            <ListItemText primary={"Applications"} sx={{ ...listItemStyles, color: selectedMenuItemColor, textDecoration: 'none' }} />
+                            <ListItemText primary={"Applications"} sx={{ ...listItemStyles,  textDecoration: 'none' }} />
                         </ListItemButton>
-                        {/* </Link> */}
 
                     </ListItem>
-                </List>
-                <List sx={{ paddingBlock: '0' }}>
+                    <ListItem disablePadding  >
+                        <ListItemButton onClick={() => navigate('companies')} >
+                            <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
+                                <ListAltIcon sx={{ color: menuItemColor }} />
+                            </ListItemIcon>
+                            <ListItemText primary={"Entreprises"} sx={{ ...listItemStyles, textDecoration: 'none' }} />
+                        </ListItemButton>
+                    </ListItem>
                     <ListItem disablePadding  >
                         <ListItemButton >
                             <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
@@ -57,8 +61,6 @@ export const Layout = (props) => {
                             <ListItemText primary={"Catégories"} sx={listItemStyles} />
                         </ListItemButton>
                     </ListItem>
-                </List>
-                <List sx={{ paddingBlock: '0' }}>
                     <ListItem disablePadding  >
                         <ListItemButton >
                             <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
@@ -67,8 +69,6 @@ export const Layout = (props) => {
                             <ListItemText primary={"Utilisateurs"} sx={listItemStyles} />
                         </ListItemButton>
                     </ListItem>
-                </List>
-                <List sx={{ paddingBlock: '0' }}>
                     <ListItem disablePadding  >
                         <ListItemButton >
                             <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
@@ -77,8 +77,6 @@ export const Layout = (props) => {
                             <ListItemText primary={"Tickets"} sx={listItemStyles} />
                         </ListItemButton>
                     </ListItem>
-                </List>
-                <List sx={{ paddingBlock: '0' }}>
                     <ListItem disablePadding  >
                         <ListItemButton >
                             <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
@@ -87,9 +85,7 @@ export const Layout = (props) => {
                             <ListItemText primary={"Paramètres"} sx={listItemStyles} />
                         </ListItemButton>
                     </ListItem>
-                </List>
-                <Divider />
-                <List sx={{ paddingBlock: '0' }}>
+                    <Divider />
                     <ListItem disablePadding  >
                         <ListItemButton >
                             <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
@@ -132,7 +128,7 @@ export const Layout = (props) => {
                         onClick={handleDrawerToggle}
                         sx={{ mr: 2, display: { md: 'none' } }}
                     >
-                        
+
                     </IconButton>
                     <Stack direction='row' sx={{ width: '100%' }} justifyContent='flex-end'>
                         <IconButton onClick={event => setAnchorEl(event.target)}>

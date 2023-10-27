@@ -1,12 +1,11 @@
-import { Avatar, IconButton, ListItemIcon, Menu, MenuItem, Stack, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
-import { sampleData } from '../../SampleData'
-import { stringAvatar } from '../../utils'
+import { IconButton, ListItemIcon, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
+
 import PropTypes from 'prop-types'
 import {  Delete, Edit,  MoreVert } from '@mui/icons-material'
 import { useState } from 'react'
 
 
-export const ApplicationsTable = ({ applications, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
+export const CompaniesTable = ({ companies, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
     function handleClose() {
         setAnchorEl(null)
     }
@@ -14,7 +13,6 @@ export const ApplicationsTable = ({ applications, showEditDialog, showDeleteDial
     const [focusedEntry, setFocusedEntry] = useState(null)
     const appMoreMenuOpen = Boolean(anchorEl)
     const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } = options
-    // TODO: Cacher les options de suppression et modification dans un dropdown (... ou more)
     // TODO: Permettre de reset les champs au clic du bouton reset a droite.
     return (
         <>
@@ -25,31 +23,29 @@ export const ApplicationsTable = ({ applications, showEditDialog, showDeleteDial
                         <TableRow>
                             <TableCell>Id</TableCell>
                             <TableCell align="left">Aperçu</TableCell>
-                            <TableCell align="left">Ajouté par</TableCell>
-                            <TableCell align="left">Date d&apos;ajout</TableCell>
                             <TableCell align="left">Actions</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {applications.length > 0 ?
+                        {companies.length > 0 ?
                             (rowsPerPage > 0
-                                ? applications.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                : applications
-                            ).map((app) => (
+                                ? companies.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                : companies
+                            ).map((company) => (
                                 <TableRow
-                                    key={'appli' + app.id}
+                                    key={'appli' + company.id}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     hover
 
                                 >
                                     <TableCell component="th" scope="row">
-                                        {app.id}
+                                        {company.id}
                                     </TableCell>
-                                    <TableCell align="left" sx={{ cursor: 'pointer', maxWidth: '30%' }} width='30%'
-                                        onClick={() => showDetailsDialog(app)}
+                                    <TableCell align="left" sx={{ cursor: 'pointer', maxWidth: '70%' }} width='70%'
+                                        onClick={() => showDetailsDialog(company)}
                                     >
 
-                                        <Typography variant='span' sx={{ my: 0, fontWeight: 'bold', }}>{app.title}</Typography>
+                                        <Typography variant='span' sx={{ my: 0, fontWeight: 'bold', }}>{company.name}</Typography>
                                         <br />
                                         <Typography color='text.secondary' sx={{
                                             overflow: "hidden",
@@ -61,23 +57,13 @@ export const ApplicationsTable = ({ applications, showEditDialog, showDeleteDial
                                             variant='span'
                                         >
 
-                                            {app.description}
+                                            {company.description}
                                         </Typography>
 
                                     </TableCell>
-                                    <TableCell align="left">
-                                        <Stack direction='row' alignItems='center' spacing={2}>
-                                            <Avatar {...stringAvatar(sampleData.users.find(u => u.id == app.createdBy)?.name)} />
-                                            <Typography variant='subtitle2'> {sampleData.users.find(u => u.id == app.createdBy)?.name}</Typography>
-                                        </Stack>
-
-                                    </TableCell>
-                                    <TableCell>
-                                        {new Date(app.dateCreated).toLocaleString()}
-                                    </TableCell>
                                     <TableCell>
                                         <IconButton onClick={event => {
-                                            setFocusedEntry(app)
+                                            setFocusedEntry(company)
                                             setAnchorEl(event.currentTarget)
                                         }}
 
@@ -99,7 +85,7 @@ export const ApplicationsTable = ({ applications, showEditDialog, showDeleteDial
                                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                                 labelRowsPerPage="Eléments par page"
                                 colSpan={5}
-                                count={applications.length}
+                                count={companies.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 SelectProps={{
@@ -175,8 +161,8 @@ export const ApplicationsTable = ({ applications, showEditDialog, showDeleteDial
         </>
     )
 }
-ApplicationsTable.propTypes = {
-    applications: PropTypes.array.isRequired,
+CompaniesTable.propTypes = {
+    companies: PropTypes.array.isRequired,
     showEditDialog: PropTypes.func.isRequired,
     options: PropTypes.object.isRequired,
     showDetailsDialog: PropTypes.func.isRequired,
