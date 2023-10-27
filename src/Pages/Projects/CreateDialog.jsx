@@ -1,25 +1,20 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material"
 import PropTypes from 'prop-types'
-import { useEffect, useState } from "react"
-export const EditDialog = ({ open, handleClose, application }) => {
-    const [formData, setFormData] = useState({ ...application })
-    useEffect(() => {
-        setFormData(application)
-    }, [application]);
-    // newFormData();
-    
-    console.log(application)
-    console.log(formData)
+import { useState } from "react"
+export const CreateDialog = ({ open, handleClose }) => {
+    //TODO: Faire bosser la pagination
+    const [formData, setFormData] = useState({})
+    const [titleError, setTitleError] = useState(false)
     return (
         <Box>
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Modifier l&apos;application</DialogTitle>
+                <DialogTitle>Nouvelle project</DialogTitle>
                 <DialogContent>
                     <TextField
                         autoFocus
                         margin="dense"
-                        id="title"
-                        label="Nom"
+                        label="Nom *"
+                        error={titleError}
                         type="text"
                         value={formData.title}
                         onChange={(event) => setFormData(prev => ({ ...prev, title: event.target.value }))}
@@ -29,7 +24,6 @@ export const EditDialog = ({ open, handleClose, application }) => {
                     <TextField
                         autoFocus
                         margin="dense"
-                        id="description"
                         label="Description"
                         type="text"
                         value={formData.description}
@@ -39,15 +33,25 @@ export const EditDialog = ({ open, handleClose, application }) => {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Annuler</Button>
-                    <Button onClick={() => handleClose(formData)}>Enregistrer</Button>
+                    <Button onClick={() => {
+                        setTitleError(false)
+                        handleClose()
+                    }}>Annuler</Button>
+                    <Button onClick={() => {
+                        if (!formData.title) {
+                            setTitleError(true)
+                            return
+                        } else {
+                            setTitleError(false)
+                            handleClose(formData)
+                        }
+                    }}>Enregistrer</Button>
                 </DialogActions>
             </Dialog>
         </Box>
     )
 }
-EditDialog.propTypes = {
+CreateDialog.propTypes = {
     open: PropTypes.bool.isRequired,
-    handleClose: PropTypes.func.isRequired,
-    application: PropTypes.object.isRequired
+    handleClose: PropTypes.func.isRequired
 }

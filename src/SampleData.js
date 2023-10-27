@@ -1,6 +1,6 @@
 
 export const sampleData = {
-    applications: [
+    projects: [
         {
             id: 1, title: 'SupTickIT',
             description: 'IT support tickets management system',
@@ -91,7 +91,7 @@ export const sampleData = {
         {
             id: 15,
             title: 'Audacity',
-            description: 'A free open source digital audio editor and recording computer software application available for Windows macOS/OS X and Unix-like operating systems.',
+            description: 'A free open source digital audio editor and recording computer software project available for Windows macOS/OS X and Unix-like operating systems.',
             dateCreated: '2016-11-28T12:10:40.000Z', // Random date within the range
             createdBy: 1
         },
@@ -111,5 +111,14 @@ export const sampleData = {
         { id: 1, name: 'GATIEN GNAKOU', email: 'spadmin@gmail.com', password: 'Admin123#', roles: ['admin'] },
         { id: 2, name: 'Clement LOTSU' },
         { id: 3, name: 'Abraham GNAWOLOU' }
+    ],
+    roles: [
+        { id: '1', code: 'admin', nom: 'Administrateur', description: 'Administrateur' },
+        { id: '2', code: 'mod', nom: 'Moderateur', description: 'Moderateur' },
+        { id: '3', code: 'agent', nom: 'Agent', description: 'Agent' },
+        { id: '4', code: 'client', nom: 'Client', description: 'Client' },
+    ],
+    rolesAffectations: [
+        { id: 1, userId: 1, roleId: 1, startDate: '2023/10/27', endDate: null }
     ]
 }

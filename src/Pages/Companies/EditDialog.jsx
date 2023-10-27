@@ -13,7 +13,7 @@ export const EditDialog = ({ open, handleClose,  entry }) => {
     return (
         <Box>
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Modifier l&apos;application</DialogTitle>
+                <DialogTitle>Modifier l&apos;project</DialogTitle>
                 <DialogContent>
                     <TextField
                         autoFocus

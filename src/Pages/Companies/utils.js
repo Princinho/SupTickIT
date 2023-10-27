@@ -1,5 +1,5 @@
-export function sortAndFilterData(applications, searchTerm, sortOption) {
-    let result = applications
+export function sortAndFilterData(projects, searchTerm, sortOption) {
+    let result = projects
     if (searchTerm)
         result = result.filter(a => a.title?.toLowerCase().includes(searchTerm.toLowerCase()))
     if (sortOption?.option == 'dateCreated') {

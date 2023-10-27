@@ -1,6 +1,6 @@
 import { ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
-import { ApplicationsTable } from './ApplicationsTable'
+import { ProjectsTable } from './ProjectsTable'
 import {  useState } from 'react'
 import { CreateDialog } from './CreateDialog'
 import { sampleData } from '../../SampleData'
@@ -9,21 +9,21 @@ import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from './utils'
 import { DetailsDialog } from './DetailsDialog'
 
-export const Applications = () => {
+export const Projects = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [applicationToEdit, setApplicationToEdit] = useState(null)
-  const [applicationToDetail, setApplicationToDetail] = useState(null)
-  const [applicationToDelete, setApplicationToDelete] = useState(null)
+  const [projectToEdit, setProjectToEdit] = useState(null)
+  const [projectToDetail, setProjectToDetail] = useState(null)
+  const [projectToDelete, setProjectToDelete] = useState(null)
   const [sortOption, setSortOption] = useState({option:'title'})
-  const [applications, setApplications] = useState([...sampleData.applications])
+  const [projects, setProjects] = useState([...sampleData.projects])
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
-    count: sampleData.applications.length,
+    count: sampleData.projects.length,
     handlePageChange: setCurrentPage,
     handleRowsPerPageChange: changeRowsPerPage
   })
@@ -31,21 +31,21 @@ export const Applications = () => {
     setRowsPerPage(rowsPerPage)
     setCurrentPage(0)
   }
-  function showEditDialog(application) {
+  function showEditDialog(project) {
     setIsEditDialogOpen(true)
-    setApplicationToEdit(application)
+    setProjectToEdit(project)
   }
-  function showDeleteDialog(application) {
+  function showDeleteDialog(project) {
     setIsDeleteDialogOpen(true)
-    setApplicationToDelete(application)
+    setProjectToDelete(project)
   }
-  function showDetailsDialog(application) {
+  function showDetailsDialog(project) {
     setIsDetailsDialogOpen(true)
-    setApplicationToDetail(application)
+    setProjectToDetail(project)
   }
-  function createApplication(data) {
-    setApplications(prev => {
-      let result = [{ ...data, id: applications.length + 1, dateCreated: new Date().toISOString(), createdBy: 3 }, ...prev]
+  function createProject(data) {
+    setProjects(prev => {
+      let result = [{ ...data, id: projects.length + 1, dateCreated: new Date().toISOString(), createdBy: 3 }, ...prev]
       return result
     })
   }
@@ -55,18 +55,18 @@ export const Applications = () => {
   function setCurrentPage(page) {
     setTableOptions(prev => ({ ...prev, page }))
   }
-  function editApplication(app) {
-    setApplications(prev => prev.map(
+  function editProject(app) {
+    setProjects(prev => prev.map(
       prevApp => prevApp.id == app.id ? { ...prevApp, ...app } : prevApp
     ))
   }
-  function deleteApplication(application) {
-    setApplications(prev => prev.filter(app => app.id != application.id))
+  function deleteProject(project) {
+    setProjects(prev => prev.filter(app => app.id != project.id))
   }
   return (
     <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
-      <Typography variant='h5' component='span' sx={{ fontWeight: 'bold' }}>Applications</Typography>
-      <Stack direction='row'><Typography color='text.secondary' sx={{ fontWeight: 'bold' }}>Menu /</Typography><Typography color='primary.light' sx={{ fontWeight: 'bold' }}>Applications</Typography></Stack>
+      <Typography variant='h5' component='span' sx={{ fontWeight: 'bold' }}>Projets</Typography>
+      <Stack direction='row'><Typography color='text.secondary' sx={{ fontWeight: 'bold' }}>Menu /</Typography><Typography color='primary.light' sx={{ fontWeight: 'bold' }}>Projets</Typography></Stack>
 
       <Grid container spacing={2}>
         <Grid item xs={12} sm={5}>
@@ -100,7 +100,7 @@ export const Applications = () => {
         <Grid item xs={12} sm={7}>
           <Stack direction='row' width='100%' spacing={{ xs: 1, sm: 2 }} justifyContent={{ xs: 'flex-start', sm: 'flex-end' }}>
             <TextField
-              id="applications-index-search-box" size='small'
+              id="projects-index-search-box" size='small'
               sx={{ minWidth: '30%' }}
               onChange={(event) => setSearchTerm(event.target.value)}
               aria-label='search'
@@ -160,30 +160,30 @@ export const Applications = () => {
         </Grid>
       </Grid>
       <Box sx={{ marginRight: '1em', mt: 2 }}>
-        <ApplicationsTable
+        <ProjectsTable
           options={tableOptions}
-          applications={sortAndFilterData(applications, searchTerm, sortOption)}
+          projects={sortAndFilterData(projects, searchTerm, sortOption)}
           showDetailsDialog={showDetailsDialog}
           showEditDialog={showEditDialog}
           showDeleteDialog={showDeleteDialog} />
       </Box>
       <CreateDialog open={isCreateDialogOpen} handleClose={(app) => {
         if (app) {
-          createApplication(app)
+          createProject(app)
         }
         setIsCreateDialogOpen(false)
       }} />
       {
-        applicationToEdit && <EditDialog open={isEditDialogOpen} application={applicationToEdit}
+        projectToEdit && <EditDialog open={isEditDialogOpen} project={projectToEdit}
           handleClose={(app) => {
-            if (app) { editApplication(app) }
+            if (app) { editProject(app) }
             setIsEditDialogOpen(false)
           }}
 
         />
       }
       {
-        applicationToDetail && <DetailsDialog open={isDetailsDialogOpen} application={applicationToDetail}
+        projectToDetail && <DetailsDialog open={isDetailsDialogOpen} project={projectToDetail}
           handleClose={() => {
             setIsDetailsDialogOpen(false)
           }}
@@ -191,9 +191,9 @@ export const Applications = () => {
         />
       }
       {
-        applicationToDelete && <DeleteDialog open={isDeleteDialogOpen} application={applicationToDelete}
+        projectToDelete && <DeleteDialog open={isDeleteDialogOpen} project={projectToDelete}
           handleClose={(app) => {
-            if (app) { deleteApplication(app) }
+            if (app) { deleteProject(app) }
             setIsDeleteDialogOpen(false)
           }}
 

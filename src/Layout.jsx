@@ -37,11 +37,11 @@ export const Layout = (props) => {
                 <List sx={{ paddingBlock: '0' }}>
 
                     <ListItem disablePadding  >
-                        <ListItemButton onClick={() => navigate('applications')} >
+                        <ListItemButton onClick={() => navigate('projects')} >
                             <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
                                 <ListAltIcon sx={{ color: menuItemColor }} />
                             </ListItemIcon>
-                            <ListItemText primary={"Applications"} sx={{ ...listItemStyles, textDecoration: 'none' }} />
+                            <ListItemText primary={"Projets"} sx={{ ...listItemStyles, textDecoration: 'none' }} />
                         </ListItemButton>
 
                     </ListItem>

@@ -18,7 +18,7 @@ export const CompaniesTable = ({ companies, showEditDialog, showDeleteDialog, sh
         <>
             <TableContainer>
 
-                <Table sx={{ minWidth: 320 }} size='small' aria-label="list of applications">
+                <Table sx={{ minWidth: 320 }} size='small' aria-label="list of projects">
                     <TableHead>
                         <TableRow>
                             <TableCell>Id</TableCell>

@@ -6,7 +6,7 @@ import {  Delete, Edit,  MoreVert } from '@mui/icons-material'
 import { useState } from 'react'
 
 
-export const ApplicationsTable = ({ applications, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
+export const ProjectsTable = ({ projects, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
     function handleClose() {
         setAnchorEl(null)
     }
@@ -20,7 +20,7 @@ export const ApplicationsTable = ({ applications, showEditDialog, showDeleteDial
         <>
             <TableContainer>
 
-                <Table sx={{ minWidth: 320 }} size='small' aria-label="list of applications">
+                <Table sx={{ minWidth: 320 }} size='small' aria-label="list of projects">
                     <TableHead>
                         <TableRow>
                             <TableCell>Id</TableCell>
@@ -31,10 +31,10 @@ export const ApplicationsTable = ({ applications, showEditDialog, showDeleteDial
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {applications.length > 0 ?
+                        {projects.length > 0 ?
                             (rowsPerPage > 0
-                                ? applications.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                : applications
+                                ? projects.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                : projects
                             ).map((app) => (
                                 <TableRow
                                     key={'appli' + app.id}
@@ -99,7 +99,7 @@ export const ApplicationsTable = ({ applications, showEditDialog, showDeleteDial
                                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                                 labelRowsPerPage="Eléments par page"
                                 colSpan={5}
-                                count={applications.length}
+                                count={projects.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 SelectProps={{
@@ -175,8 +175,8 @@ export const ApplicationsTable = ({ applications, showEditDialog, showDeleteDial
         </>
     )
 }
-ApplicationsTable.propTypes = {
-    applications: PropTypes.array.isRequired,
+ProjectsTable.propTypes = {
+    projects: PropTypes.array.isRequired,
     showEditDialog: PropTypes.func.isRequired,
     options: PropTypes.object.isRequired,
     showDetailsDialog: PropTypes.func.isRequired,

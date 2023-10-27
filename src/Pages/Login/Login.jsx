@@ -23,7 +23,7 @@ export const Login = () => {
     }
   }
 
-  if (user) { navigate('/applications') }
+  if (user) { navigate('/projects') }
   else {
     return (
       <form>

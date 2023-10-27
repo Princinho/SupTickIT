@@ -6,11 +6,11 @@ import { Layout } from './Layout.jsx'
 import { createTheme } from '@mui/material'
 import { themeOptions } from './ThemeOptions.jsx'
 import { ThemeProvider } from '@emotion/react'
-import { Applications } from './Pages/Applications/Applications.jsx'
 import { Login } from './Pages/Login/Login'
 import { useState } from 'react'
 import { UserContext } from './Contexts.js'
 import { Companies } from './Pages/Companies/Companies.jsx'
+import { Projects } from './Pages/Projects/Projects.jsx'
 
 function App() {
   const [user, setUser] = useState(null)
@@ -20,7 +20,7 @@ function App() {
       <Route path='/' element={<Outlet />} >
         <Route path='login' element={<Login />} />
         <Route path='/' element={<Layout />} >
-          <Route path='applications' element={<Applications />} />
+          <Route path='projects' element={<Projects />} />
           <Route path='companies' element={<Companies />} />
 
         </Route>
