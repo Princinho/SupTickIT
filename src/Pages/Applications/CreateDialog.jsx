@@ -1,9 +1,6 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material"
 import PropTypes from 'prop-types'
 import { useState } from "react"
-//TODO: Afficher des icones aulieu de boutons sur mobile
-//TODO: Faire bosser la modification
-//TODO: Faire bosser la suppression
 export const CreateDialog = ({ open, handleClose }) => {
     //TODO: Faire bosser la pagination
     const [formData, setFormData] = useState({})

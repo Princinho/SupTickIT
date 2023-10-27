@@ -10,7 +10,6 @@ import { sortAndFilterData } from './utils'
 import { DetailsDialog } from './DetailsDialog'
 
 export const Applications = () => {
-  //TODO: Ajouter un popup de details qui s'affiche quand on clique sur le nom de l'application
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -19,7 +18,7 @@ export const Applications = () => {
   const [applicationToEdit, setApplicationToEdit] = useState(null)
   const [applicationToDetail, setApplicationToDetail] = useState(null)
   const [applicationToDelete, setApplicationToDelete] = useState(null)
-  const [sortOption, setSortOption] = useState(null)
+  const [sortOption, setSortOption] = useState({option:'title'})
   const [applications, setApplications] = useState([...sampleData.applications])
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,

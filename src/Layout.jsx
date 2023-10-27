@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
-import { ListAlt as ListAltIcon, Menu } from '@mui/icons-material';
-import { AppBar, Avatar, Box, Button, CssBaseline, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack, Toolbar } from '@mui/material';
-import React, { useContext, useEffect } from 'react'
+import { ListAlt as ListAltIcon, Logout, Settings } from '@mui/icons-material';
+import { AppBar, Avatar, Box, Button, CssBaseline, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack, Toolbar } from '@mui/material';
+import React, { useContext, useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { stringAvatar } from './utils';
 import { sampleData } from './SampleData';
@@ -10,15 +10,19 @@ import { UserContext } from './Contexts';
 const drawerWidth = 240;
 
 export const Layout = (props) => {
-    const { user } = useContext(UserContext)
+    // TODO: Add logout capability
+    const { user, setUser } = useContext(UserContext)
     const navigate = useNavigate()
     const { window } = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
-
+    const [anchorEl, setAnchorEl] = useState(null)
+    const userMenuOpen = Boolean(anchorEl)
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
-
+    function handleClose() {
+        setAnchorEl(null)
+    }
     const menuIconWidth = '32px'
     const menuItemColor = '#0090D7'
     const selectedMenuItemColor = 'white'
@@ -128,10 +132,12 @@ export const Layout = (props) => {
                         onClick={handleDrawerToggle}
                         sx={{ mr: 2, display: { md: 'none' } }}
                     >
-                        <Menu />
+                        
                     </IconButton>
                     <Stack direction='row' sx={{ width: '100%' }} justifyContent='flex-end'>
-                        <Avatar {...stringAvatar(sampleData.users[0].name)} />
+                        <IconButton onClick={event => setAnchorEl(event.target)}>
+                            <Avatar {...stringAvatar(sampleData.users[0].name)} />
+                        </IconButton>
                     </Stack>
                 </Toolbar>
             </AppBar>
@@ -182,6 +188,62 @@ export const Layout = (props) => {
 
                 <Outlet />
             </Box>
+            <Menu
+                anchorEl={anchorEl}
+                id="account-menu"
+                open={userMenuOpen}
+                onClose={handleClose}
+                onClick={handleClose}
+                PaperProps={{
+                    elevation: 0,
+                    sx: {
+                        overflow: 'visible',
+                        filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                        mt: 1.5,
+                        '& .MuiAvatar-root': {
+                            width: 32,
+                            height: 32,
+                            ml: -0.5,
+                            mr: 1,
+                        },
+                        '&:before': {
+                            content: '""',
+                            display: 'block',
+                            position: 'absolute',
+                            top: 0,
+                            right: 14,
+                            width: 10,
+                            height: 10,
+                            bgcolor: 'background.paper',
+                            transform: 'translateY(-50%) rotate(45deg)',
+                            zIndex: 0,
+                        },
+                    },
+                }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            >
+                <MenuItem onClick={handleClose}>
+                    <Avatar /> Profil
+                </MenuItem>
+                <Divider />
+
+                <MenuItem onClick={handleClose}>
+                    <ListItemIcon>
+                        <Settings fontSize="small" />
+                    </ListItemIcon>
+                    Paramètres
+                </MenuItem>
+                <MenuItem onClick={() => {
+                    setUser(null)
+                    handleClose()
+                }}>
+                    <ListItemIcon>
+                        <Logout fontSize="small" />
+                    </ListItemIcon>
+                    Déconnexion
+                </MenuItem>
+            </Menu>
         </Box>
     );
 
