@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { useState } from "react"
 export const CreateDialog = ({ open, handleClose }) => {
     //TODO: Faire bosser la pagination
-    const [formData, setFormData] = useState({})
+    const [formData, setFormData] = useState({ title: '', description: '' })
     const [titleError, setTitleError] = useState(false)
     return (
         <Box>
