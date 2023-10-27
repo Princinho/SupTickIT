@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { ListAlt as ListAltIcon, Logout, Settings } from '@mui/icons-material';
+import { ListAlt as ListAltIcon, Logout, MenuRounded, Settings } from '@mui/icons-material';
 import { AppBar, Avatar, Box, Button, CssBaseline, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, Stack, Toolbar } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
@@ -10,7 +10,7 @@ import { UserContext } from './Contexts';
 const drawerWidth = 240;
 
 export const Layout = (props) => {
-    // TODO: Add icon to open drawer on small screens
+    
     const { user, setUser } = useContext(UserContext)
     const navigate = useNavigate()
     const { window } = props;
@@ -41,7 +41,7 @@ export const Layout = (props) => {
                             <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
                                 <ListAltIcon sx={{ color: menuItemColor }} />
                             </ListItemIcon>
-                            <ListItemText primary={"Applications"} sx={{ ...listItemStyles,  textDecoration: 'none' }} />
+                            <ListItemText primary={"Applications"} sx={{ ...listItemStyles, textDecoration: 'none' }} />
                         </ListItemButton>
 
                     </ListItem>
@@ -128,7 +128,7 @@ export const Layout = (props) => {
                         onClick={handleDrawerToggle}
                         sx={{ mr: 2, display: { md: 'none' } }}
                     >
-
+                        <MenuRounded />
                     </IconButton>
                     <Stack direction='row' sx={{ width: '100%' }} justifyContent='flex-end'>
                         <IconButton onClick={event => setAnchorEl(event.target)}>
