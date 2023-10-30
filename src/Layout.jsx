@@ -4,13 +4,12 @@ import { AppBar, Avatar, Box, Button, CssBaseline, Divider, Drawer, IconButton, 
 import React, { useContext, useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { stringAvatar } from './utils';
-import { sampleData } from './SampleData';
-import { UserContext } from './Contexts';
+import { DataContext, UserContext } from './Contexts';
 
 const drawerWidth = 240;
 
 export const Layout = (props) => {
-    
+    const { sampleData } = useContext(DataContext)
     const { user, setUser } = useContext(UserContext)
     const navigate = useNavigate()
     const { window } = props;

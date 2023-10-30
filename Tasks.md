@@ -9,8 +9,9 @@ Ajouter les 3 types de roles dans le sample data (Admin, Moderateur, Agent, Clie
 ===========
  LEFT
 ===========
-TODO:Permettre a l'admin d'Ajouter des projets
+TODO:
 Affecter des projets aux entreprises
+Enregistrer dans le localstorage a chaque modif du datacontext et charger depuis le localstorage si il es dispo
 Permettre a l'administrateur de Creer des comptes et y affecter des roles (En precisant l'entreprise titulaire)
 Permettre au moderateur de changer leur mots de passe.
 Permettre au moderateur d'ajouter des categories de tickets pour chacun des projets de son entreprise

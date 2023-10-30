@@ -3,13 +3,14 @@ import bgImage from "../../assets/login-background.jpg"
 import { Link as RouterLink, useNavigate } from "react-router-dom"
 import { Logo } from "../../Components/Logo"
 import { useContext, useState } from "react"
-import { UserContext } from "../../Contexts"
-import { sampleData } from "../../SampleData"
+import { DataContext, UserContext } from "../../Contexts"
 export const Login = () => {
   const { user, setUser } = useContext(UserContext)
   const navigate = useNavigate()
   const [credentials, setCredentials] = useState(null)
   const [error, setError] = useState(null)
+  const { sampleData } = useContext(DataContext)
+
   function login() {
     console.log(credentials)
     setError(false)

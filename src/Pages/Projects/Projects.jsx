@@ -1,15 +1,17 @@
 import { ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
 import { ProjectsTable } from './ProjectsTable'
-import {  useState } from 'react'
+import {  useContext, useState } from 'react'
 import { CreateDialog } from './CreateDialog'
-import { sampleData } from '../../SampleData'
 import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from './utils'
 import { DetailsDialog } from './DetailsDialog'
+import { DataContext } from '../../Contexts'
 
 export const Projects = () => {
+  
+  const { sampleData } = useContext(DataContext)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)

@@ -104,7 +104,11 @@ export const sampleData = {
         }
     ],
     companies: [
-        { id: '1', name: 'Cognitive Factory', description: 'Software edition company focused on makin businesses more efficient through high quality and high impact software.' },
+        {
+            id: '1', name: 'Cognitive Factory',
+            projects: [1, 2, 5, 7, 9],
+            description: 'Software edition company focused on makin businesses more efficient through high quality and high impact software.'
+        },
         { id: '2', name: 'Solimi', description: 'FinTech company with the goal of making digital money transactions mainstream and more affordable' },
     ],
     users: [

@@ -1,15 +1,17 @@
 import { Avatar, IconButton, ListItemIcon, Menu, MenuItem, Stack, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
-import { sampleData } from '../../SampleData'
 import { stringAvatar } from '../../utils'
 import PropTypes from 'prop-types'
 import {  Delete, Edit,  MoreVert } from '@mui/icons-material'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import { DataContext } from '../../Contexts'
 
 
 export const ProjectsTable = ({ projects, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
     function handleClose() {
         setAnchorEl(null)
     }
+    
+    const { sampleData } = useContext(DataContext)
     const [anchorEl, setAnchorEl] = useState(null)
     const [focusedEntry, setFocusedEntry] = useState(null)
     const appMoreMenuOpen = Boolean(anchorEl)

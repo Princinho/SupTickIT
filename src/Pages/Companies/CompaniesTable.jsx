@@ -23,7 +23,7 @@ export const CompaniesTable = ({ companies, showEditDialog, showDeleteDialog, sh
                         <TableRow>
                             <TableCell>Id</TableCell>
                             <TableCell align="left">Aperçu</TableCell>
-                            <TableCell align="left">Actions</TableCell>
+                            <TableCell align="left">Options</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
