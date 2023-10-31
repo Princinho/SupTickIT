@@ -1,3 +1,4 @@
+const SAMPLE_DATA_LOCALSTORAGE_KEY = 'com.cognitive-factory.SupTickIt'
 function stringToColor(string) {
     let hash = 0;
     let i;
@@ -26,4 +27,20 @@ function stringAvatar(name) {
         children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
     };
 }
-export { stringAvatar, stringToColor }
+
+function getSampleDataFromLocalStorage() {
+
+    let rawData = localStorage.getItem(SAMPLE_DATA_LOCALSTORAGE_KEY)
+    let parsedData = null
+    try {
+        parsedData = JSON.parse(rawData)
+    } catch (error) {
+        console.log(error)
+    }
+    return parsedData
+}
+function saveSampleDataToLocalStorage(sampleData) {
+    
+    localStorage.setItem(SAMPLE_DATA_LOCALSTORAGE_KEY, JSON.stringify(sampleData))
+}
+export { stringAvatar, stringToColor, getSampleDataFromLocalStorage, saveSampleDataToLocalStorage }

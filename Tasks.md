@@ -5,12 +5,12 @@
 DONE
 ===========
 Ajouter les 3 types de roles dans le sample data (Admin, Moderateur, Agent, Client)
+Affecter des projets aux entreprises
 
 ===========
  LEFT
 ===========
 TODO:
-Affecter des projets aux entreprises
 Enregistrer dans le localstorage a chaque modif du datacontext et charger depuis le localstorage si il es dispo
 Permettre a l'administrateur de Creer des comptes et y affecter des roles (En precisant l'entreprise titulaire)
 Permettre au moderateur de changer leur mots de passe.

@@ -4,12 +4,12 @@ import { AppBar, Avatar, Box, Button, CssBaseline, Divider, Drawer, IconButton, 
 import React, { useContext, useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { stringAvatar } from './utils';
-import { DataContext, UserContext } from './Contexts';
+import {  UserContext } from './Contexts';
 
 const drawerWidth = 240;
 
 export const Layout = (props) => {
-    const { sampleData } = useContext(DataContext)
+    
     const { user, setUser } = useContext(UserContext)
     const navigate = useNavigate()
     const { window } = props;
@@ -131,7 +131,7 @@ export const Layout = (props) => {
                     </IconButton>
                     <Stack direction='row' sx={{ width: '100%' }} justifyContent='flex-end'>
                         <IconButton onClick={event => setAnchorEl(event.target)}>
-                            <Avatar {...stringAvatar(sampleData.users[0].name)} />
+                            {user && <Avatar {...stringAvatar(user?.name)} />}
                         </IconButton>
                     </Stack>
                 </Toolbar>

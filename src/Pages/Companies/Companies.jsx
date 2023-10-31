@@ -1,7 +1,7 @@
 import { ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
 import { CompaniesTable } from './CompaniesTable'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { CreateDialog } from './CreateDialog'
 import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
@@ -12,7 +12,7 @@ import { DataContext } from '../../Contexts'
 export const Companies = () => {
   // TODO: Add company creation date and company subscription date.
 
-  const { sampleData } = useContext(DataContext)
+  const { sampleData, setSampleData } = useContext(DataContext)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -22,11 +22,16 @@ export const Companies = () => {
   const [companyToDetail, setCompanyToDetail] = useState(null)
   const [companyToDelete, setCompanyToDelete] = useState(null)
   const [sortOption, setSortOption] = useState({ option: 'name' })
-  const [companies, setCompanies] = useState([...sampleData.companies])
+  const [companies, setCompanies] = useState([])
+
+  useEffect(() => {
+    setCompanies(sampleData?.companies||[])
+  }, [sampleData])
+
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
-    count: sampleData.companies.length,
+    count: companies.length,
     handlePageChange: setCurrentPage,
     handleRowsPerPageChange: changeRowsPerPage
   })
@@ -47,10 +52,8 @@ export const Companies = () => {
     setCompanyToDetail(company)
   }
   function createCompany(data) {
-    setCompanies(prev => {
-      let result = [{ ...data, id: companies.length + 1, dateCreated: new Date().toISOString(), createdBy: 3 }, ...prev]
-      return result
-    })
+
+    setSampleData(prev => ({ ...prev, companies: [...prev.companies, { ...data, id: companies.length + 1, dateCreated: new Date().toISOString(), createdBy: 3 }] }))
   }
   function setRowsPerPage(rowsPerPage) {
     setTableOptions(prev => ({ ...prev, rowsPerPage }))
