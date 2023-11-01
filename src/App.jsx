@@ -14,6 +14,7 @@ import { Projects } from './Pages/Projects/Projects.jsx'
 import { CompanyDetails } from './Pages/Companies/CompanyDetails.jsx'
 import { sampleData as initialData } from './SampleData.js'
 import { getSampleDataFromLocalStorage, saveSampleDataToLocalStorage } from './utils.js'
+import { Users } from './Pages/Users/Users.jsx'
 
 function App() {
   const [user, setUser] = useState(null)
@@ -47,6 +48,7 @@ function App() {
           <Route path='projects' element={<Projects />} />
           <Route path='companies' element={<Companies />} />
           <Route path='companies/:id' element={<CompanyDetails />} />
+          <Route path='users' element={<Users />} />
 
         </Route>
       </Route>

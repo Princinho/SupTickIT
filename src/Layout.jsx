@@ -4,12 +4,12 @@ import { AppBar, Avatar, Box, Button, CssBaseline, Divider, Drawer, IconButton, 
 import React, { useContext, useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { stringAvatar } from './utils';
-import {  UserContext } from './Contexts';
+import { UserContext } from './Contexts';
 
 const drawerWidth = 240;
 
 export const Layout = (props) => {
-    
+
     const { user, setUser } = useContext(UserContext)
     const navigate = useNavigate()
     const { window } = props;
@@ -61,7 +61,7 @@ export const Layout = (props) => {
                         </ListItemButton>
                     </ListItem>
                     <ListItem disablePadding  >
-                        <ListItemButton >
+                        <ListItemButton onClick={() => navigate('users')}>
                             <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
                                 <ListAltIcon sx={{ color: menuItemColor }} />
                             </ListItemIcon>

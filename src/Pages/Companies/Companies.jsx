@@ -25,7 +25,7 @@ export const Companies = () => {
   const [companies, setCompanies] = useState([])
 
   useEffect(() => {
-    setCompanies(sampleData?.companies||[])
+    setCompanies(sampleData?.companies || [])
   }, [sampleData])
 
   const [tableOptions, setTableOptions] = useState({
@@ -74,7 +74,8 @@ export const Companies = () => {
       <Typography variant='h5' component='span' sx={{ fontWeight: 'bold' }}>Entreprises</Typography>
       <Stack direction='row'>
         <Typography color='text.secondary' sx={{ fontWeight: 'bold' }}>Menu /</Typography>
-        <Typography color='primary.light' sx={{ fontWeight: 'bold' }}>Entreprises</Typography></Stack>
+        <Typography color='primary.light' sx={{ fontWeight: 'bold' }}>Entreprises</Typography>
+      </Stack>
 
       <Grid container spacing={2}>
         <Grid item xs={12} sm={5}>
