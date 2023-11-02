@@ -3,8 +3,16 @@ import { Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, Men
 import { PropTypes } from "prop-types"
 import { useEffect, useState } from 'react'
 export const PageHeader = (
-    { pageTitle, pagePath, onAddButtonClick, sortingOptions, onSortingOptionChanged, onSearchTermChanged, currentPageIndex,
-        onPageChanged, itemsCount, rowsPerPage
+    { pageTitle,
+        pagePath,
+        onAddButtonClick,
+        sortingOptions,
+        onSortingOptionChanged,
+        onSearchTermChanged,
+        currentPageIndex,
+        onPageChanged,
+        itemsCount,
+        rowsPerPage
     }) => {
 
     const [searchTerm, setSearchTerm] = useState('')

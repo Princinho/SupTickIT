@@ -4,19 +4,24 @@ import { useContext, useEffect, useState } from 'react'
 import { DataContext } from '../../Contexts'
 import { PageHeader } from '../../Components/PageHeader'
 import { UsersTable } from './UsersTable'
+import { CreateDialog } from './CreateDialog'
 
 export const Users = () => {
   // TODO: Add entry creation date and entry subscription date.
 
   const { sampleData, setSampleData } = useContext(DataContext)
-
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [sortOption, setSortOption] = useState({ option: 'name' })
   const [users, setUsers] = useState([])
 
   useEffect(() => {
     setUsers(sampleData?.users || [])
   }, [sampleData])
-
+  function createUser(user) {
+    setSampleData(
+      prev => ({ ...prev, users: [...prev.users, { ...user, id: sampleData.users.length+1 }] })
+    )
+  }
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
@@ -47,13 +52,19 @@ export const Users = () => {
         currentPageIndex={tableOptions.page}
         itemsCount={tableOptions.count}
         rowsPerPage={tableOptions.rowsPerPage}
+        onAddButtonClick={() => { setIsCreateDialogOpen(true) }}
       />
 
       <UsersTable
         users={sampleData.users}
         options={tableOptions}
       />
-
+      <CreateDialog open={isCreateDialogOpen} handleClose={(user) => {
+        if (user) {
+          createUser(user)
+        }
+        setIsCreateDialogOpen(false)
+      }} />
     </Paper >
   )
 }

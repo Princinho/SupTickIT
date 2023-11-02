@@ -1,8 +1,9 @@
-import { IconButton, ListItemIcon, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
+import { Divider, IconButton, ListItemIcon, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
 
 import PropTypes from 'prop-types'
-import {  Delete, Edit,  MoreVert } from '@mui/icons-material'
-import { useState } from 'react'
+import { Delete, Edit, MoreVert } from '@mui/icons-material'
+import { useContext, useState } from 'react'
+import { DataContext } from '../../Contexts'
 
 
 export const UsersTable = ({ users, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
@@ -10,19 +11,24 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, showDetail
         setAnchorEl(null)
     }
     const [anchorEl, setAnchorEl] = useState(null)
+    const { sampleData } = useContext(DataContext)
     const [focusedEntry, setFocusedEntry] = useState(null)
     const appMoreMenuOpen = Boolean(anchorEl)
     const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } = options
     // TODO: Permettre de reset les champs au clic du bouton reset a droite.
     return (
         <>
+            <Divider sx={{ marginTop: '1em' }} />
             <TableContainer>
 
                 <Table sx={{ minWidth: 320 }} size='small' aria-label="list of projects">
                     <TableHead>
                         <TableRow>
                             <TableCell>Id</TableCell>
-                            <TableCell align="left">Aperçu</TableCell>
+                            <TableCell align="left">Nom Complet</TableCell>
+                            <TableCell align="left">Identifiant</TableCell>
+                            <TableCell align="left">Derniere Connexion</TableCell>
+                            <TableCell align="left">Entreprise</TableCell>
                             <TableCell align="left">Options</TableCell>
                         </TableRow>
                     </TableHead>
@@ -41,12 +47,14 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, showDetail
                                     <TableCell component="th" scope="row">
                                         {user.id}
                                     </TableCell>
-                                    <TableCell align="left" sx={{ cursor: 'pointer', maxWidth: '70%' }} width='70%'
+                                    <TableCell component="th" scope="row">
+                                        <Typography variant='body2'>
+                                            {`${user.firstName} ${user.lastName}`}
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell align="left" sx={{ cursor: 'pointer', }} 
                                         onClick={() => showDetailsDialog(user)}
                                     >
-
-                                        <Typography variant='span' sx={{ my: 0, fontWeight: 'bold', }}>{user.name}</Typography>
-                                        <br />
                                         <Typography color='text.secondary' sx={{
                                             overflow: "hidden",
                                             textOverflow: "ellipsis",
@@ -57,19 +65,25 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, showDetail
                                             variant='span'
                                         >
 
-                                            {user.description}
+                                            {user.username}
                                         </Typography>
 
+                                    </TableCell>
+                                    <TableCell>
+                                        {user.lastLoginDate}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant='body2'>
+                                            {sampleData.companies.find(company => company.id == user.companyId)?.name}
+                                        </Typography>
                                     </TableCell>
                                     <TableCell>
                                         <IconButton onClick={event => {
                                             setFocusedEntry(user)
                                             setAnchorEl(event.currentTarget)
-                                        }}
-
-                                        ><MoreVert /></IconButton>
-                                        
-
+                                        }}>
+                                            <MoreVert />
+                                        </IconButton>
                                     </TableCell>
                                 </TableRow>
                             )) :

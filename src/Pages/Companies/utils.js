@@ -6,16 +6,14 @@ export function sortAndFilterData(projects, searchTerm, sortOption) {
         result = result.sort((a, b) => {
             return new Date(b.dateCreated) - new Date(a.dateCreated)
         })
-    }
-    if (sortOption?.option == 'title' || sortOption?.option == 'id') {
+    }else if (sortOption?.option == 'id') {
+        result = result.sort((a, b) => {
+            return a.id - b.id
+        })
+    }else {
         let { option } = sortOption
         result = result.sort((a, b) => {
             return (('' + a[option]).toLowerCase()).localeCompare(('' + b[option]).toLowerCase());
-        })
-    }
-    if (sortOption?.option == 'id') {
-        result = result.sort((a, b) => {
-            return a.id - b.id
         })
     }
     return result

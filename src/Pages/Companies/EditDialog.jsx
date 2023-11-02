@@ -7,9 +7,6 @@ export const EditDialog = ({ open, handleClose,  entry }) => {
         setFormData(entry)
     }, [entry]);
     // newFormData();
-    
-    console.log(entry)
-    console.log(formData)
     return (
         <Box>
             <Dialog open={open} onClose={handleClose}>

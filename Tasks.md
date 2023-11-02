@@ -7,6 +7,7 @@ DONE
 Ajouter les 3 types de roles dans le sample data (Admin, Moderateur, Agent, Client)
 Affecter des projets aux entreprises
 Enregistrer dans le localstorage a chaque modif du datacontext et charger depuis le localstorage si il es dispo
+appliquer le tri sur la page des entreprises
 
 ===========
  LEFT

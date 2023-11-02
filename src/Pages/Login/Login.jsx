@@ -15,13 +15,19 @@ export const Login = () => {
     console.log(credentials)
     setError(false)
     let matchingUser = sampleData.users.find(u => u.email == credentials.email && u.password == credentials.password)
-    if (matchingUser) {
-      setUser(matchingUser)
-      navigate('/')
-    }
-    else {
-      setError(true)
-    }
+    setUser({
+      id: 1, name: 'GATIEN GNAKOU', email: 'spadmin@gmail.com', password: 'Admin123#', roles: ['admin'],
+      userId: 'spadmin@gmail.com', lastLoginDate: '2023/10/32',
+      companyId: ''
+    })
+    navigate('/')
+    // if (matchingUser) {
+    //   setUser(matchingUser)
+    //   navigate('/')
+    // }
+    // else {
+    //   setError(true)
+    // }
   }
 
   if (user) { navigate('/projects') }
