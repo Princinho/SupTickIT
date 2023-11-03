@@ -1,5 +1,4 @@
-import { ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-material'
-import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
+import { Paper } from '@mui/material'
 import { useContext, useEffect, useState } from 'react'
 import { DataContext } from '../../Contexts'
 import { PageHeader } from '../../Components/PageHeader'
@@ -11,7 +10,6 @@ export const Users = () => {
 
   const { sampleData, setSampleData } = useContext(DataContext)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const [sortOption, setSortOption] = useState({ option: 'name' })
   const [users, setUsers] = useState([])
 
   useEffect(() => {

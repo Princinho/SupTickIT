@@ -20,6 +20,7 @@ function stringToColor(string) {
 }
 
 function stringAvatar(name) {
+    if (!name) return
     return {
         sx: {
             bgcolor: stringToColor(name),
@@ -27,7 +28,9 @@ function stringAvatar(name) {
         children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
     };
 }
-
+function getRandomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1))
+}
 function getSampleDataFromLocalStorage() {
 
     let rawData = localStorage.getItem(SAMPLE_DATA_LOCALSTORAGE_KEY)
@@ -40,7 +43,15 @@ function getSampleDataFromLocalStorage() {
     return parsedData
 }
 function saveSampleDataToLocalStorage(sampleData) {
-    
+
     localStorage.setItem(SAMPLE_DATA_LOCALSTORAGE_KEY, JSON.stringify(sampleData))
 }
-export { stringAvatar, stringToColor, getSampleDataFromLocalStorage, saveSampleDataToLocalStorage }
+function addOnemonth(date) {
+    var d = date.getDate();
+    date.setMonth(date.getMonth() + +1);
+    if (date.getDate() != d) {
+        date.setDate(0);
+    }
+    return date;
+}
+export { stringAvatar, stringToColor, getSampleDataFromLocalStorage, saveSampleDataToLocalStorage, getRandomNumber, addOnemonth }

@@ -1,12 +1,13 @@
 import { Divider, IconButton, ListItemIcon, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
 
 import PropTypes from 'prop-types'
-import { Delete, Edit, MoreVert } from '@mui/icons-material'
+import { Delete, Edit, MoreVert, Tune } from '@mui/icons-material'
 import { useContext, useState } from 'react'
 import { DataContext } from '../../Contexts'
+import { Link } from 'react-router-dom'
 
 
-export const UsersTable = ({ users, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
+export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options }) => {
     function handleClose() {
         setAnchorEl(null)
     }
@@ -42,7 +43,6 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, showDetail
                                     key={'appli' + user.id}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     hover
-
                                 >
                                     <TableCell component="th" scope="row">
                                         {user.id}
@@ -52,22 +52,23 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, showDetail
                                             {`${user.firstName} ${user.lastName}`}
                                         </Typography>
                                     </TableCell>
-                                    <TableCell align="left" sx={{ cursor: 'pointer', }} 
-                                        onClick={() => showDetailsDialog(user)}
+                                    <TableCell align="left" sx={{ cursor: 'pointer', }}
+                                    // onClick={() => navigate(`${user.id}`)}
                                     >
-                                        <Typography color='text.secondary' sx={{
-                                            overflow: "hidden",
-                                            textOverflow: "ellipsis",
-                                            display: "-webkit-box",
-                                            "WebkitLineClamp": '1',
-                                            "WebkitBoxOrient": "vertical"
-                                        }}
-                                            variant='span'
-                                        >
+                                        <Link to={`${user.id}`}>
+                                            <Typography color='text.secondary' sx={{
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                                display: "-webkit-box",
+                                                "WebkitLineClamp": '1',
+                                                "WebkitBoxOrient": "vertical"
+                                            }}
+                                                variant='span'
+                                            >
 
-                                            {user.username}
-                                        </Typography>
-
+                                                {user.username}
+                                            </Typography>
+                                        </Link>
                                     </TableCell>
                                     <TableCell>
                                         {user.lastLoginDate}
@@ -98,7 +99,7 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, showDetail
                             <TablePagination
                                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                                 labelRowsPerPage="Eléments par page"
-                                colSpan={5}
+                                colSpan={6}
                                 count={users.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
@@ -110,7 +111,6 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, showDetail
                                 }}
                                 onPageChange={(event, newPage) => handlePageChange(newPage)}
                                 onRowsPerPageChange={(event) => (handleRowsPerPageChange(parseInt(event.target.value, 10)))}
-                            // ActionsComponent={TablePaginationActions}
                             />
                         </TableRow>
                     </TableFooter>
@@ -161,6 +161,16 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, showDetail
                         <Edit color='warning' fontSize='small' />
                     </ListItemIcon>
                     Modifier
+                </MenuItem>
+                <MenuItem onClick={() => {
+                    handleClose()
+                    showEditDialog(focusedEntry)
+                }}>
+
+                    <ListItemIcon>
+                        <Tune color='primary' fontSize='small' />
+                    </ListItemIcon>
+                    Roles et Accès
                 </MenuItem>
                 <MenuItem onClick={() => {
                     handleClose()

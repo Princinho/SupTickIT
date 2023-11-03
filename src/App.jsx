@@ -15,30 +15,31 @@ import { CompanyDetails } from './Pages/Companies/CompanyDetails.jsx'
 import { sampleData as initialData } from './SampleData.js'
 import { getSampleDataFromLocalStorage, saveSampleDataToLocalStorage } from './utils.js'
 import { Users } from './Pages/Users/Users.jsx'
+import { UserDetails } from './Pages/Users/UserDetails.jsx'
 
 function App() {
   const [user, setUser] = useState(null)
-  const [sampleData, setSampleData] = useState(initialData)
+  const [sampleData, setSampleData] = useState(null)
   const theme = createTheme(themeOptions)
-  useEffect(() => {
+  // useEffect(() => {
     let storedData = getSampleDataFromLocalStorage()
-    console.log('retrieved storedData', storedData)
+  //   console.log('retrieved storedData', storedData)
     if (!storedData) {
       console.log('no stored data, using initialData', initialData)
       storedData = initialData
       saveSampleDataToLocalStorage(initialData)
       setSampleData(initialData)
     } else {
-      console.log('using storedData', storedData)
+      
+      if(!sampleData)
       setSampleData(storedData)
     }
 
-  }, [])
+  // }, [])
   useEffect(() => {
     // Pour eviter que les donnees soient reinitialisees a chaque actualisation
     if (JSON.stringify(sampleData) != JSON.stringify(initialData))
       saveSampleDataToLocalStorage(sampleData)
-    console.log('saving to localstorage', sampleData)
   }, [sampleData])
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -49,6 +50,7 @@ function App() {
           <Route path='companies' element={<Companies />} />
           <Route path='companies/:id' element={<CompanyDetails />} />
           <Route path='users' element={<Users />} />
+          <Route path='users/:id' element={<UserDetails />} />
 
         </Route>
       </Route>

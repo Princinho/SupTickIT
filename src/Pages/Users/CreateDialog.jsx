@@ -73,6 +73,7 @@ export const CreateDialog = ({ open, handleClose }) => {
                         } else {
                             setNameError(false)
                             handleClose(formData)
+                            setFormData({firstName:'',lastName:'',username:'',companyId:''})
                         }
                     }}>Enregistrer</Button>
                 </DialogActions>

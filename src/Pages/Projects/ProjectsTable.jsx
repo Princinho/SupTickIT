@@ -1,7 +1,7 @@
 import { Avatar, IconButton, ListItemIcon, Menu, MenuItem, Stack, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
 import { stringAvatar } from '../../utils'
 import PropTypes from 'prop-types'
-import {  Delete, Edit,  MoreVert } from '@mui/icons-material'
+import { Delete, Edit, MoreVert } from '@mui/icons-material'
 import { useContext, useState } from 'react'
 import { DataContext } from '../../Contexts'
 
@@ -10,7 +10,7 @@ export const ProjectsTable = ({ projects, showEditDialog, showDeleteDialog, show
     function handleClose() {
         setAnchorEl(null)
     }
-    
+
     const { sampleData } = useContext(DataContext)
     const [anchorEl, setAnchorEl] = useState(null)
     const [focusedEntry, setFocusedEntry] = useState(null)
@@ -18,6 +18,7 @@ export const ProjectsTable = ({ projects, showEditDialog, showDeleteDialog, show
     const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } = options
     // TODO: Cacher les options de suppression et modification dans un dropdown (... ou more)
     // TODO: Permettre de reset les champs au clic du bouton reset a droite.
+    console.log(sampleData.projects)
     return (
         <>
             <TableContainer>
@@ -33,11 +34,8 @@ export const ProjectsTable = ({ projects, showEditDialog, showDeleteDialog, show
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {projects.length > 0 ?
-                            (rowsPerPage > 0
-                                ? projects.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                : projects
-                            ).map((app) => (
+                        {sampleData.projects?.length > 0 ?
+                            projects.map((app) => (
                                 <TableRow
                                     key={'appli' + app.id}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -69,7 +67,7 @@ export const ProjectsTable = ({ projects, showEditDialog, showDeleteDialog, show
                                     </TableCell>
                                     <TableCell align="left">
                                         <Stack direction='row' alignItems='center' spacing={2}>
-                                            <Avatar {...stringAvatar(sampleData.users.find(u => u.id == app.createdBy)?.name)} />
+                                            <Avatar {...stringAvatar("GNAKOU-EDJAMBO Gatien Essor")} />
                                             <Typography variant='subtitle2'> {sampleData.users.find(u => u.id == app.createdBy)?.name}</Typography>
                                         </Stack>
 
@@ -84,7 +82,7 @@ export const ProjectsTable = ({ projects, showEditDialog, showDeleteDialog, show
                                         }}
 
                                         ><MoreVert /></IconButton>
-                                        
+
 
                                     </TableCell>
                                 </TableRow>
