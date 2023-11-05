@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { Delete, Edit, MoreVert, Tune } from '@mui/icons-material'
 import { useContext, useState } from 'react'
 import { DataContext } from '../../Contexts'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 
 export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options }) => {
@@ -15,6 +15,7 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
     const { sampleData } = useContext(DataContext)
     const [focusedEntry, setFocusedEntry] = useState(null)
     const appMoreMenuOpen = Boolean(anchorEl)
+    const navigate = useNavigate()
     const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } = options
     // TODO: Permettre de reset les champs au clic du bouton reset a droite.
     return (
@@ -42,7 +43,7 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                                 <TableRow
                                     key={'appli' + user.id}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                    hover
+                                    hovere
                                 >
                                     <TableCell component="th" scope="row">
                                         {user.id}
@@ -97,7 +98,7 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                     <TableFooter>
                         <TableRow>
                             <TablePagination
-                                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: '-1' }]}
                                 labelRowsPerPage="Eléments par page"
                                 colSpan={6}
                                 count={users.length}
@@ -163,8 +164,7 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                     Modifier
                 </MenuItem>
                 <MenuItem onClick={() => {
-                    handleClose()
-                    showEditDialog(focusedEntry)
+                    navigate(`${focusedEntry?.id}`)
                 }}>
 
                     <ListItemIcon>

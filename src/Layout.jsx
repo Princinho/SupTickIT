@@ -131,7 +131,7 @@ export const Layout = (props) => {
                     </IconButton>
                     <Stack direction='row' sx={{ width: '100%' }} justifyContent='flex-end'>
                         <IconButton onClick={event => setAnchorEl(event.target)}>
-                            {user && <Avatar {...stringAvatar(user?.name)} />}
+                            {user && <Avatar {...stringAvatar(user?.firstName+" "+user?.lastName)} />}
                         </IconButton>
                     </Stack>
                 </Toolbar>

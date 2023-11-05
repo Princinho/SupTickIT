@@ -12,13 +12,12 @@ export const PageHeader = (
         currentPageIndex,
         onPageChanged,
         itemsCount,
+        sortOption,
         rowsPerPage
     }) => {
 
     const [searchTerm, setSearchTerm] = useState('')
-    const [sortingOption, setSortingOption] = useState('')
-    useEffect(() => onSearchTermChanged(searchTerm), [searchTerm, onSearchTermChanged])
-    useEffect(() => onSortingOptionChanged(sortingOption), [sortingOption, onSortingOptionChanged])
+    useEffect(() => onSearchTermChanged(searchTerm), [searchTerm])
     return (
         <>
             <Typography variant='h5' component='span' sx={{ fontWeight: 'bold' }}>{pageTitle}</Typography>
@@ -46,8 +45,8 @@ export const PageHeader = (
                                     labelId="demo-simple-select-label"
                                     id="demo-simple-select"
                                     label="Options"
-                                    // value={sortOption?.option}
-                                    onChange={event => setSortingOption(event.target.value)}
+                                    value={sortOption}
+                                    onChange={event => onSortingOptionChanged(event.target.value)}
                                 >
                                     {
                                         sortingOptions.map(s => <MenuItem key={'sorting-Option#' + s.name} value={s.name}>{s.label}</MenuItem>)
@@ -81,7 +80,7 @@ export const PageHeader = (
                                 labelId="demo-simple-select-label"
                                 id="demo-simple-select"
                                 label="Options"
-                            // value={tableOptions.rowsPerPage}
+                                value={rowsPerPage}
                             // onChange={event => changeRowsPerPage(event.target.value)}
                             >
                                 <MenuItem value={-1}>All</MenuItem>
@@ -128,6 +127,7 @@ export const PageHeader = (
 }
 PageHeader.propTypes = {
     pageTitle: PropTypes.string.required,
+    sortOption: PropTypes.string,
     pagePath: PropTypes.array.required,
     onAddButtonClick: PropTypes.func,
     sortingOptions: PropTypes.array,

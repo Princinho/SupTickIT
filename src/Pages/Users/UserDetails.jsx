@@ -25,6 +25,7 @@ export const UserDetails = () => {
         setRoleOptionsMenuOpen(false)
     }
     function openOptionsMenu(event, roleAssignMent) {
+
         setAnchorEl(event.currentTarget)
         setRoleToDelete(roleAssignMent)
         setRoleOptionsMenuOpen(true)
@@ -113,7 +114,7 @@ export const UserDetails = () => {
                         <AddButton onClick={() => setIsAddRoleDialogOpen(true)} />
                     </Stack>
                     <Stack direction='row' spacing={2} flexWrap='wrap' alignItems='flex-start' useFlexGap paddingBlock='1em'>
-                        {sampleData.roleAssignments?.map(
+                        {sampleData.roleAssignments?.filter(r => r.userId == user.id).map(
                             roleAssignment => <ActionableTag key={`role=${roleAssignment.userId}-${roleAssignment.roleId}`}
                                 secondaryText={`(Jusqu'au ${new Date(roleAssignment.expiryDate).toLocaleDateString("FR-fr")})` || ""}
                                 label={sampleData.roles.find(r => r.id == roleAssignment.roleId)?.nom}

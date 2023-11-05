@@ -54,4 +54,27 @@ function addOnemonth(date) {
     }
     return date;
 }
-export { stringAvatar, stringToColor, getSampleDataFromLocalStorage, saveSampleDataToLocalStorage, getRandomNumber, addOnemonth }
+function sortAndFilterData(array, searchTerm, sortOption) {
+    let result = array
+    if (searchTerm)
+        result = result.filter(a => a.title?.toLowerCase().includes(searchTerm.toLowerCase()) || a.name?.toLowerCase().includes(searchTerm.toLowerCase())
+            || a.firstName?.toLowerCase().includes(searchTerm.toLowerCase())
+            || a.lastName?.toLowerCase().includes(searchTerm.toLowerCase()))
+    if (sortOption== 'dateCreated') {
+        result = result.sort((a, b) => {
+            return new Date(b.dateCreated) - new Date(a.dateCreated)
+        })
+    } else if (sortOption == 'id') {
+        result = result.sort((a, b) => {
+            return a.id - b.id
+        })
+    } else {
+        
+        result = result.sort((a, b) => {
+            return (('' + a[sortOption]).toLowerCase()).localeCompare(('' + b[sortOption]).toLowerCase());
+        })
+    }
+    console.log(result)
+    return result
+}
+export { stringAvatar, stringToColor, getSampleDataFromLocalStorage, saveSampleDataToLocalStorage, getRandomNumber, addOnemonth, sortAndFilterData }

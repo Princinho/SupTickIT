@@ -133,6 +133,12 @@ export const sampleData = {
         //     lastLoginDate: '',
         //     companyId: ''
         // }
+        {
+            id: 1, firstName: 'GATIEN', lastName: 'GNAKOU-EDJAMBO',
+            username: 'spadmin@gmail.com', password: 'Admin123#', roles: ['admin'],
+            lastLoginDate: '2023/10/32',
+            companyId: ''
+        }
     ],
     roles: [
         { id: '1', code: 'admin', nom: 'Administrateur', description: 'Administrateur' },
