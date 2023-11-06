@@ -1,5 +1,5 @@
 import { Paper } from '@mui/material'
-import { useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { DataContext } from '../../Contexts'
 import { PageHeader } from '../../Components/PageHeader'
 import { UsersTable } from './UsersTable'
@@ -27,6 +27,7 @@ export const Users = () => {
       prev => ({ ...prev, users: [...prev.users, { ...user, id: sampleData.users.length + 1, password: '123abc' }] })
     )
   }
+
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
@@ -97,7 +98,7 @@ export const Users = () => {
         sortingOptions={[{ name: "id", label: 'Id' }, { name: "firstName", label: "Nom" }]}
         sortOption={tableOptions.sortOption}
         onSortingOptionChanged={(value) => updateTableOptions('sortOption', value)}
-        onSearchTermChanged={(value) => setSearchTerm(value)}
+        onSearchTermChanged={useCallback((value) => setSearchTerm(value),[])}
         onPaginationChanged={handleRowsPerPageChange}
         onPageChanged={handlePageChange}
         currentPageIndex={tableOptions.page}
@@ -107,7 +108,7 @@ export const Users = () => {
       />
 
       <UsersTable
-        users={sortAndFilterData(sampleData.users, searchTerm, tableOptions.sortOption||"")}
+        users={sortAndFilterData(sampleData.users, searchTerm, tableOptions.sortOption || "")}
         options={({ ...tableOptions, handlePageChange, handleRowsPerPageChange })}
         showEditDialog={showEditDialog}
         showDeleteDialog={showDeleteDialog}

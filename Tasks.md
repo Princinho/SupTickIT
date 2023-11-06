@@ -14,7 +14,7 @@ Permettre a l'administrateur de Creer des comptes et y affecter des roles (En pr
  LEFT
 ===========
 TODO:
-Permettre a l'utlisateur de changer son son mot de passe
+Faire fonctionner la tabulation de pageheader
 Permettre au moderateur d'ajouter des categories de tickets pour chacun des projets de son entreprise
 Permettre au moderateur de creer des comptes agent
 Permettre au client de s'inscrire sur la plateforme
@@ -35,3 +35,4 @@ Permettre au client de valider le ticket.
 Permettre au client de rejeter le ticket.
 Permettre au moderateur d'affecter les tickets rejetes a d'autres agents
 Permettre au moderateur de cloturer les tickets valides.
+Permettre a l'utlisateur de changer son son mot de passe

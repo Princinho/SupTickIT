@@ -1,5 +1,5 @@
-import { ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-material'
-import { Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material'
+import { HighlightOff, Search } from '@mui/icons-material'
+import { Button, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material'
 import { PropTypes } from "prop-types"
 import { useEffect, useState } from 'react'
 export const PageHeader = (
@@ -9,15 +9,13 @@ export const PageHeader = (
         sortingOptions,
         onSortingOptionChanged,
         onSearchTermChanged,
-        currentPageIndex,
-        onPageChanged,
-        itemsCount,
+        onPaginationChanged,
         sortOption,
         rowsPerPage
     }) => {
-
+    console.log('sortoption is ', sortOption)
     const [searchTerm, setSearchTerm] = useState('')
-    useEffect(() => onSearchTermChanged(searchTerm), [searchTerm])
+    useEffect(() => onSearchTermChanged(searchTerm), [searchTerm, onSearchTermChanged])
     return (
         <>
             <Typography variant='h5' component='span' sx={{ fontWeight: 'bold' }}>{pageTitle}</Typography>
@@ -45,7 +43,7 @@ export const PageHeader = (
                                     labelId="demo-simple-select-label"
                                     id="demo-simple-select"
                                     label="Options"
-                                    value={sortOption}
+                                    value={sortOption == undefined ? "id" : sortOption}
                                     onChange={event => onSortingOptionChanged(event.target.value)}
                                 >
                                     {
@@ -81,7 +79,7 @@ export const PageHeader = (
                                 id="demo-simple-select"
                                 label="Options"
                                 value={rowsPerPage}
-                            // onChange={event => changeRowsPerPage(event.target.value)}
+                                onChange={event => onPaginationChanged(event.target.value)}
                             >
                                 <MenuItem value={-1}>All</MenuItem>
                                 <MenuItem value={5}>5</MenuItem>
@@ -91,7 +89,7 @@ export const PageHeader = (
                             </Select>
                         </FormControl>
 
-                        <ButtonGroup variant="outlined" aria-label="outlined primary button group">
+                        {/* <ButtonGroup variant="outlined" aria-label="outlined primary button group">
                             <Button
                                 disabled={currentPageIndex == 0}
                                 sx={{ backgroundColor: 'white', color: (theme) => theme.palette.text.secondary }}
@@ -103,7 +101,7 @@ export const PageHeader = (
                                 onClick={() => onPageChanged(currentPageIndex + 1)}
                                 sx={{ backgroundColor: 'white', color: (theme) => theme.palette.text.secondary }}><ArrowForward />
                             </Button>
-                        </ButtonGroup>
+                        </ButtonGroup> */}
 
                         <Button sx={{
                             backgroundColor: 'white', color: (theme) => theme.palette.primary.light,
@@ -121,7 +119,7 @@ export const PageHeader = (
                         </Button>
                     </Stack>
                 </Grid>
-            </Grid>
+            </Grid >
         </>
     )
 }
@@ -132,6 +130,7 @@ PageHeader.propTypes = {
     onAddButtonClick: PropTypes.func,
     sortingOptions: PropTypes.array,
     onSortingOptionChanged: PropTypes.func,
+    onPaginationChanged: PropTypes.funct,
     onSearchTermChanged: PropTypes.func,
     currentPageIndex: PropTypes.number,
     itemsCount: PropTypes.number,
