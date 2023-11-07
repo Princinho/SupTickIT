@@ -1,6 +1,3 @@
-
-
-
 import { Outlet, Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { Layout } from './Layout.jsx'
 import { createTheme } from '@mui/material'
@@ -41,14 +38,10 @@ function App() {
     // Pour eviter que les donnees soient reinitialisees a chaque actualisation
     try {
       let stringifiedSampleData = JSON.stringify(sampleData)
-      console.log(stringifiedSampleData)
       let stringifiedInitialData = JSON.stringify(initialData)
-      console.log(stringifiedInitialData)
       if (stringifiedSampleData != stringifiedInitialData)
         saveSampleDataToLocalStorage(sampleData)
     } catch (e) {
-      console.log(sampleData)
-      console.log(initialData)
       console.warn(e)
     }
   }, [sampleData])

@@ -65,8 +65,8 @@ export const Categories = () => {
         setTableOptions(prev => ({ ...prev, page }))
     }
     function editCategory(cat) {
-        setCategories(prev => prev.map(
-            prevApp => prevApp.id == cat.id ? { ...prevApp, ...cat } : prevApp
+        setCategories(prevEntries => prevEntries.map(
+            prevEntry => prevEntry.id == cat.id ? { ...prevEntry, ...cat } : prevEntry
         ))
     }
     function deleteCategory(category) {
