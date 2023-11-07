@@ -1,20 +1,27 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from "@mui/material"
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider,  Typography } from "@mui/material"
 import PropTypes from 'prop-types'
+import { useContext } from "react"
+import { DataContext } from "../../Contexts"
 
-export const DeleteDialog = ({ open, handleClose, project }) => {
+export const DeleteDialog = ({ open, handleClose, category }) => {
+    const { sampleData } = useContext(DataContext)
+    const { projects } = sampleData
 
-    console.log(project)
+    console.log(category)
     return (
         <Box>
             <Dialog open={open} onClose={() => handleClose()}>
-                <DialogTitle>Supprimer le project</DialogTitle>
+                <DialogTitle>Supprimer la catégorie</DialogTitle>
+
                 <DialogContent>
-                    <Typography variant="span" sx={{fontWeight:'bold'}}>{project.name}</Typography>
-                    <Typography>{project.description}</Typography>
+                    <Typography variant="span" sx={{ fontWeight: 'bold' }}>{category.name}</Typography>
+                    <Divider />
+                    <Typography variant="span" sx={{ fontWeight: 'bold' }}>{projects.find(p => p.id == category.projectId)?.title}</Typography>
+                    <Typography>{category.description}</Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Annuler</Button>
-                    <Button color="error" variant="outlined" onClick={() => handleClose(project)}>Supprimer</Button>
+                    <Button color="error" variant="outlined" onClick={() => handleClose(category)}>Supprimer</Button>
                 </DialogActions>
             </Dialog>
         </Box>
@@ -23,5 +30,5 @@ export const DeleteDialog = ({ open, handleClose, project }) => {
 DeleteDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
-    project: PropTypes.object.isRequired
+    category: PropTypes.object.isRequired
 }

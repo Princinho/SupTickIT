@@ -56,7 +56,6 @@ export const Categories = () => {
             let result = [{ ...data, id: categories.length + 1, dateCreated: new Date().toISOString(), createdBy: 3 }, ...prev]
             return result
         })
-
     }
     function setRowsPerPage(rowsPerPage) {
         setTableOptions(prev => ({ ...prev, rowsPerPage }))
