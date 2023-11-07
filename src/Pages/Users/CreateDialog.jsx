@@ -9,7 +9,7 @@ export const CreateDialog = ({ open, handleClose }) => {
     const [nameError, setNameError] = useState(false)
     return (
         <Box>
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={open} onClose={() => handleClose()}>
                 <DialogTitle>Nouvel utilisateur</DialogTitle>
                 <DialogContent>
                     <TextField

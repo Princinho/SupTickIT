@@ -74,7 +74,7 @@ function sortAndFilterData(array, searchTerm, sortOption) {
             return (('' + a[sortOption]).toLowerCase()).localeCompare(('' + b[sortOption]).toLowerCase());
         })
     }
-    console.log(result)
+    // console.log(result)
     return result
 }
 export { stringAvatar, stringToColor, getSampleDataFromLocalStorage, saveSampleDataToLocalStorage, getRandomNumber, addOnemonth, sortAndFilterData }

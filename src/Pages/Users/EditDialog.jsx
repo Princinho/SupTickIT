@@ -9,7 +9,7 @@ export const EditDialog = ({ open, handleClose, entry }) => {
     const [nameError, setNameError] = useState(false)
     return (
         <Box>
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={open} onClose={() => handleClose()}>
                 <DialogTitle>Modification de l&apos;utilisateur</DialogTitle>
                 <DialogContent>
                     <TextField

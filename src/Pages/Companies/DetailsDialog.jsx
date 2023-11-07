@@ -9,7 +9,7 @@ export const DetailsDialog = ({ open, handleClose, entry }) => {
     }
     return (
         <Box>
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={open} onClose={() => handleClose()}>
                 <DialogTitle>Aperçu de l&apos;entreprise</DialogTitle>
                 <DialogContent>
                     <Typography variant="span" sx={{ fontWeight: 'bold' }}>{entry.name}</Typography>

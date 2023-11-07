@@ -9,7 +9,7 @@ export const DeleteDialog = ({ open, handleClose, project }) => {
             <Dialog open={open} onClose={() => handleClose()}>
                 <DialogTitle>Supprimer le project</DialogTitle>
                 <DialogContent>
-                    <Typography variant="span" sx={{fontWeight:'bold'}}>{project.title}</Typography>
+                    <Typography variant="span" sx={{fontWeight:'bold'}}>{project.name}</Typography>
                     <Typography>{project.description}</Typography>
                 </DialogContent>
                 <DialogActions>

@@ -6,7 +6,7 @@ export const RemoveProject = ({ open, handleClose, project }) => {
     // console.log(project)
     return (
         <Box>
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={open} onClose={() => handleClose()}>
                 <DialogTitle>Retirer le projet</DialogTitle>
                 <DialogContent>
                     <Typography variant="span" sx={{fontWeight:'bold'}}>{project.title}</Typography>

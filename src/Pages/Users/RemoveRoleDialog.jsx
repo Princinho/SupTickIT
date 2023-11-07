@@ -9,7 +9,7 @@ export const RemoveRoleDialog = ({ open, handleClose, roleAssignMent }) => {
     console.log(sampleData.users.find(u => u.id == roleAssignMent.userId))
     return (
         <Box>
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={open} onClose={() => handleClose()}>
                 <DialogTitle>Confirmer le retrait du role </DialogTitle>
                 <DialogContent>
                     <Stack direction='row' spacing={1}>

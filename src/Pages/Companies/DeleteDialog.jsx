@@ -6,7 +6,7 @@ export const DeleteDialog = ({ open, handleClose, entry }) => {
     console.log(entry)
     return (
         <Box>
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={open} onClose={() => handleClose()}>
                 <DialogTitle>Supprimer l&apos;entreprise</DialogTitle>
                 <DialogContent>
                     <Typography variant="span" sx={{ fontWeight: 'bold' }}>{entry.name}</Typography>

@@ -11,7 +11,7 @@ export const AddCompanyToProjectDialog = ({ open, handleClose, entry }) => {
   }
   return (
     <Box>
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={open} onClose={() => handleClose()}>
         <DialogTitle>Ajouter un projet a {entry.name}</DialogTitle>
         <DialogContent>
           <FormControl fullWidth sx={{marginTop:'1em'}}>

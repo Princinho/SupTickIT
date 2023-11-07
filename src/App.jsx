@@ -16,30 +16,41 @@ import { sampleData as initialData } from './SampleData.js'
 import { getSampleDataFromLocalStorage, saveSampleDataToLocalStorage } from './utils.js'
 import { Users } from './Pages/Users/Users.jsx'
 import { UserDetails } from './Pages/Users/UserDetails.jsx'
+import { Categories } from './Pages/Categories/Categories.jsx'
 
 function App() {
   const [user, setUser] = useState(null)
   const [sampleData, setSampleData] = useState(null)
   const theme = createTheme(themeOptions)
   // useEffect(() => {
-    let storedData = getSampleDataFromLocalStorage()
+  let storedData = getSampleDataFromLocalStorage()
   //   console.log('retrieved storedData', storedData)
-    if (!storedData) {
-      console.log('no stored data, using initialData', initialData)
-      storedData = initialData
-      saveSampleDataToLocalStorage(initialData)
-      setSampleData(initialData)
-    } else {
-      
-      if(!sampleData)
+  if (!storedData) {
+    console.log('no stored data, using initialData', initialData)
+    storedData = initialData
+    saveSampleDataToLocalStorage(initialData)
+    setSampleData(initialData)
+  } else {
+
+    if (!sampleData)
       setSampleData(storedData)
-    }
+  }
 
   // }, [])
   useEffect(() => {
     // Pour eviter que les donnees soient reinitialisees a chaque actualisation
-    if (JSON.stringify(sampleData) != JSON.stringify(initialData))
-      saveSampleDataToLocalStorage(sampleData)
+    try {
+      let stringifiedSampleData = JSON.stringify(sampleData)
+      console.log(stringifiedSampleData)
+      let stringifiedInitialData = JSON.stringify(initialData)
+      console.log(stringifiedInitialData)
+      if (stringifiedSampleData != stringifiedInitialData)
+        saveSampleDataToLocalStorage(sampleData)
+    } catch (e) {
+      console.log(sampleData)
+      console.log(initialData)
+      console.warn(e)
+    }
   }, [sampleData])
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -51,6 +62,7 @@ function App() {
           <Route path='companies/:id' element={<CompanyDetails />} />
           <Route path='users' element={<Users />} />
           <Route path='users/:id' element={<UserDetails />} />
+          <Route path='categories' element={<Categories />} />
 
         </Route>
       </Route>

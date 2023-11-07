@@ -1,20 +1,42 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material"
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material"
 import PropTypes from 'prop-types'
-import { useState } from "react"
+import { useContext, useState } from "react"
+import { DataContext } from "../../Contexts"
 export const CreateDialog = ({ open, handleClose }) => {
     //TODO: Faire bosser la pagination
-    const [formData, setFormData] = useState({ name: "", description: "" })
-    const [nameError, setNameError] = useState(false)
+    const [formData, setFormData] = useState({ name: '', description: '', projectId: '' })
+    const { sampleData } = useContext(DataContext)
+
+    const { projects } = sampleData
+    const [titleError, setTitleError] = useState(false)
+    function handleProjectChange(event) {
+        setFormData(prev => ({ ...prev, projectId: event.target.value }))
+    }
     return (
         <Box>
             <Dialog open={open} onClose={() => handleClose()}>
-                <DialogTitle>Nouvelle entreprise</DialogTitle>
+                <DialogTitle>Nouvelle catégorie</DialogTitle>
                 <DialogContent>
+                    <FormControl fullWidth sx={{ marginTop: '1em' }}>
+                        <InputLabel id="project-select-label">Projet</InputLabel>
+                        <Select
+                            labelId="project-select-label"
+                            id="project-select"
+                            value={formData.projectId}
+                            label="Age"
+                            onChange={handleProjectChange}
+                        >
+                            {projects.map(
+                                project => <MenuItem key={`projet-${project.id}`} value={project.id}>{project.title}</MenuItem>
+                            )}
+
+                        </Select>
+                    </FormControl>
                     <TextField
                         autoFocus
                         margin="dense"
                         label="Nom *"
-                        error={nameError}
+                        error={titleError}
                         type="text"
                         value={formData.name}
                         onChange={(event) => setFormData(prev => ({ ...prev, name: event.target.value }))}
@@ -34,15 +56,15 @@ export const CreateDialog = ({ open, handleClose }) => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => {
-                        setNameError(false)
+                        setTitleError(false)
                         handleClose()
                     }}>Annuler</Button>
                     <Button onClick={() => {
                         if (!formData.name) {
-                            setNameError(true)
+                            setTitleError(true)
                             return
                         } else {
-                            setNameError(false)
+                            setTitleError(false)
                             handleClose(formData)
                         }
                     }}>Enregistrer</Button>

@@ -8,7 +8,7 @@ export const DeleteDialog = ({ open, handleClose, entry }) => {
 
     return (
         <Box>
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={open} onClose={() => handleClose()}>
                 <DialogTitle>Suppression de l&apos;utilisateur</DialogTitle>
                 <DialogContent>
                     <Stack>

@@ -53,7 +53,7 @@ export const Layout = (props) => {
                         </ListItemButton>
                     </ListItem>
                     <ListItem disablePadding  >
-                        <ListItemButton >
+                        <ListItemButton onClick={() => navigate('Categories')}>
                             <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
                                 <ListAltIcon sx={{ color: menuItemColor }} />
                             </ListItemIcon>
@@ -131,7 +131,7 @@ export const Layout = (props) => {
                     </IconButton>
                     <Stack direction='row' sx={{ width: '100%' }} justifyContent='flex-end'>
                         <IconButton onClick={event => setAnchorEl(event.target)}>
-                            {user && <Avatar {...stringAvatar(user?.firstName+" "+user?.lastName)} />}
+                            {user && <Avatar {...stringAvatar(user?.firstName + " " + user?.lastName)} />}
                         </IconButton>
                     </Stack>
                 </Toolbar>

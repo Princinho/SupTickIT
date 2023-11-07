@@ -6,7 +6,7 @@ export const DetailsDialog = ({ open, handleClose, project }) => {
     console.log(project)
     return (
         <Box>
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={open} onClose={() => handleClose()}>
                 <DialogTitle>Détails du projet</DialogTitle>
                 <DialogContent>
                     <Typography variant="span" sx={{ fontWeight: 'bold' }}>{project.title}</Typography>

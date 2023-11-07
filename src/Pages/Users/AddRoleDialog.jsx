@@ -15,7 +15,7 @@ export const AddRoleDialog = ({ open, handleClose, currentlyAssignedRoles, }) =>
     console.log(currentlyAssignedRoles)
     return (
         <Box>
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={open} onClose={() => handleClose()}>
                 <DialogTitle>Ajouter un Role</DialogTitle>
                 <DialogContent>
 

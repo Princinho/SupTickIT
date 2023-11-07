@@ -9,12 +9,12 @@ Affecter des projets aux entreprises
 Enregistrer dans le localstorage a chaque modif du datacontext et charger depuis le localstorage si il es dispo
 appliquer le tri sur la page des entreprises
 Permettre a l'administrateur de Creer des comptes et y affecter des roles (En precisant l'entreprise titulaire)
+Retirer la tabulation de pageheader
 
 ===========
  LEFT
 ===========
 TODO:
-Faire fonctionner la tabulation de pageheader
 Permettre au moderateur d'ajouter des categories de tickets pour chacun des projets de son entreprise
 Permettre au moderateur de creer des comptes agent
 Permettre au client de s'inscrire sur la plateforme

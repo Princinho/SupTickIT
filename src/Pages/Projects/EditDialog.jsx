@@ -12,7 +12,7 @@ export const EditDialog = ({ open, handleClose, project }) => {
     console.log(formData)
     return (
         <Box>
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={open} onClose={() => handleClose()}>
                 <DialogTitle>Modifier le project</DialogTitle>
                 <DialogContent>
                     <TextField
