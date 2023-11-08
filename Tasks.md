@@ -10,12 +10,20 @@ Enregistrer dans le localstorage a chaque modif du datacontext et charger depuis
 appliquer le tri sur la page des entreprises
 Permettre a l'administrateur de Creer des comptes et y affecter des roles (En precisant l'entreprise titulaire)
 Retirer la tabulation de pageheader
+Permettre au moderateur d'ajouter des categories de tickets pour chacun des projets de son entreprise
+Afficher les entreprises concernees par le projet dans le listing des projets.
+Utiliser des cartes aulieu du tableau dans le listing des projets.
 
 ===========
  LEFT
 ===========
 TODO:
-Permettre au moderateur d'ajouter des categories de tickets pour chacun des projets de son entreprise
+Revoir les couleurs des boutons et de la sidebar
+Rendre plus lisibles le tableau des projets 
+Afficher le nom a cote de l'avatar dans la les listing
+Faire bosser la pagination sur la page des projets
+Lors de la creation d'un projet, permettre de choisir les entreprises dans lesquelles il est deja deploye
+basculer tous les acces aux donnees vers des services de recuperation de donnees qui pourront etre branches sur une api apres.
 Permettre au moderateur de creer des comptes agent
 Permettre au client de s'inscrire sur la plateforme
 Permettre aux agents d'activer un compte client ayant souscrit pour le support de leur entreprise

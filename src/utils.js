@@ -21,11 +21,16 @@ function stringToColor(string) {
 
 function stringAvatar(name) {
     if (!name) return
+    const subNames = name.split(' ')
+    const firstName = subNames[0]
+    let lastName = null
+    if (subNames.length > 1)
+        lastName = subNames[1]
     return {
         sx: {
             bgcolor: stringToColor(name),
         },
-        children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+        children: `${firstName[0]}${lastName ? lastName[0] : firstName[1]}`,
     };
 }
 function getRandomNumber(min, max) {
@@ -60,7 +65,7 @@ function sortAndFilterData(array, searchTerm, sortOption) {
         result = result.filter(a => a.title?.toLowerCase().includes(searchTerm.toLowerCase()) || a.name?.toLowerCase().includes(searchTerm.toLowerCase())
             || a.firstName?.toLowerCase().includes(searchTerm.toLowerCase())
             || a.lastName?.toLowerCase().includes(searchTerm.toLowerCase()))
-    if (sortOption== 'dateCreated') {
+    if (sortOption == 'dateCreated') {
         result = result.sort((a, b) => {
             return new Date(b.dateCreated) - new Date(a.dateCreated)
         })
@@ -69,7 +74,7 @@ function sortAndFilterData(array, searchTerm, sortOption) {
             return a.id - b.id
         })
     } else {
-        
+
         result = result.sort((a, b) => {
             return (('' + a[sortOption]).toLowerCase()).localeCompare(('' + b[sortOption]).toLowerCase());
         })

@@ -3,7 +3,7 @@ import { stringAvatar } from '../../utils'
 import PropTypes from 'prop-types'
 import { Delete, Edit, MoreVert } from '@mui/icons-material'
 import { useContext, useState } from 'react'
-import { DataContext } from '../../Contexts'
+import { DataContext, UserContext } from '../../Contexts'
 
 
 export const ProjectsTable = ({ projects, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
@@ -15,10 +15,11 @@ export const ProjectsTable = ({ projects, showEditDialog, showDeleteDialog, show
     const [anchorEl, setAnchorEl] = useState(null)
     const [focusedEntry, setFocusedEntry] = useState(null)
     const appMoreMenuOpen = Boolean(anchorEl)
+    const { user } = useContext(UserContext)
     const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } = options
     // TODO: Cacher les options de suppression et modification dans un dropdown (... ou more)
     // TODO: Permettre de reset les champs au clic du bouton reset a droite.
-    console.log(sampleData.projects)
+    console.log(user)
     return (
         <>
             <TableContainer>
@@ -35,58 +36,63 @@ export const ProjectsTable = ({ projects, showEditDialog, showDeleteDialog, show
                     </TableHead>
                     <TableBody>
                         {sampleData.projects?.length > 0 ?
-                            projects.map((app) => (
-                                <TableRow
-                                    key={'appli' + app.id}
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                    hover
+                            projects.map((project) => {
+                                const creator = sampleData.users.find(u => u.id == project.createdBy)
+                                return (
+                                    <TableRow
+                                        key={'appli' + project.id}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        hover
 
-                                >
-                                    <TableCell component="th" scope="row">
-                                        {app.id}
-                                    </TableCell>
-                                    <TableCell align="left" sx={{ cursor: 'pointer', maxWidth: '30%' }} width='30%'
-                                        onClick={() => showDetailsDialog(app)}
                                     >
-
-                                        <Typography variant='span' sx={{ my: 0, fontWeight: 'bold', }}>{app.title}</Typography>
-                                        <br />
-                                        <Typography color='text.secondary' sx={{
-                                            overflow: "hidden",
-                                            textOverflow: "ellipsis",
-                                            display: "-webkit-box",
-                                            "WebkitLineClamp": '1',
-                                            "WebkitBoxOrient": "vertical"
-                                        }}
-                                            variant='span'
+                                        <TableCell component="th" scope="row">
+                                            {project.id}
+                                        </TableCell>
+                                        <TableCell align="left" sx={{ cursor: 'pointer', maxWidth: '60%', paddingBlock: '2em' }} width='60%'
+                                            onClick={() => showDetailsDialog(project)}
                                         >
 
-                                            {app.description}
-                                        </Typography>
+                                            <Typography variant='span' sx={{ my: 0, fontWeight: 'bold', }}>{project.title}</Typography>
+                                            <br />
+                                            <Typography color='text.secondary' sx={{
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                                display: "-webkit-box",
+                                                "WebkitLineClamp": '2',
+                                                "WebkitBoxOrient": "vertical"
+                                            }}
+                                                variant='span'
+                                            >
 
-                                    </TableCell>
-                                    <TableCell align="left">
-                                        <Stack direction='row' alignItems='center' spacing={2}>
-                                            <Avatar {...stringAvatar("GNAKOU-EDJAMBO Gatien Essor")} />
-                                            <Typography variant='subtitle2'> {sampleData.users.find(u => u.id == app.createdBy)?.name}</Typography>
-                                        </Stack>
+                                                {project.description}
+                                            </Typography>
 
-                                    </TableCell>
-                                    <TableCell>
-                                        {new Date(app.dateCreated).toLocaleString()}
-                                    </TableCell>
-                                    <TableCell>
-                                        <IconButton onClick={event => {
-                                            setFocusedEntry(app)
-                                            setAnchorEl(event.currentTarget)
-                                        }}
+                                        </TableCell>
+                                        <TableCell align="left">
+                                            <Stack direction={{ md: 'row' }} alignItems='center' spacing={2}>
 
-                                        ><MoreVert /></IconButton>
+                                                <Avatar {...stringAvatar(creator ? creator.firstName + " " + creator.lastName : "??")} />
+
+                                                <Typography variant='subtitle2'> {sampleData.users.find(u => u.id == project.createdBy)?.firstName}</Typography>
+                                            </Stack>
+
+                                        </TableCell>
+                                        <TableCell>
+                                            {new Date(project.dateCreated).toLocaleString()}
+                                        </TableCell>
+                                        <TableCell>
+                                            <IconButton onClick={event => {
+                                                setFocusedEntry(project)
+                                                setAnchorEl(event.currentTarget)
+                                            }}
+
+                                            ><MoreVert /></IconButton>
 
 
-                                    </TableCell>
-                                </TableRow>
-                            )) :
+                                        </TableCell>
+                                    </TableRow>
+                                )
+                            }) :
                             <TableRow>
                                 <TableCell colSpan={5}>
                                     <Typography variant='subtitle1' color='primary' textAlign='center'> Aucune donnée disponible</Typography>

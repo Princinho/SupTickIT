@@ -23,7 +23,7 @@ export const Layout = (props) => {
         setAnchorEl(null)
     }
     const menuIconWidth = '32px'
-    const menuItemColor = '#0090D7'
+    const menuItemColor = 'whitesmoke'
     // const selectedMenuItemColor = 'white'
     const listItemStyles = { color: menuItemColor, '& .MuiListItemText-primary': { fontWeight: '400' } }
     const drawerContents = (
