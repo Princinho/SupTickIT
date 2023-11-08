@@ -20,6 +20,7 @@ Afficher le nom a cote de l'avatar dans la les listing
  LEFT
 ===========
 TODO:
+Repercuter la selection des entreprises lors de la creation du modal sur les donnees
 Faire bosser la pagination sur la page des projets
 Lors de la creation d'un projet, permettre de choisir les entreprises dans lesquelles il est deja deploye
 basculer tous les acces aux donnees vers des services de recuperation de donnees qui pourront etre branches sur une api apres.
