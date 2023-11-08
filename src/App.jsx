@@ -3,7 +3,6 @@ import { Layout } from './Layout.jsx'
 import { createTheme } from '@mui/material'
 import { themeOptions } from './ThemeOptions.jsx'
 import { ThemeProvider } from '@emotion/react'
-import { Login } from './Pages/Login/Login'
 import { useEffect, useState } from 'react'
 import { DataContext, UserContext } from './Contexts.js'
 import { Companies } from './Pages/Companies/Companies.jsx'
@@ -14,6 +13,8 @@ import { getSampleDataFromLocalStorage, saveSampleDataToLocalStorage } from './u
 import { Users } from './Pages/Users/Users.jsx'
 import { UserDetails } from './Pages/Users/UserDetails.jsx'
 import { Categories } from './Pages/Categories/Categories.jsx'
+import { LoginRegister } from './Pages/Login/LoginRegister.jsx'
+import { Tickets } from './Pages/Tickets/Tickets.jsx'
 
 function App() {
   const [user, setUser] = useState(null)
@@ -48,7 +49,7 @@ function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path='/' element={<Outlet />} >
-        <Route path='login' element={<Login />} />
+        <Route path='login' element={<LoginRegister />} />
         <Route path='/' element={<Layout />} >
           <Route path='projects' element={<Projects />} />
           <Route path='companies' element={<Companies />} />
@@ -56,6 +57,7 @@ function App() {
           <Route path='users' element={<Users />} />
           <Route path='users/:id' element={<UserDetails />} />
           <Route path='categories' element={<Categories />} />
+          <Route path='tickets' element={<Tickets />} />
 
         </Route>
       </Route>

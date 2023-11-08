@@ -66,7 +66,7 @@ export const Users = () => {
       deleteUser(entry)
     }
     setFocusedEntry(null)
-    setIsEditDialogOpen(false)
+    setIsDeleteDialogOpen(false)
   }
   function editUser(entry) {
     console.log(entry);
@@ -90,15 +90,14 @@ export const Users = () => {
   function handleRowsPerPageChange(value) {
     updateTableOptions('rowsPerPage', value)
   }
-  console.log(sampleData.users)
-  console.log(users)
+  console.log(isEditDialogOpen, isDeleteDialogOpen)
   return (
     <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
       <PageHeader pageTitle={"Utilisateurs"} pagePath={["Menu"]}
         sortingOptions={[{ name: "id", label: 'Id' }, { name: "firstName", label: "Nom" }]}
         sortOption={tableOptions.sortOption}
         onSortingOptionChanged={(value) => updateTableOptions('sortOption', value)}
-        onSearchTermChanged={useCallback((value) => setSearchTerm(value),[])}
+        onSearchTermChanged={useCallback((value) => setSearchTerm(value), [])}
         onPaginationChanged={handleRowsPerPageChange}
         onPageChanged={handlePageChange}
         currentPageIndex={tableOptions.page}

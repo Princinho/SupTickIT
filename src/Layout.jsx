@@ -69,7 +69,7 @@ export const Layout = (props) => {
                         </ListItemButton>
                     </ListItem>
                     <ListItem disablePadding  >
-                        <ListItemButton >
+                        <ListItemButton onClick={() => navigate('tickets')}>
                             <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
                                 <ListAltIcon sx={{ color: menuItemColor }} />
                             </ListItemIcon>

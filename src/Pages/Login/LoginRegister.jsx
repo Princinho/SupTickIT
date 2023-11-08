@@ -4,7 +4,7 @@ import { Link as RouterLink, useNavigate } from "react-router-dom"
 import { Logo } from "../../Components/Logo"
 import { useContext, useState } from "react"
 import { DataContext, UserContext } from "../../Contexts"
-export const Login = () => {
+export const LoginRegister = () => {
   const { user, setUser } = useContext(UserContext)
   const navigate = useNavigate()
   const [credentials, setCredentials] = useState(null)
@@ -91,7 +91,7 @@ export const Login = () => {
               {currentForm == 'login' && <>
                 <Box width='60%'>
                   <Typography variant="h4">Bienvenue!</Typography>
-                  <Typography variant="subtitle1">Connectez vous un accès complet !</Typography>
+                  <Typography variant="subtitle1">Connectez vous pour un accès complet !</Typography>
                 </Box>
 
                 <Stack direction='column' width='100%' spacing={2} alignItems='center'>
@@ -139,7 +139,7 @@ export const Login = () => {
                       onChange={event => setRegistrationFormData(prev => ({ ...prev, companyId: event.target.value }))}
                     >
                       {
-                        companies.map(c => <MenuItem value={10} key={`company-${c.id}`}>{c.name}</MenuItem>)
+                        companies.map(c => <MenuItem value={c.id} key={`company-${c.id}`}>{c.name}</MenuItem>)
                       }
                     </Select>
                   </FormControl>

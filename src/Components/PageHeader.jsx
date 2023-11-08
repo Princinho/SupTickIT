@@ -13,7 +13,6 @@ export const PageHeader = (
         sortOption,
         rowsPerPage
     }) => {
-    console.log('sortoption is ', sortOption)
     const [searchTerm, setSearchTerm] = useState('')
     useEffect(() => onSearchTermChanged(searchTerm), [searchTerm, onSearchTermChanged])
     return (
@@ -134,6 +133,6 @@ PageHeader.propTypes = {
     onSearchTermChanged: PropTypes.func,
     currentPageIndex: PropTypes.number,
     itemsCount: PropTypes.number,
-    onPageChanged: PropTypes.number,
+    onPageChanged: PropTypes.func,
     rowsPerPage: PropTypes.number,
 }
