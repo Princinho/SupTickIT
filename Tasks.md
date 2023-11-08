@@ -13,14 +13,13 @@ Retirer la tabulation de pageheader
 Permettre au moderateur d'ajouter des categories de tickets pour chacun des projets de son entreprise
 Afficher les entreprises concernees par le projet dans le listing des projets.
 Utiliser des cartes aulieu du tableau dans le listing des projets.
+Revoir les couleurs des boutons et de la sidebar
+Afficher le nom a cote de l'avatar dans la les listing
 
 ===========
  LEFT
 ===========
 TODO:
-Revoir les couleurs des boutons et de la sidebar
-Rendre plus lisibles le tableau des projets 
-Afficher le nom a cote de l'avatar dans la les listing
 Faire bosser la pagination sur la page des projets
 Lors de la creation d'un projet, permettre de choisir les entreprises dans lesquelles il est deja deploye
 basculer tous les acces aux donnees vers des services de recuperation de donnees qui pourront etre branches sur une api apres.

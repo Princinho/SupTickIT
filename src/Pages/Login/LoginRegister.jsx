@@ -101,7 +101,7 @@ export const LoginRegister = () => {
                   ></TextField>
                   <TextField variant="outlined" error={error} label="Mot de passe(Utilisez Admin123#)" type="password" sx={{ minWidth: '60%' }}
                     onChange={event => setCredentials(prev => ({ ...prev, password: event.target.value }))}></TextField>
-                  <Button variant="contained" sx={{ fontWeight: 'bold' }}
+                  <Button variant="contained" sx={{ fontWeight: 'bold', color:'whitesmoke' }}
                     onClick={login}
                   >Connexion</Button>
                   <Stack sx={{
@@ -151,7 +151,7 @@ export const LoginRegister = () => {
                     onChange={event => setRegistrationFormData(prev => ({ ...prev, password: event.target.value }))}></TextField>
                   <TextField variant="outlined" size="small" error={errors?.passwordConfirmation} label="Confirmation" type="password" sx={{ minWidth: '60%' }}
                     onChange={event => setRegistrationFormData(prev => ({ ...prev, passwordConfirmation: event.target.value }))}></TextField>
-                  <Button variant="contained" sx={{ fontWeight: 'bold' }}
+                  <Button variant="contained" sx={{ fontWeight: 'bold', color:'whitesmoke' }}
                     onClick={register}
                   >
                     Inscription

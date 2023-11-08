@@ -35,58 +35,63 @@ export const CategoriesTable = ({ categories, showEditDialog, showDeleteDialog, 
                     </TableHead>
                     <TableBody>
                         {sampleData.categories?.length > 0 ?
-                            categories.map((cat) => (
-                                <TableRow
-                                    key={'appli' + cat.id}
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                    hover
+                            categories.map((cat) => {
+                                console.log(sampleData.users)
+                                const creator = sampleData.users.find(u => u.id == cat.createdBy)
+                                const creatorName = creator ? creator?.firstName + " " + creator?.lastName : "??"
+                                return (
+                                    <TableRow
+                                        key={'appli' + cat.id}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        hover
 
-                                >
-                                    <TableCell component="th" scope="row">
-                                        {cat.id}
-                                    </TableCell>
-                                    <TableCell align="left" sx={{ cursor: 'pointer', maxWidth: '30%' }} width='30%'
-                                        onClick={() => showDetailsDialog(cat)}
                                     >
-
-                                        <Typography variant='span' sx={{ my: 0, fontWeight: 'bold', }}>{cat.name}</Typography>
-                                        <br />
-                                        <Typography color='text.secondary' sx={{
-                                            overflow: "hidden",
-                                            textOverflow: "ellipsis",
-                                            display: "-webkit-box",
-                                            "WebkitLineClamp": '1',
-                                            "WebkitBoxOrient": "vertical"
-                                        }}
-                                            variant='span'
+                                        <TableCell component="th" scope="row">
+                                            {cat.id}
+                                        </TableCell>
+                                        <TableCell align="left" sx={{ cursor: 'pointer', maxWidth: '30%' }} width='30%'
+                                            onClick={() => showDetailsDialog(cat)}
                                         >
 
-                                            {cat.description}
-                                        </Typography>
+                                            <Typography variant='span' sx={{ my: 0, fontWeight: 'bold', }}>{cat.name}</Typography>
+                                            <br />
+                                            <Typography color='text.secondary' sx={{
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                                display: "-webkit-box",
+                                                "WebkitLineClamp": '1',
+                                                "WebkitBoxOrient": "vertical"
+                                            }}
+                                                variant='span'
+                                            >
 
-                                    </TableCell>
-                                    <TableCell align="left">
-                                        <Stack direction='row' alignItems='center' spacing={2}>
-                                            <Avatar {...stringAvatar("GNAKOU-EDJAMBO Gatien Essor")} />
-                                            <Typography variant='subtitle2'> {sampleData.users.find(u => u.id == cat.createdBy)?.name}</Typography>
-                                        </Stack>
+                                                {cat.description}
+                                            </Typography>
 
-                                    </TableCell>
-                                    <TableCell>
-                                        {new Date(cat.dateCreated).toLocaleString()}
-                                    </TableCell>
-                                    <TableCell>
-                                        <IconButton onClick={event => {
-                                            setFocusedEntry(cat)
-                                            setAnchorEl(event.currentTarget)
-                                        }}
+                                        </TableCell>
+                                        <TableCell align="left">
+                                            <Stack direction='row' alignItems='center' spacing={2}>
+                                                <Avatar {...stringAvatar(creatorName)} />
+                                                <Typography variant='subtitle2'> {creatorName}</Typography>
+                                            </Stack>
 
-                                        ><MoreVert /></IconButton>
+                                        </TableCell>
+                                        <TableCell>
+                                            {new Date(cat.dateCreated).toLocaleString()}
+                                        </TableCell>
+                                        <TableCell>
+                                            <IconButton onClick={event => {
+                                                setFocusedEntry(cat)
+                                                setAnchorEl(event.currentTarget)
+                                            }}
+
+                                            ><MoreVert /></IconButton>
 
 
-                                    </TableCell>
-                                </TableRow>
-                            )) :
+                                        </TableCell>
+                                    </TableRow>
+                                )
+                            }) :
                             <TableRow>
                                 <TableCell colSpan={5}>
                                     <Typography variant='subtitle1' color='primary' textAlign='center'> Aucune donnée disponible</Typography>

@@ -7,7 +7,7 @@ import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from '../../utils'
 import { DetailsDialog } from './DetailsDialog'
-import { DataContext } from '../../Contexts'
+import { DataContext, UserContext } from '../../Contexts'
 
 export const Categories = () => {
 
@@ -22,6 +22,7 @@ export const Categories = () => {
     const [categoryToDelete, setCategoryToDelete] = useState(null)
     const [sortOption, setSortOption] = useState({ option: 'name' })
     const [categories, setCategories] = useState(sampleData.categories ? [...sampleData.categories] : [])
+    const { user } = useContext(UserContext)
     const [tableOptions, setTableOptions] = useState({
         rowsPerPage: 5,
         page: 0,
@@ -53,7 +54,7 @@ export const Categories = () => {
     }
     function createCategory(data) {
         setCategories(prev => {
-            let result = [{ ...data, id: categories.length + 1, dateCreated: new Date().toISOString(), createdBy: 3 }, ...prev]
+            let result = [{ ...data, id: categories.length + 1, dateCreated: new Date().toISOString(), createdBy: user?.id }, ...prev]
             return result
         })
     }
