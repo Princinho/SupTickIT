@@ -8,6 +8,8 @@ import { sortAndFilterData } from './utils'
 import { DetailsDialog } from './DetailsDialog'
 import { DataContext } from '../../Contexts'
 import { stringAvatar } from '../../utils'
+import { createProject, deleteProject, editProject, getAllProjects } from '../../Api'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export const Projects = () => {
 
@@ -23,7 +25,7 @@ export const Projects = () => {
   const [anchorEl, setAnchorEl] = useState(null)
   const [focusedEntry, setFocusedEntry] = useState(null)
   const [sortOption, setSortOption] = useState({ option: 'title' })
-  const [projects, setProjects] = useState([...sampleData.projects])
+  // const [projects, setProjects] = useState([])
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
@@ -31,7 +33,7 @@ export const Projects = () => {
     handlePageChange: setCurrentPage,
     handleRowsPerPageChange: changeRowsPerPage
   })
-
+  const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
   function handleClose() {
     setAnchorEl(null)
   }
@@ -51,26 +53,29 @@ export const Projects = () => {
     setIsDetailsDialogOpen(true)
     setProjectToDetail(project)
   }
-  function createProject(data) {
-    setProjects(prev => {
-      let result = [{ ...data, id: projects.length + 1, dateCreated: new Date().toISOString(), createdBy: 3 }, ...prev]
-      return result
-    })
-  }
+  const queryClient = useQueryClient()
+  const createMutation = useMutation({
+    mutationFn: createProject,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projects'] })
+  })
+
+  const editMutation = useMutation({
+    mutationFn: editProject,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projects'] })
+  })
+  const deleteMutation = useMutation({
+    mutationFn: deleteProject,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projects'] })
+  })
+
   function setRowsPerPage(rowsPerPage) {
     setTableOptions(prev => ({ ...prev, rowsPerPage }))
   }
   function setCurrentPage(page) {
     setTableOptions(prev => ({ ...prev, page }))
   }
-  function editProject(app) {
-    setProjects(prev => prev.map(
-      prevApp => prevApp.id == app.id ? { ...prevApp, ...app } : prevApp
-    ))
-  }
-  function deleteProject(project) {
-    setProjects(prev => prev.filter(app => app.id != project.id))
-  }
+
+
 
   const appMoreMenuOpen = Boolean(anchorEl)
   return (
@@ -182,14 +187,14 @@ export const Projects = () => {
 
         <CreateDialog open={isCreateDialogOpen} handleClose={(app) => {
           if (app) {
-            createProject(app)
+            createMutation.mutate(app)
           }
           setIsCreateDialogOpen(false)
         }} />
         {
           projectToEdit && <EditDialog open={isEditDialogOpen} project={projectToEdit}
             handleClose={(app) => {
-              if (app) { editProject(app) }
+              if (app) { editMutation.mutate(app) }
               setIsEditDialogOpen(false)
             }}
 
@@ -206,7 +211,7 @@ export const Projects = () => {
         {
           projectToDelete && <DeleteDialog open={isDeleteDialogOpen} project={projectToDelete}
             handleClose={(app) => {
-              if (app) { deleteProject(app) }
+              if (app) { deleteMutation.mutate(app) }
               setIsDeleteDialogOpen(false)
             }}
 

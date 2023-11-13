@@ -1,4 +1,4 @@
-const SAMPLE_DATA_LOCALSTORAGE_KEY = 'com.cognitive-factory.SupTickIt'
+const DATA_LOCALSTORAGE_KEY = 'com.cognitive-factory.SupTickIt'
 function stringToColor(string) {
     let hash = 0;
     let i;
@@ -38,7 +38,7 @@ function getRandomNumber(min, max) {
 }
 function getSampleDataFromLocalStorage() {
 
-    let rawData = localStorage.getItem(SAMPLE_DATA_LOCALSTORAGE_KEY)
+    let rawData = localStorage.getItem(DATA_LOCALSTORAGE_KEY)
     let parsedData = null
     try {
         parsedData = JSON.parse(rawData)
@@ -47,9 +47,9 @@ function getSampleDataFromLocalStorage() {
     }
     return parsedData
 }
-function saveSampleDataToLocalStorage(sampleData) {
+function saveDataToLocalStorage(data) {
 
-    localStorage.setItem(SAMPLE_DATA_LOCALSTORAGE_KEY, JSON.stringify(sampleData))
+    localStorage.setItem(DATA_LOCALSTORAGE_KEY, JSON.stringify(data))
 }
 function addOnemonth(date) {
     var d = date.getDate();
@@ -82,4 +82,4 @@ function sortAndFilterData(array, searchTerm, sortOption) {
     // console.log(result)
     return result
 }
-export { stringAvatar, stringToColor, getSampleDataFromLocalStorage, saveSampleDataToLocalStorage, getRandomNumber, addOnemonth, sortAndFilterData }
+export { stringAvatar, stringToColor, getSampleDataFromLocalStorage, saveDataToLocalStorage, getRandomNumber, addOnemonth, sortAndFilterData }

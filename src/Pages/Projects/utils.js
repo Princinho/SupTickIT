@@ -1,4 +1,5 @@
 export function sortAndFilterData(projects, searchTerm, sortOption) {
+    if (!projects) return []
     let result = projects
     if (searchTerm)
         result = result.filter(a => a.title?.toLowerCase().includes(searchTerm.toLowerCase()))

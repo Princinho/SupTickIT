@@ -9,24 +9,24 @@ import { Companies } from './Pages/Companies/Companies.jsx'
 import { Projects } from './Pages/Projects/Projects.jsx'
 import { CompanyDetails } from './Pages/Companies/CompanyDetails.jsx'
 import { sampleData as initialData } from './SampleData.js'
-import { getSampleDataFromLocalStorage, saveSampleDataToLocalStorage } from './utils.js'
+import { getSampleDataFromLocalStorage, saveDataToLocalStorage } from './utils.js'
 import { Users } from './Pages/Users/Users.jsx'
 import { UserDetails } from './Pages/Users/UserDetails.jsx'
 import { Categories } from './Pages/Categories/Categories.jsx'
 import { LoginRegister } from './Pages/Login/LoginRegister.jsx'
 import { Tickets } from './Pages/Tickets/Tickets.jsx'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 function App() {
   const [user, setUser] = useState(null)
   const [sampleData, setSampleData] = useState(null)
   const theme = createTheme(themeOptions)
-  // useEffect(() => {
+  const queryClient = new QueryClient()
   let storedData = getSampleDataFromLocalStorage()
-  //   console.log('retrieved storedData', storedData)
   if (!storedData) {
     console.log('no stored data, using initialData', initialData)
     storedData = initialData
-    saveSampleDataToLocalStorage(initialData)
+    saveDataToLocalStorage(initialData)
     setSampleData(initialData)
   } else {
 
@@ -34,14 +34,13 @@ function App() {
       setSampleData(storedData)
   }
 
-  // }, [])
   useEffect(() => {
     // Pour eviter que les donnees soient reinitialisees a chaque actualisation
     try {
       let stringifiedSampleData = JSON.stringify(sampleData)
       let stringifiedInitialData = JSON.stringify(initialData)
       if (stringifiedSampleData != stringifiedInitialData)
-        saveSampleDataToLocalStorage(sampleData)
+        saveDataToLocalStorage(sampleData)
     } catch (e) {
       console.warn(e)
     }
@@ -65,15 +64,15 @@ function App() {
   )
 
   return (
-
-    <UserContext.Provider value={{ user, setUser }}>
-      <DataContext.Provider value={{ sampleData, setSampleData }}>
-        <ThemeProvider theme={theme}>
-          <RouterProvider router={router} />
-        </ThemeProvider>
-      </DataContext.Provider>
-    </UserContext.Provider>
-
+    <QueryClientProvider client={queryClient} >
+      <UserContext.Provider value={{ user, setUser }}>
+        <DataContext.Provider value={{ sampleData, setSampleData }}>
+          <ThemeProvider theme={theme}>
+            <RouterProvider router={router} />
+          </ThemeProvider>
+        </DataContext.Provider>
+      </UserContext.Provider>
+    </QueryClientProvider>
   )
 }
 

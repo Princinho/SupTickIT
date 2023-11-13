@@ -20,6 +20,7 @@ export const CreateDialog = ({ open, handleClose }) => {
             },
         },
     };
+    console.log(selectedCompanies)
     function handleChange(event) {
         console.log(event.target.value)
         setSelectedCompanies(event.target.value)
