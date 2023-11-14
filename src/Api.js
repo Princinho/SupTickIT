@@ -85,6 +85,21 @@ function editCategory(data) {
 function deleteCategory(data) {
     deleteEntry(data, 'categories')
 }
+function getAllUsers() {
+    return getAllEntries('users')
+}
+
+function createUser(data) {
+    create(data, 'users')
+}
+
+function editUser(data) {
+    editEntry(data, 'users')
+}
+
+function deleteUser(data) {
+    deleteEntry(data, 'users')
+}
 function create(newEntry, type) {
     let allEntries = getAllEntries(type)
     let storedData = getOrInitData()
@@ -97,5 +112,6 @@ export {
     getDataFromLocalStorage,
     getAllProjects, createProject, editProject, deleteProject,
     getAllCompanies, createCompany, editCompany, deleteCompany,
-    getAllCategories, createCategory, editCategory, deleteCategory
+    getAllCategories, createCategory, editCategory, deleteCategory,
+    getAllUsers, createUser, editUser, deleteUser,
 }

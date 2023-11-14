@@ -1,37 +1,36 @@
 import { Paper } from '@mui/material'
-import { useCallback, useContext, useEffect, useState } from 'react'
-import { DataContext } from '../../Contexts'
+import { useCallback, useState } from 'react'
 import { PageHeader } from '../../Components/PageHeader'
 import { UsersTable } from './UsersTable'
 import { CreateDialog } from './CreateDialog'
 import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from '../../utils'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { createUser, deleteUser, editUser, getAllUsers } from '../../Api'
 
 export const Users = () => {
   // TODO: Add entry creation date and entry subscription date.
 
-  const { sampleData, setSampleData } = useContext(DataContext)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [focusedEntry, setFocusedEntry] = useState(null)
-  const [users, setUsers] = useState([])
+  // const [users, setUsers] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
-  useEffect(() => {
-    setUsers(sampleData?.users || [])
-  }, [sampleData])
+  const BASE_QUERY_KEY = 'users'
+  const queryClient = useQueryClient()
+  const { data: users } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllUsers })
+  // useEffect(() => {
+  //   setUsers(sampleData?.users || [])
+  // }, [sampleData])
 
-  function createUser(user) {
-    setSampleData(
-      prev => ({ ...prev, users: [...prev.users, { ...user, id: sampleData.users.length + 1, password: '123abc' }] })
-    )
-  }
+
 
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
-    count: users.length,
+    count: users?.length,
     handlePageChange: setCurrentPage,
     handleRowsPerPageChange: changeRowsPerPage
   })
@@ -56,30 +55,31 @@ export const Users = () => {
   }
   function closeEditDialog(entry) {
     if (entry) {
-      editUser(entry)
+      editMutation.mutate(entry)
     }
     setFocusedEntry(null)
     setIsEditDialogOpen(false)
   }
   function closeDeleteDialog(entry) {
     if (entry) {
-      deleteUser(entry)
+      deleteMutation.mutate(entry)
     }
     setFocusedEntry(null)
     setIsDeleteDialogOpen(false)
   }
-  function editUser(entry) {
-    console.log(entry);
-    setSampleData(prev => (
-      { ...prev, users: prev.users.map(user => user.id == entry.id ? entry : user) }
-    ))
-  }
-  function deleteUser(entry) {
-    console.log(entry);
-    setSampleData(prev => (
-      { ...prev, users: prev.users.filter(user => user.id != entry.id) }
-    ))
-  }
+
+  const createMutation = useMutation({
+    mutationFn: createUser,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+  })
+  const editMutation = useMutation({
+    mutationFn: editUser,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+  })
+  const deleteMutation = useMutation({
+    mutationFn: deleteUser,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+  })
   function updateTableOptions(key, value) {
     setTableOptions(prev =>
       ({ ...prev, [key]: value }))
@@ -107,14 +107,14 @@ export const Users = () => {
       />
 
       <UsersTable
-        users={sortAndFilterData(sampleData.users, searchTerm, tableOptions.sortOption || "")}
+        users={sortAndFilterData(users, searchTerm, tableOptions.sortOption || "")}
         options={({ ...tableOptions, handlePageChange, handleRowsPerPageChange })}
         showEditDialog={showEditDialog}
         showDeleteDialog={showDeleteDialog}
       />
       <CreateDialog open={isCreateDialogOpen} handleClose={(user) => {
         if (user) {
-          createUser(user)
+          createMutation.mutate(user)
         }
         setIsCreateDialogOpen(false)
       }} />
