@@ -26,6 +26,7 @@ export const Projects = () => {
   const [focusedEntry, setFocusedEntry] = useState(null)
   const [sortOption, setSortOption] = useState({ option: 'title' })
   // const [projects, setProjects] = useState([])
+  const BASE_QUERY_KEY='projects'
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
@@ -33,7 +34,7 @@ export const Projects = () => {
     handlePageChange: setCurrentPage,
     handleRowsPerPageChange: changeRowsPerPage
   })
-  const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
+  const { data: projects } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllProjects })
   function handleClose() {
     setAnchorEl(null)
   }
@@ -56,16 +57,16 @@ export const Projects = () => {
   const queryClient = useQueryClient()
   const createMutation = useMutation({
     mutationFn: createProject,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projects'] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
 
   const editMutation = useMutation({
     mutationFn: editProject,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projects'] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
   const deleteMutation = useMutation({
     mutationFn: deleteProject,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['projects'] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
 
   function setRowsPerPage(rowsPerPage) {
@@ -75,7 +76,7 @@ export const Projects = () => {
     setTableOptions(prev => ({ ...prev, page }))
   }
 
-
+  console.log(projects)
 
   const appMoreMenuOpen = Boolean(anchorEl)
   return (

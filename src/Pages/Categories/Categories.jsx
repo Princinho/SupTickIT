@@ -1,13 +1,13 @@
 import { ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
 import { CategoriesTable } from './CategoriesTable'
-import {  useState } from 'react'
+import { useState } from 'react'
 import { CreateDialog } from './CreateDialog'
 import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from '../../utils'
 import { DetailsDialog } from './DetailsDialog'
-import { createCategory, deleteCategory, editCategory, getAllCategories } from '../../Api'
+import { createCategory, deleteCategory, editCategory, getAllCategories, getAllProjects } from '../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export const Categories = () => {
@@ -23,6 +23,7 @@ export const Categories = () => {
 
     const BASE_QUERY_KEY = 'categories'
     const { data: categories } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCategories })
+    const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
     const queryClient = useQueryClient()
     // const [categories, setCategories] = useState(sampleData.categories ? [...sampleData.categories] : [])
     // const { user } = useContext(UserContext)
@@ -200,7 +201,7 @@ export const Categories = () => {
                 />
             }
             {
-                categoryToDetail && <DetailsDialog open={isDetailsDialogOpen} category={categoryToDetail}
+                categoryToDetail && <DetailsDialog open={isDetailsDialogOpen} category={categoryToDetail} project={projects.find(p => p.id == categoryToDetail?.projectId)}
                     handleClose={() => {
                         setIsDetailsDialogOpen(false)
                     }}

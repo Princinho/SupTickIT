@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 export const DeleteDialog = ({ open, handleClose, project }) => {
 
-    console.log(project)
+    // console.log(project)
     return (
         <Box>
             <Dialog open={open} onClose={() => handleClose()}>

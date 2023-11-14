@@ -8,8 +8,8 @@ export const EditDialog = ({ open, handleClose, project }) => {
     }, [project]);
     // newFormData();
     
-    console.log(project)
-    console.log(formData)
+    // console.log(project)
+    // console.log(formData)
     return (
         <Box>
             <Dialog open={open} onClose={() => handleClose()}>

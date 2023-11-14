@@ -3,7 +3,8 @@ import { sampleData as initialData } from './SampleData.js'
 
 function getAllEntries(type) {
     let data = getDataFromLocalStorage()
-    return data[type]
+
+    return data[type]|| []
 }
 function getAllProjects() {
     return getAllEntries('projects')
@@ -54,7 +55,7 @@ function deleteEntry(data, type) {
     let allEntries = getAllEntries(type)
     let storedData = getOrInitData()
     let updatedEntriesArray = allEntries.filter(p => p.id != data.id)
-    saveDataToLocalStorage({ ...storedData, projects: updatedEntriesArray })
+    saveDataToLocalStorage({ ...storedData, [type]: updatedEntriesArray })
 }
 function getAllCompanies() {
     return getAllEntries('companies')
@@ -104,7 +105,9 @@ function create(newEntry, type) {
     let allEntries = getAllEntries(type)
     let storedData = getOrInitData()
     let updatedEntriesArray = [{ ...newEntry, id: allEntries.length + 1, dateCreated: new Date().toISOString(), createdBy: 3 }, ...allEntries]
-    saveDataToLocalStorage({ ...storedData, [type]: updatedEntriesArray })
+    const result = { ...storedData, [type]: updatedEntriesArray }
+    console.log(result)
+    saveDataToLocalStorage(result)
 }
 
 export {

@@ -7,6 +7,9 @@ export const CreateDialog = ({ open, handleClose }) => {
     const [formData, setFormData] = useState({ name: '', description: '', projectId: '' })
     const { sampleData } = useContext(DataContext)
 
+    function reset() {
+        setFormData({ name: '', description: '', projectId: '' })
+    }
     const { projects } = sampleData
     const [titleError, setTitleError] = useState(false)
     function handleProjectChange(event) {
@@ -67,6 +70,7 @@ export const CreateDialog = ({ open, handleClose }) => {
                             setTitleError(false)
                             handleClose(formData)
                         }
+                        reset()
                     }}>Enregistrer</Button>
                 </DialogActions>
             </Dialog>
