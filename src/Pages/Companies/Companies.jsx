@@ -1,18 +1,19 @@
 import { ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
 import { CompaniesTable } from './CompaniesTable'
-import { useContext, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { CreateDialog } from './CreateDialog'
 import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from './utils'
 import { DetailsDialog } from './DetailsDialog'
-import { DataContext } from '../../Contexts'
+import { createCompany, deleteCompany, editCompany, getAllCompanies } from '../../Api'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export const Companies = () => {
   // TODO: Add company creation date and company subscription date.
 
-  const { sampleData, setSampleData } = useContext(DataContext)
+  // const { sampleData, setSampleData } = useContext(DataContext)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -22,16 +23,15 @@ export const Companies = () => {
   const [companyToDetail, setCompanyToDetail] = useState(null)
   const [companyToDelete, setCompanyToDelete] = useState(null)
   const [sortOption, setSortOption] = useState({ option: 'name' })
-  const [companies, setCompanies] = useState([])
-
-  useEffect(() => {
-    setCompanies(sampleData?.companies || [])
-  }, [sampleData])
+  const BASE_QUERY_KEY = 'companies'
+  // const [companies, setCompanies] = useState([])
+  const queryClient = useQueryClient()
+  const { data: companies } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCompanies })
 
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
-    count: companies.length,
+    count: companies?.length,
     handlePageChange: setCurrentPage,
     handleRowsPerPageChange: changeRowsPerPage
   })
@@ -51,24 +51,25 @@ export const Companies = () => {
     setIsDetailsDialogOpen(true)
     setCompanyToDetail(company)
   }
-  function createCompany(data) {
-
-    setSampleData(prev => ({ ...prev, companies: [...prev.companies, { ...data, id: companies.length + 1, dateCreated: new Date().toISOString(), createdBy: 3 }] }))
-  }
   function setRowsPerPage(rowsPerPage) {
     setTableOptions(prev => ({ ...prev, rowsPerPage }))
   }
   function setCurrentPage(page) {
     setTableOptions(prev => ({ ...prev, page }))
   }
-  function editCompany(app) {
-    setCompanies(prev => prev.map(
-      prevApp => prevApp.id == app.id ? { ...prevApp, ...app } : prevApp
-    ))
-  }
-  function deleteCompany(company) {
-    setCompanies(prev => prev.filter(app => app.id != company.id))
-  }
+  const createMutation = useMutation({
+    mutationFn: createCompany,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+  })
+  const editMutation = useMutation({
+    mutationFn: editCompany,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+  })
+  const deleteMutation = useMutation({
+    mutationFn: deleteCompany,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+  })
+
   return (
     <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
       <Typography variant='h5' component='span' sx={{ fontWeight: 'bold' }}>Entreprises</Typography>
@@ -176,16 +177,16 @@ export const Companies = () => {
           showEditDialog={showEditDialog}
           showDeleteDialog={showDeleteDialog} />
       </Box>
-      <CreateDialog open={isCreateDialogOpen} handleClose={(app) => {
-        if (app) {
-          createCompany(app)
+      <CreateDialog open={isCreateDialogOpen} handleClose={(company) => {
+        if (company) {
+          createMutation.mutate(company)
         }
         setIsCreateDialogOpen(false)
       }} />
       {
         companyToEdit && <EditDialog open={isEditDialogOpen} entry={companyToEdit}
-          handleClose={(app) => {
-            if (app) { editCompany(app) }
+          handleClose={(company) => {
+            if (company) { editMutation.mutate(company) }
             setIsEditDialogOpen(false)
           }}
 
@@ -202,7 +203,7 @@ export const Companies = () => {
       {
         companyToDelete && <DeleteDialog open={isDeleteDialogOpen} entry={companyToDelete}
           handleClose={(app) => {
-            if (app) { deleteCompany(app) }
+            if (app) { deleteMutation.mutate(app) }
             setIsDeleteDialogOpen(false)
           }}
 

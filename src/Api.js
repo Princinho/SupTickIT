@@ -1,9 +1,16 @@
 import { getSampleDataFromLocalStorage, saveDataToLocalStorage } from "./utils"
 import { sampleData as initialData } from './SampleData.js'
 
-function getAllProjects() {
+function getAllEntries(type) {
     let data = getDataFromLocalStorage()
-    return data.projects
+    return data[type]
+}
+function getAllProjects() {
+    return getAllEntries('projects')
+}
+function getAllCompanies() {
+    let data = getDataFromLocalStorage()
+    return data.companies
 }
 function getOrInitData() {
     let storedData = getSampleDataFromLocalStorage()
@@ -32,13 +39,47 @@ function editProject(updatedProject) {
         ...project, ...updatedProject
     } : project)
     saveDataToLocalStorage({ ...storedData, projects: updatedProjectsArray })
-
 }
 function deleteProject(project) {
     let allProjects = getAllProjects()
     let storedData = getOrInitData()
     let updatedProjectsArray = allProjects.filter(p => p.id != project.id)
     saveDataToLocalStorage({ ...storedData, projects: updatedProjectsArray })
-    
 }
-export { getAllProjects, getOrInitData, getDataFromLocalStorage, createProject, editProject,deleteProject }
+function createCompany(data) {
+    create(data, 'companies')
+}
+function editEntry(updatedEntry, type) {
+    let allEntries = getAllEntries(type)
+    let storedData = getOrInitData()
+    let updatedEntriesArray = allEntries.map(entry => entry.id == updatedEntry.id ? {
+        ...entry, ...updatedEntry
+    } : entry)
+    saveDataToLocalStorage({ ...storedData, [type]: updatedEntriesArray })
+}
+function editCompany(company) {
+    editEntry(company, 'companies')
+}
+function deleteEntry(data, type) {
+    let allEntries = getAllEntries(type)
+    let storedData = getOrInitData()
+    let updatedEntriesArray = allEntries.filter(p => p.id != data.id)
+    saveDataToLocalStorage({ ...storedData, projects: updatedEntriesArray })
+}
+
+function deleteCompany(data) {
+    deleteEntry(data, 'companies')
+}
+function create(newEntry, type) {
+    let allEntries = getAllEntries(type)
+    let storedData = getOrInitData()
+    let updatedEntriesArray = [{ ...newEntry, id: allEntries.length + 1, dateCreated: new Date().toISOString(), createdBy: 3 }, ...allEntries]
+    saveDataToLocalStorage({ ...storedData, [type]: updatedEntriesArray })
+}
+
+export {
+    getOrInitData,
+    getDataFromLocalStorage,
+    getAllProjects, createProject, editProject, deleteProject,
+    getAllCompanies, createCompany, editCompany, deleteCompany
+}
