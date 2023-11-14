@@ -1,17 +1,16 @@
 import { ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
 import { CategoriesTable } from './CategoriesTable'
-import { useCallback, useContext, useEffect, useState } from 'react'
+import {  useState } from 'react'
 import { CreateDialog } from './CreateDialog'
 import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from '../../utils'
 import { DetailsDialog } from './DetailsDialog'
-import { DataContext, UserContext } from '../../Contexts'
+import { createCategory, deleteCategory, editCategory, getAllCategories } from '../../Api'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export const Categories = () => {
-
-    const { sampleData, setSampleData } = useContext(DataContext)
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
     const [searchTerm, setSearchTerm] = useState(false)
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -21,21 +20,16 @@ export const Categories = () => {
     const [categoryToDetail, setCategoryToDetail] = useState(null)
     const [categoryToDelete, setCategoryToDelete] = useState(null)
     const [sortOption, setSortOption] = useState({ option: 'name' })
-    const [categories, setCategories] = useState(sampleData.categories ? [...sampleData.categories] : [])
-    const { user } = useContext(UserContext)
+
+    const BASE_QUERY_KEY = 'categories'
+    const { data: categories } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCategories })
+    const queryClient = useQueryClient()
+    // const [categories, setCategories] = useState(sampleData.categories ? [...sampleData.categories] : [])
+    // const { user } = useContext(UserContext)
     const [tableOptions, setTableOptions] = useState({
-        rowsPerPage: 5,
-        page: 0,
-        count: categories.length,
-        handlePageChange: setCurrentPage,
+        rowsPerPage: 5, page: 0, count: categories?.length, handlePageChange: setCurrentPage,
         handleRowsPerPageChange: changeRowsPerPage
     })
-    const memoSetSampleData = useCallback(setSampleData, [setSampleData])
-    useEffect(() => {
-        memoSetSampleData(prev => ({ ...prev, categories: [...categories] }))
-    }
-        , [categories, memoSetSampleData])
-
     function changeRowsPerPage(rowsPerPage) {
         setRowsPerPage(rowsPerPage)
         setCurrentPage(0)
@@ -52,26 +46,40 @@ export const Categories = () => {
         setIsDetailsDialogOpen(true)
         setCategoryToDetail(category)
     }
-    function createCategory(data) {
-        setCategories(prev => {
-            let result = [{ ...data, id: categories.length + 1, dateCreated: new Date().toISOString(), createdBy: user?.id }, ...prev]
-            return result
-        })
-    }
+    // function createCategory(data) {
+    //     setCategories(prev => {
+    //         let result = [{ ...data, id: categories.length + 1, dateCreated: new Date().toISOString(), createdBy: user?.id }, ...prev]
+    //         return result
+    //     })
+    // }
     function setRowsPerPage(rowsPerPage) {
         setTableOptions(prev => ({ ...prev, rowsPerPage }))
     }
     function setCurrentPage(page) {
         setTableOptions(prev => ({ ...prev, page }))
     }
-    function editCategory(cat) {
-        setCategories(prevEntries => prevEntries.map(
-            prevEntry => prevEntry.id == cat.id ? { ...prevEntry, ...cat } : prevEntry
-        ))
-    }
-    function deleteCategory(category) {
-        setCategories(prev => prev.filter(cat => cat.id != category.id))
-    }
+    // function editCategory(cat) {
+    //     setCategories(prevEntries => prevEntries.map(
+    //         prevEntry => prevEntry.id == cat.id ? { ...prevEntry, ...cat } : prevEntry
+    //     ))
+    // }
+    // function deleteCategory(category) {
+    //     setCategories(prev => prev.filter(cat => cat.id != category.id))
+    // }
+
+    const createMutation = useMutation({
+        mutationFn: createCategory,
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+    })
+    const editMutation = useMutation({
+        mutationFn: editCategory,
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+    })
+    const deleteMutation = useMutation({
+        mutationFn: deleteCategory,
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+    })
+
     return (
         <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
             <Typography variant='h5' component='span' sx={{ fontWeight: 'bold' }}>Catégories de ticket</Typography>
@@ -178,14 +186,14 @@ export const Categories = () => {
             </Box>
             <CreateDialog open={isCreateDialogOpen} handleClose={(cat) => {
                 if (cat) {
-                    createCategory(cat)
+                    createMutation.mutate(cat)
                 }
                 setIsCreateDialogOpen(false)
             }} />
             {
                 categoryToEdit && <EditDialog open={isEditDialogOpen} category={categoryToEdit}
                     handleClose={(cat) => {
-                        if (cat) { editCategory(cat) }
+                        if (cat) { editMutation.mutate(cat) }
                         setIsEditDialogOpen(false)
                     }}
 
@@ -202,7 +210,7 @@ export const Categories = () => {
             {
                 categoryToDelete && <DeleteDialog open={isDeleteDialogOpen} category={categoryToDelete}
                     handleClose={(cat) => {
-                        if (cat) { deleteCategory(cat) }
+                        if (cat) { deleteMutation.mutate(cat) }
                         setIsDeleteDialogOpen(false)
                     }}
 

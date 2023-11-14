@@ -60,6 +60,7 @@ function addOnemonth(date) {
     return date;
 }
 function sortAndFilterData(array, searchTerm, sortOption) {
+    if (!array) return []
     let result = array
     if (searchTerm)
         result = result.filter(a => a.title?.toLowerCase().includes(searchTerm.toLowerCase()) || a.name?.toLowerCase().includes(searchTerm.toLowerCase())

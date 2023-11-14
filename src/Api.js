@@ -8,10 +8,6 @@ function getAllEntries(type) {
 function getAllProjects() {
     return getAllEntries('projects')
 }
-function getAllCompanies() {
-    let data = getDataFromLocalStorage()
-    return data.companies
-}
 function getOrInitData() {
     let storedData = getSampleDataFromLocalStorage()
     if (!storedData) {
@@ -46,9 +42,6 @@ function deleteProject(project) {
     let updatedProjectsArray = allProjects.filter(p => p.id != project.id)
     saveDataToLocalStorage({ ...storedData, projects: updatedProjectsArray })
 }
-function createCompany(data) {
-    create(data, 'companies')
-}
 function editEntry(updatedEntry, type) {
     let allEntries = getAllEntries(type)
     let storedData = getOrInitData()
@@ -57,18 +50,40 @@ function editEntry(updatedEntry, type) {
     } : entry)
     saveDataToLocalStorage({ ...storedData, [type]: updatedEntriesArray })
 }
-function editCompany(company) {
-    editEntry(company, 'companies')
-}
 function deleteEntry(data, type) {
     let allEntries = getAllEntries(type)
     let storedData = getOrInitData()
     let updatedEntriesArray = allEntries.filter(p => p.id != data.id)
     saveDataToLocalStorage({ ...storedData, projects: updatedEntriesArray })
 }
+function getAllCompanies() {
+    return getAllEntries('companies')
+}
+function createCompany(data) {
+    create(data, 'companies')
+}
+
+function editCompany(company) {
+    editEntry(company, 'companies')
+}
 
 function deleteCompany(data) {
     deleteEntry(data, 'companies')
+}
+function getAllCategories() {
+    return getAllEntries('categories')
+}
+
+function createCategory(data) {
+    create(data, 'categories')
+}
+
+function editCategory(data) {
+    editEntry(data, 'categories')
+}
+
+function deleteCategory(data) {
+    deleteEntry(data, 'categories')
 }
 function create(newEntry, type) {
     let allEntries = getAllEntries(type)
@@ -81,5 +96,6 @@ export {
     getOrInitData,
     getDataFromLocalStorage,
     getAllProjects, createProject, editProject, deleteProject,
-    getAllCompanies, createCompany, editCompany, deleteCompany
+    getAllCompanies, createCompany, editCompany, deleteCompany,
+    getAllCategories, createCategory, editCategory, deleteCategory
 }
