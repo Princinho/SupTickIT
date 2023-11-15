@@ -1,24 +1,30 @@
 import { Divider, Grid, ListItemIcon, Menu, MenuItem, Paper, Stack, Typography, } from "@mui/material"
 import { useNavigate, useParams } from 'react-router-dom'
-import { useContext, useState } from "react"
-import { DataContext } from "../../Contexts"
 import { AddButton } from "../../Components/AddButton"
 import { AddRoleDialog } from "./AddRoleDialog"
 import { ActionableTag } from "../../Components/ActionableTag"
 import { Delete, MoreVert } from "@mui/icons-material"
 import { SimpleButton } from "../../Components/SimpleButton"
 import { RemoveRoleDialog } from "./RemoveRoleDialog"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { addRoleToUser, getAllRoleAssignments, getAllRoles, getAllUsers, removeRoleFromUser } from "../../Api"
+import { useState } from "react"
 export const UserDetails = () => {
     const [isAddRoleDialogOpen, setIsAddRoleDialogOpen] = useState(false)
     const [isRemoveRoleDialogOpen, setIsRemoveRoleDialogOpen] = useState(false)
     const [anchorEl, setAnchorEl] = useState(null)
     const [roleOptionsMenuOpen, setRoleOptionsMenuOpen] = useState(false)
     const [roleToDelete, setRoleToDelete] = useState(false)
-    const { sampleData, setSampleData } = useContext(DataContext)
+
     const navigate = useNavigate()
     const { id } = useParams()
-    const { users } = sampleData
-    const user = users.find(u => u.id == id)
+
+    const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
+    const { data: roleAssignments } = useQuery({ queryKey: ['roleAssignments'], queryFn: getAllRoleAssignments })
+    const { data: roles } = useQuery({ queryKey: ['roles'], queryFn: getAllRoles })
+    const queryClient = useQueryClient()
+    const user = users?.find(u => u.id == id)
+    console.log(users)
     // TODO: Ecrire une fonction qui va recuperer les roles affectes a l'utilisateur en tenant compte des dates de debut et de fin
     function handleMenuClose() {
         setAnchorEl(null)
@@ -33,27 +39,29 @@ export const UserDetails = () => {
     function handleAddRoleDialogClose(roleId, startDate, expiryDate) {
         setIsAddRoleDialogOpen(false)
         if (!roleId || !startDate) { return }
-        addRoleToUser(roleId, startDate, expiryDate)
+        addRoleToUserMutation.mutate({
+            roleId, startDate, expiryDate, userId: id
+        })
     }
     function handleRemoveRoleDialogClose(roleAssignMent) {
         setIsRemoveRoleDialogOpen(false)
         if (!roleAssignMent) { return }
-        removeRoleFromUser(roleAssignMent.roleId)
+        removeFromUserMutation.mutate(roleAssignMent)
     }
-    function removeRoleFromUser(roleId) {
-        var roleAssignments = sampleData.roleAssignments ? [...sampleData.roleAssignments] : []
-        setSampleData(prev => ({
-            ...prev, roleAssignments: roleAssignments.filter(r => !(r.roleId == roleId && r.userId == id))
-        }))
-    }
-    function addRoleToUser(roleId, startDate, expiryDate) {
-        var roleAssignments = sampleData.roleAssignments ? [...sampleData.roleAssignments] : []
-        setSampleData(prev => ({
-            ...prev, roleAssignments: [...roleAssignments, {
-                roleId, startDate, expiryDate, userId: id
-            }]
-        }))
-    }
+    // function removeRoleFromUser(roleId) {
+    //     var roleAssignments = roleAssignments ? [...roleAssignments] : []
+    //     setSampleData(prev => ({
+    //         ...prev, roleAssignments: roleAssignments.filter(r => !(r.roleId == roleId && r.userId == id))
+    //     }))
+    // }
+    const addRoleToUserMutation = useMutation({
+        mutationFn: addRoleToUser,
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['roleAssignments'] })
+    })
+    const removeFromUserMutation = useMutation({
+        mutationFn: removeRoleFromUser,
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['roleAssignments'] })
+    })
     return (
         <Paper sx={{ padding: '1em' }}>
             <Stack direction='row' justifyContent='space-between' sx={{ paddingBlockEnd: '1em' }}>
@@ -114,17 +122,18 @@ export const UserDetails = () => {
                         <AddButton onClick={() => setIsAddRoleDialogOpen(true)} />
                     </Stack>
                     <Stack direction='row' spacing={2} flexWrap='wrap' alignItems='flex-start' useFlexGap paddingBlock='1em'>
-                        {sampleData.roleAssignments?.filter(r => r.userId == user.id).map(
+                        {roleAssignments?.filter(r => r.userId == user.id).map(
                             roleAssignment => <ActionableTag key={`role=${roleAssignment.userId}-${roleAssignment.roleId}`}
                                 secondaryText={`(Jusqu'au ${new Date(roleAssignment.expiryDate).toLocaleDateString("FR-fr")})` || ""}
-                                label={sampleData.roles.find(r => r.id == roleAssignment.roleId)?.nom}
+                                label={roles.find(r => r.id == roleAssignment.roleId)?.nom}
                                 icon={<MoreVert fontSize="1em" />}
                                 handleButtonClick={(event) => openOptionsMenu(event, roleAssignment)} />
                         )}
                     </Stack>
                 </Grid>
             </Grid>
-            <AddRoleDialog open={isAddRoleDialogOpen} currentlyAssignedRoles={sampleData.roleAssignments?.filter(r => r.userId == id) || []} handleClose={handleAddRoleDialogClose} />
+            <AddRoleDialog open={isAddRoleDialogOpen} roles={roles || []}
+                currentlyAssignedRoles={roleAssignments?.filter(r => r.userId == id) || []} handleClose={handleAddRoleDialogClose} />
             <RemoveRoleDialog open={isRemoveRoleDialogOpen} handleClose={handleRemoveRoleDialogClose} roleAssignMent={roleToDelete} />
 
             <Menu

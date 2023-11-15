@@ -1,14 +1,12 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select } from "@mui/material"
 import PropTypes from "prop-types"
-import { useContext, useState } from "react"
-import { DataContext } from "../../Contexts"
+import { useState } from "react"
 import { DatePicker } from "@mui/x-date-pickers"
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from "dayjs"
 import { addOnemonth } from "../../utils"
-export const AddRoleDialog = ({ open, handleClose, currentlyAssignedRoles, }) => {
-    const { sampleData } = useContext(DataContext)
+export const AddRoleDialog = ({ open, roles, handleClose, currentlyAssignedRoles, }) => {
     const [roleId, setRoleId] = useState('')
     const [startDate, setStartDate] = useState(new Date().toISOString())
     const [expiryDate, setExpiryDate] = useState(addOnemonth(new Date()).toISOString())
@@ -28,7 +26,7 @@ export const AddRoleDialog = ({ open, handleClose, currentlyAssignedRoles, }) =>
                             label="Role"
                             onChange={event => setRoleId(event.target.value)}
                         >
-                            {sampleData.roles.filter(newRole => !(currentlyAssignedRoles.some(r => r.roleId == newRole.id))).map(
+                            {roles.filter(newRole => !(currentlyAssignedRoles.some(r => r.roleId == newRole.id))).map(
                                 role => <MenuItem key={`role-${role.id}`} value={role.id}>{role.nom}</MenuItem>
                             )}
 
@@ -58,5 +56,6 @@ export const AddRoleDialog = ({ open, handleClose, currentlyAssignedRoles, }) =>
 AddRoleDialog.propTypes = {
     open: PropTypes.bool,
     handleClose: PropTypes.func,
-    currentlyAssignedRoles: PropTypes.array
+    currentlyAssignedRoles: PropTypes.array,
+    roles: PropTypes.Array
 }

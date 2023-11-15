@@ -1,17 +1,14 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material"
 import PropTypes from 'prop-types'
-import { useContext, useEffect, useState } from "react"
-import { DataContext } from "../../Contexts"
-export const EditDialog = ({ open, handleClose, category }) => {
+import { useEffect, useState } from "react"
+export const EditDialog = ({ open, handleClose, category, projects }) => {
     //TODO: Faire bosser la pagination
     const [formData, setFormData] = useState({ ...category })
-    const { sampleData } = useContext(DataContext)
-    const { projects } = sampleData
     const [titleError, setTitleError] = useState(false)
     function handleProjectChange(event) {
         setFormData(prev => ({ ...prev, projectId: event.target.value }))
     }
-    useEffect(() => setFormData({...category}), [category])
+    useEffect(() => setFormData({ ...category }), [category])
     console.log(formData)
     // console.log(projects)
     return (
@@ -78,5 +75,6 @@ export const EditDialog = ({ open, handleClose, category }) => {
 EditDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
-    category: PropTypes.object
+    category: PropTypes.object,
+    projects: PropTypes.array
 }

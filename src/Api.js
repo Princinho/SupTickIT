@@ -4,7 +4,7 @@ import { sampleData as initialData } from './SampleData.js'
 function getAllEntries(type) {
     let data = getDataFromLocalStorage()
 
-    return data[type]|| []
+    return data[type] || []
 }
 function getAllProjects() {
     return getAllEntries('projects')
@@ -19,15 +19,27 @@ function getOrInitData() {
     }
     return storedData
 }
+function assignProject(project, companyId) {
+    console.log(project, companyId)
+    let company = getAllCompanies().find(c => c.id == companyId)
+    editCompany({ ...company, projects: [...company.projects, project.id] })
+}
 function getDataFromLocalStorage() {
     return getOrInitData()
 }
 function createProject(newProject) {
     let allProjects = getAllProjects()
     let storedData = getOrInitData()
-    let updatedProjectsArray = [{ ...newProject, id: allProjects.length + 1, dateCreated: new Date().toISOString(), createdBy: 3 }, ...allProjects]
+    let newProjectWithDbData = { ...newProject, id: allProjects.length + 1, dateCreated: new Date().toISOString(), createdBy: 3 }
+    let updatedProjectsArray = [newProjectWithDbData, ...allProjects]
     saveDataToLocalStorage({ ...storedData, projects: updatedProjectsArray })
-
+    assignProjectToCompanies(newProjectWithDbData)
+}
+function assignProjectToCompanies(project) {
+    project.companies.forEach(companyId => {
+        let company = getAllCompanies().find(c => c.id == companyId)
+        editCompany({ ...company, projects: [...company.projects, project.id] })
+    });
 }
 function editProject(updatedProject) {
     let allProjects = getAllProjects()
@@ -58,7 +70,7 @@ function deleteEntry(data, type) {
     saveDataToLocalStorage({ ...storedData, [type]: updatedEntriesArray })
 }
 function getAllCompanies() {
-    return getAllEntries('companies')
+    return getAllEntries('companies')||[]
 }
 function createCompany(data) {
     create(data, 'companies')
@@ -101,20 +113,38 @@ function editUser(data) {
 function deleteUser(data) {
     deleteEntry(data, 'users')
 }
+function getAllRoleAssignments() {
+    return getAllEntries('roleAssignments')
+}
+function getAllRoles() {
+    return getAllEntries('roles')
+}
+function addRoleToUser(roleAssignment) {
+    create(roleAssignment, 'roleAssignments')
+}
+function removeRoleFromUser(roleAssignment) {
+    let allEntries = getAllEntries('roleAssignments')
+    let storedData = getOrInitData()
+    let updatedEntriesArray = allEntries.filter(p =>
+        !(p.roleId == roleAssignment.roleId && p.userId == roleAssignment.userId)
+    )
+    saveDataToLocalStorage({ ...storedData, roleAssignments: updatedEntriesArray })
+}
 function create(newEntry, type) {
     let allEntries = getAllEntries(type)
     let storedData = getOrInitData()
     let updatedEntriesArray = [{ ...newEntry, id: allEntries.length + 1, dateCreated: new Date().toISOString(), createdBy: 3 }, ...allEntries]
     const result = { ...storedData, [type]: updatedEntriesArray }
-    console.log(result)
+    // console.log(result)
     saveDataToLocalStorage(result)
 }
 
 export {
     getOrInitData,
     getDataFromLocalStorage,
-    getAllProjects, createProject, editProject, deleteProject,
+    getAllProjects, createProject, editProject, deleteProject, assignProject,
     getAllCompanies, createCompany, editCompany, deleteCompany,
     getAllCategories, createCategory, editCategory, deleteCategory,
     getAllUsers, createUser, editUser, deleteUser,
+    getAllRoleAssignments, getAllRoles, addRoleToUser, removeRoleFromUser
 }

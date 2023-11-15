@@ -7,7 +7,7 @@ import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from '../../utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createUser, deleteUser, editUser, getAllUsers } from '../../Api'
+import { createUser, deleteUser, editUser, getAllCompanies, getAllUsers } from '../../Api'
 
 export const Users = () => {
   // TODO: Add entry creation date and entry subscription date.
@@ -21,6 +21,7 @@ export const Users = () => {
   const BASE_QUERY_KEY = 'users'
   const queryClient = useQueryClient()
   const { data: users } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllUsers })
+  const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompanies })
   // useEffect(() => {
   //   setUsers(sampleData?.users || [])
   // }, [sampleData])
@@ -112,7 +113,9 @@ export const Users = () => {
         showEditDialog={showEditDialog}
         showDeleteDialog={showDeleteDialog}
       />
-      <CreateDialog open={isCreateDialogOpen} handleClose={(user) => {
+      <CreateDialog open={isCreateDialogOpen} 
+      companies={companies}
+      handleClose={(user) => {
         if (user) {
           createMutation.mutate(user)
         }

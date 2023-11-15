@@ -1,11 +1,7 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider,  Typography } from "@mui/material"
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Typography } from "@mui/material"
 import PropTypes from 'prop-types'
-import { useContext } from "react"
-import { DataContext } from "../../Contexts"
 
-export const DeleteDialog = ({ open, handleClose, category }) => {
-    const { sampleData } = useContext(DataContext)
-    const { projects } = sampleData
+export const DeleteDialog = ({ open, handleClose, category, projects }) => {
 
     console.log(category)
     return (
@@ -30,5 +26,6 @@ export const DeleteDialog = ({ open, handleClose, category }) => {
 DeleteDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
-    category: PropTypes.object.isRequired
+    category: PropTypes.object.isRequired,
+    projects: PropTypes.array
 }

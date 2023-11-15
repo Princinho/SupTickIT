@@ -1,19 +1,16 @@
 import { ArrowBack, ArrowForward, Delete, Edit, HighlightOff, MoreVert, OpenInNew, Search } from '@mui/icons-material'
 import { Avatar, Button, ButtonGroup, Divider, FormControl, Grid, IconButton, InputAdornment, InputLabel, ListItemIcon, Menu, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { CreateDialog } from './CreateDialog'
 import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from './utils'
 import { DetailsDialog } from './DetailsDialog'
-import { DataContext } from '../../Contexts'
 import { stringAvatar } from '../../utils'
-import { createProject, deleteProject, editProject, getAllProjects } from '../../Api'
+import { createProject, deleteProject, editProject, getAllCompanies, getAllProjects, getAllUsers } from '../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export const Projects = () => {
-
-  const { sampleData } = useContext(DataContext)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -26,15 +23,17 @@ export const Projects = () => {
   const [focusedEntry, setFocusedEntry] = useState(null)
   const [sortOption, setSortOption] = useState({ option: 'title' })
   // const [projects, setProjects] = useState([])
-  const BASE_QUERY_KEY='projects'
+  const BASE_QUERY_KEY = 'projects'
+  const { data: projects} = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllProjects })
+  const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
+  const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompanies })
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
-    count: sampleData.projects.length,
+    count: projects?.length,
     handlePageChange: setCurrentPage,
     handleRowsPerPageChange: changeRowsPerPage
   })
-  const { data: projects } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllProjects })
   function handleClose() {
     setAnchorEl(null)
   }
@@ -75,9 +74,17 @@ export const Projects = () => {
   function setCurrentPage(page) {
     setTableOptions(prev => ({ ...prev, page }))
   }
-
-  console.log(projects)
-
+  // const assignProjectMutation = useMutation({
+  //   mutationFn: assignProject,
+  //   onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+  // })
+  // // console.log(projects)
+  // function assignProjectToCompanies(project) {
+  //   for (const companyId of project.companies) {
+  //     assignProjectMutation.mutate(project, companyId)
+  //   }
+  // }
+  console.log(users, '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
   const appMoreMenuOpen = Boolean(anchorEl)
   return (
     <>
@@ -186,12 +193,15 @@ export const Projects = () => {
       </Box> */}
 
 
-        <CreateDialog open={isCreateDialogOpen} handleClose={(app) => {
-          if (app) {
-            createMutation.mutate(app)
-          }
-          setIsCreateDialogOpen(false)
-        }} />
+        {companies&&<CreateDialog open={isCreateDialogOpen}
+          companies={companies || []}
+          handleClose={(project) => {
+            if (project) {
+              createMutation.mutate(project)
+              // assignProjectToCompanies(project)
+            }
+            setIsCreateDialogOpen(false)
+          }} />}
         {
           projectToEdit && <EditDialog open={isEditDialogOpen} project={projectToEdit}
             handleClose={(app) => {
@@ -226,7 +236,8 @@ export const Projects = () => {
         {
           sortAndFilterData(projects, searchTerm, sortOption).map(
             project => {
-              const creator = sampleData.users.find(u => u.id == project.createdBy)
+              console.log(project)
+              const creator = users?.find(u => u.id == project.createdBy)
               const creatorName = creator ? creator.firstName + " " + creator.lastName : "??"
               return <Grid item component='paper' key={`proj-${project.id}`} >
                 <Paper sx={{ width: { xs: '300px', md: '30vw' }, minHeight: '200px', padding: '1em' }}>
@@ -258,11 +269,17 @@ export const Projects = () => {
                     </Stack>
                   </Stack>
                   <Divider />
-                  {sampleData.companies.some(c => c.projects?.includes(project.id)) ?
+                  {companies?.some(c => {
+                    console.log(c, '########################')
+                    return c.projects?.includes(+project.id)
+                  }) ?
                     <>
                       <Typography variant='subtitle1' fontWeight='bold'>Participants</Typography>
                       <Typography variant="subtitle2">
-                        {sampleData.companies.filter(company => company.projects?.includes(project?.id)).map(company => company.name).join(', ')}
+                        {companies?.filter(company => {
+                          // console.log(company, project)
+                          return company.projects?.includes(project?.id)
+                        }).map(company => company.name).join(', ')}
                       </Typography>
                     </> :
                     <Typography variant='subtitle2'>Non deployé</Typography>

@@ -2,8 +2,9 @@ import { Avatar, IconButton, ListItemIcon, Menu, MenuItem, Stack, Table, TableBo
 import { stringAvatar } from '../../utils'
 import PropTypes from 'prop-types'
 import { Delete, Edit, MoreVert } from '@mui/icons-material'
-import { useContext, useState } from 'react'
-import { DataContext } from '../../Contexts'
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { getAllUsers } from '../../Api'
 
 
 export const CategoriesTable = ({ categories, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
@@ -11,14 +12,13 @@ export const CategoriesTable = ({ categories, showEditDialog, showDeleteDialog, 
         setAnchorEl(null)
     }
 
-    const { sampleData } = useContext(DataContext)
+    const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
     const [anchorEl, setAnchorEl] = useState(null)
     const [focusedEntry, setFocusedEntry] = useState(null)
     const appMoreMenuOpen = Boolean(anchorEl)
     const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } = options
     // TODO: Cacher les options de suppression et modification dans un dropdown (... ou more)
     // TODO: Permettre de reset les champs au clic du bouton reset a droite.
-    // console.log(sampleData.categories)
     return (
         <>
             <TableContainer>
@@ -34,10 +34,10 @@ export const CategoriesTable = ({ categories, showEditDialog, showDeleteDialog, 
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {sampleData.categories?.length > 0 ?
+                        {categories?.length > 0 ?
                             categories.map((cat) => {
-                                console.log(sampleData.users)
-                                const creator = sampleData.users.find(u => u.id == cat.createdBy)
+                                console.log(users)
+                                const creator = users?.find(u => u.id == cat.createdBy)
                                 const creatorName = creator ? creator?.firstName + " " + creator?.lastName : "??"
                                 return (
                                     <TableRow

@@ -1,13 +1,13 @@
 import { Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, OutlinedInput, Select, TextField } from "@mui/material"
 import PropTypes from 'prop-types'
-import { useContext, useState } from "react"
-import { DataContext } from "../../Contexts"
+import { useState } from "react"
+
 import { useTheme } from "@emotion/react"
-export const CreateDialog = ({ open, handleClose }) => {
+export const CreateDialog = ({ open, handleClose, companies }) => {
     //TODO: Faire bosser la pagination
     const [formData, setFormData] = useState({ title: '', description: '' })
     const theme = useTheme()
-    const { sampleData: { companies } } = useContext(DataContext)
+    console.log(companies,'########################################################')
     const [titleError, setTitleError] = useState(false)
     const [selectedCompanies, setSelectedCompanies] = useState([])
     const ITEM_HEIGHT = 48;
@@ -112,5 +112,6 @@ export const CreateDialog = ({ open, handleClose }) => {
 }
 CreateDialog.propTypes = {
     open: PropTypes.bool.isRequired,
-    handleClose: PropTypes.func.isRequired
+    handleClose: PropTypes.func.isRequired,
+    companies: PropTypes.array
 }

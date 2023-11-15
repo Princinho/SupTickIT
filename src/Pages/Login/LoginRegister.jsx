@@ -3,31 +3,31 @@ import bgImage from "../../assets/login-background.jpg"
 import { Link as RouterLink, useNavigate } from "react-router-dom"
 import { Logo } from "../../Components/Logo"
 import { useContext, useState } from "react"
-import { DataContext, UserContext } from "../../Contexts"
+import { UserContext } from "../../Contexts"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { createUser, getAllCompanies, getAllUsers } from "../../Api"
 export const LoginRegister = () => {
   const { user, setUser } = useContext(UserContext)
   const navigate = useNavigate()
   const [credentials, setCredentials] = useState(null)
   const [registrationFormData, setRegistrationFormData] = useState(null)
   const [error, setError] = useState(null)
-  const { sampleData, setSampleData } = useContext(DataContext)
   const [currentForm, setCurrentForm] = useState('login')
-  const { companies } = sampleData
   const [errors, setErrors] = useState(null)
 
+  const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompanies })
+  const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
+  const queryClient = useQueryClient()
 
+  const createMutation = useMutation({
+    mutationFn: createUser,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] })
+  })
   function login() {
+
     console.log(credentials)
     setError(false)
-    let matchingUser = sampleData.users.find(u => u.username == credentials.username && u.password == credentials.password)
-    // setUser({
-    //   id: 1, name: 'GATIEN GNAKOU', username: 'spadmin@gmail.com', password: 'Admin123#', roles: ['admin'],
-    //   userId: 'spadmin@gmail.com', lastLoginDate: '2023/10/32',
-    //   companyId: ''
-    // })
-
-
-    // navigate('/')
+    let matchingUser = users.find(u => u.username == credentials.username && u.password == credentials.password)
     if (matchingUser) {
       setUser(matchingUser)
       navigate('/')
@@ -50,9 +50,10 @@ export const LoginRegister = () => {
     }
     console.log(errors)
     if (!errors) {
-      setSampleData(
-        prev => ({ ...prev, users: [...prev.users, { ...registrationFormData, id: sampleData.users.length + 1 }] })
-      )
+      // setSampleData(
+      //   prev => ({ ...prev, users: [...prev.users, { ...registrationFormData, id: users?.length + 1 }] })
+      // )
+      createMutation.mutate(registrationFormData)
       setUser(registrationFormData)
       navigate('/')
     }
@@ -101,7 +102,7 @@ export const LoginRegister = () => {
                   ></TextField>
                   <TextField variant="outlined" error={error} label="Mot de passe(Utilisez Admin123#)" type="password" sx={{ minWidth: '60%' }}
                     onChange={event => setCredentials(prev => ({ ...prev, password: event.target.value }))}></TextField>
-                  <Button variant="contained" sx={{ fontWeight: 'bold', color:'whitesmoke' }}
+                  <Button variant="contained" sx={{ fontWeight: 'bold', color: 'whitesmoke' }}
                     onClick={login}
                   >Connexion</Button>
                   <Stack sx={{
@@ -151,7 +152,7 @@ export const LoginRegister = () => {
                     onChange={event => setRegistrationFormData(prev => ({ ...prev, password: event.target.value }))}></TextField>
                   <TextField variant="outlined" size="small" error={errors?.passwordConfirmation} label="Confirmation" type="password" sx={{ minWidth: '60%' }}
                     onChange={event => setRegistrationFormData(prev => ({ ...prev, passwordConfirmation: event.target.value }))}></TextField>
-                  <Button variant="contained" sx={{ fontWeight: 'bold', color:'whitesmoke' }}
+                  <Button variant="contained" sx={{ fontWeight: 'bold', color: 'whitesmoke' }}
                     onClick={register}
                   >
                     Inscription

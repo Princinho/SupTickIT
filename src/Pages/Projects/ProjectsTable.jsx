@@ -3,15 +3,15 @@ import { stringAvatar } from '../../utils'
 import PropTypes from 'prop-types'
 import { Delete, Edit, MoreVert } from '@mui/icons-material'
 import { useContext, useState } from 'react'
-import { DataContext, UserContext } from '../../Contexts'
+import { UserContext } from '../../Contexts'
 
 
-export const ProjectsTable = ({ projects, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
+export const ProjectsTable = ({ projects, users,showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
     function handleClose() {
         setAnchorEl(null)
     }
 
-    const { sampleData } = useContext(DataContext)
+
     const [anchorEl, setAnchorEl] = useState(null)
     const [focusedEntry, setFocusedEntry] = useState(null)
     const appMoreMenuOpen = Boolean(anchorEl)
@@ -35,9 +35,9 @@ export const ProjectsTable = ({ projects, showEditDialog, showDeleteDialog, show
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {sampleData.projects?.length > 0 ?
+                        {projects?.length > 0 ?
                             projects.map((project) => {
-                                const creator = sampleData.users.find(u => u.id == project.createdBy)
+                                const creator = users?.find(u => u.id == project.createdBy)
                                 return (
                                     <TableRow
                                         key={'appli' + project.id}
@@ -73,7 +73,7 @@ export const ProjectsTable = ({ projects, showEditDialog, showDeleteDialog, show
 
                                                 <Avatar {...stringAvatar(creator ? creator.firstName + " " + creator.lastName : "??")} />
 
-                                                <Typography variant='subtitle2'> {sampleData.users.find(u => u.id == project.createdBy)?.firstName}</Typography>
+                                                <Typography variant='subtitle2'> {users?.find(u => u.id == project.createdBy)?.firstName}</Typography>
                                             </Stack>
 
                                         </TableCell>
@@ -186,5 +186,6 @@ ProjectsTable.propTypes = {
     showEditDialog: PropTypes.func.isRequired,
     options: PropTypes.object.isRequired,
     showDetailsDialog: PropTypes.func.isRequired,
-    showDeleteDialog: PropTypes.func.isRequired
+    showDeleteDialog: PropTypes.func.isRequired,
+    users: PropTypes.array
 }

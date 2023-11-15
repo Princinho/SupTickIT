@@ -1,16 +1,14 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material"
 import PropTypes from 'prop-types'
-import { useContext, useState } from "react"
-import { DataContext } from "../../Contexts"
-export const CreateDialog = ({ open, handleClose }) => {
+import { useState } from "react"
+export const CreateDialog = ({ open, handleClose, projects }) => {
     //TODO: Faire bosser la pagination
     const [formData, setFormData] = useState({ name: '', description: '', projectId: '' })
-    const { sampleData } = useContext(DataContext)
 
     function reset() {
         setFormData({ name: '', description: '', projectId: '' })
     }
-    const { projects } = sampleData
+
     const [titleError, setTitleError] = useState(false)
     function handleProjectChange(event) {
         setFormData(prev => ({ ...prev, projectId: event.target.value }))
@@ -29,7 +27,7 @@ export const CreateDialog = ({ open, handleClose }) => {
                             label="Age"
                             onChange={handleProjectChange}
                         >
-                            {projects.map(
+                            {projects?.map(
                                 project => <MenuItem key={`projet-${project.id}`} value={project.id}>{project.title}</MenuItem>
                             )}
 
@@ -79,5 +77,6 @@ export const CreateDialog = ({ open, handleClose }) => {
 }
 CreateDialog.propTypes = {
     open: PropTypes.bool.isRequired,
-    handleClose: PropTypes.func.isRequired
+    handleClose: PropTypes.func.isRequired,
+    projects: PropTypes.array
 }

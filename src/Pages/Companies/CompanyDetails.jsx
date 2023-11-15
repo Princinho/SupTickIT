@@ -1,40 +1,47 @@
-import { Paper, Typography, Stack, Grid, IconButton, MenuItem, ListItemIcon, Menu } from "@mui/material"
+import { Paper, Typography, Stack, Grid, IconButton, MenuItem, ListItemIcon, Menu, Box } from "@mui/material"
 import { useNavigate, useParams } from 'react-router-dom'
 import DataTable from "react-data-table-component";
 import { Delete, MoreVert } from "@mui/icons-material";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { AddButton } from "../../Components/AddButton";
 import { RemoveProject } from "./RemoveProject";
 import { SimpleButton } from "../../Components/SimpleButton";
-import { DataContext } from "../../Contexts";
 import { AddCompanyToProjectDialog } from "./AddCompanyToProjectDialog";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { editCompany, getAllCompanies, getAllProjects } from "../../Api";
 export const CompanyDetails = () => {
     const [focusedProject, setFocusedProject] = useState(null)
-    const { sampleData, setSampleData } = useContext(DataContext)
 
     const [anchorEl, setAnchorEl] = useState(null)
     const [isRemoveProjectMenuOpen, setIsRemoveProjectMenuOpen] = useState(false)
     const [isAddProjectDialogOpen, setIsAddProjectDialogOpen] = useState(false)
     // console.log(isBigScreen)
     const { id } = useParams()
-    const company = sampleData.companies.find(app => app.id == id);
-    const companyProjects = company.projects?.map(projId => sampleData.projects.find(p => p.id == projId))
+    const BASE_QUERY_KEY = 'companies'
+    const queryClient = useQueryClient()
+    const { data: companies } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCompanies })
+    const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
+    const company = companies?.find(app => app?.id == id);
+    // const companyProjects = 
     const navigate = useNavigate()
     function handleMenuClose() {
         setAnchorEl(null)
     }
+    const editMutation = useMutation({
+        mutationFn: editCompany,
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+    })
     function closeRemoveDialog(project) {
         // console.log(project)
         if (project) {
             // TODO: Code pour retirer le projet a l'entreprise
-            let newSampleData = {
-                ...sampleData, companies: [...sampleData.companies.map(
-                    comp => comp.id == company.id ?
-                        { ...comp, projects: [...comp.projects.filter(projId => projId != project.id)] } : comp
-                )]
-            }
-            setSampleData(newSampleData)
-            console.log(newSampleData)
+
+
+            let editedCompany = companies.find(c => c.id == id)
+            editMutation.mutate({
+                ...editedCompany,
+                projects: [...editedCompany.projects.filter(projId => projId != project.id)]
+            })
         }
         setFocusedProject(null)
         setIsRemoveProjectMenuOpen(false)
@@ -43,15 +50,12 @@ export const CompanyDetails = () => {
         console.log(company)
         console.log(projectId)
         if (company && projectId) {
-            // TODO: Code pour retirer le projet a l'entreprise
-            let newSampleData = {
-                ...sampleData, companies: [...sampleData.companies.map(
-                    comp => comp.id == company.id ?
-                        { ...comp, projects: [...comp.projects, projectId] } : comp
-                )]
-            }
-            setSampleData(newSampleData)
-            console.log(newSampleData)
+
+            let editedCompany = companies.find(c => c?.id == id)
+            editMutation.mutate({
+                ...editedCompany,
+                projects: [...editedCompany.projects, projectId]
+            })
         }
         setIsAddProjectDialogOpen(false)
     }
@@ -81,6 +85,7 @@ export const CompanyDetails = () => {
             maxWidth: '64px'
         },
     ]
+    if (!company) return <Box sx={{ minHeight: '200px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>Nothing</Box>
     return (
         <>
             <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
@@ -108,7 +113,9 @@ export const CompanyDetails = () => {
                             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Projets en cours</Typography>
                             <AddButton onClick={() => setIsAddProjectDialogOpen(true)} />
                         </Stack>
-                        <DataTable columns={projectColumns} data={companyProjects} responsive={false} />
+                        <DataTable columns={projectColumns}
+                            data={company.projects?.map(projId => projects?.find(p => p?.id == projId)) || []}
+                            responsive={false} />
                     </Paper>
                 </Grid>
             </Grid>
@@ -163,10 +170,11 @@ export const CompanyDetails = () => {
             {focusedProject && <RemoveProject project={focusedProject}
                 handleClose={closeRemoveDialog}
                 open={isRemoveProjectMenuOpen} />}
-            <AddCompanyToProjectDialog
+            {company && <AddCompanyToProjectDialog
+                projects={projects}
                 entry={company}
                 handleClose={addProject}
-                open={isAddProjectDialogOpen} />
+                open={isAddProjectDialogOpen} />}
         </>
 
     )

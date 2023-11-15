@@ -1,10 +1,8 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material"
 import PropTypes from 'prop-types'
-import { useContext, useState } from "react"
-import { DataContext } from "../../Contexts"
-export const CreateDialog = ({ open, handleClose }) => {
+import { useState } from "react"
+export const CreateDialog = ({ open, handleClose, companies }) => {
     //TODO: Faire bosser la pagination
-    const { sampleData } = useContext(DataContext)
     const [formData, setFormData] = useState({ firstName: "", lastName: "", companyId: '', username: '' })
     const [nameError, setNameError] = useState(false)
     return (
@@ -54,7 +52,7 @@ export const CreateDialog = ({ open, handleClose }) => {
                             label="Entreprise"
                             onChange={event => setFormData(prev => ({ ...prev, companyId: event.target.value }))}
                         >
-                            {sampleData.companies.map(
+                            {companies?.map(
                                 company => <MenuItem key={`projet-${company.id}`} value={company.id}>{company.name}</MenuItem>
                             )}
 
@@ -73,7 +71,7 @@ export const CreateDialog = ({ open, handleClose }) => {
                         } else {
                             setNameError(false)
                             handleClose(formData)
-                            setFormData({firstName:'',lastName:'',username:'',companyId:''})
+                            setFormData({ firstName: '', lastName: '', username: '', companyId: '' })
                         }
                     }}>Enregistrer</Button>
                 </DialogActions>
@@ -83,5 +81,6 @@ export const CreateDialog = ({ open, handleClose }) => {
 }
 CreateDialog.propTypes = {
     open: PropTypes.bool.isRequired,
-    handleClose: PropTypes.func.isRequired
+    handleClose: PropTypes.func.isRequired,
+    companies: PropTypes.array
 }

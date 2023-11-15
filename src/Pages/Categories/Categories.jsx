@@ -25,8 +25,6 @@ export const Categories = () => {
     const { data: categories } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCategories })
     const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
     const queryClient = useQueryClient()
-    // const [categories, setCategories] = useState(sampleData.categories ? [...sampleData.categories] : [])
-    // const { user } = useContext(UserContext)
     const [tableOptions, setTableOptions] = useState({
         rowsPerPage: 5, page: 0, count: categories?.length, handlePageChange: setCurrentPage,
         handleRowsPerPageChange: changeRowsPerPage
@@ -185,14 +183,16 @@ export const Categories = () => {
                     showEditDialog={showEditDialog}
                     showDeleteDialog={showDeleteDialog} />
             </Box>
-            <CreateDialog open={isCreateDialogOpen} handleClose={(cat) => {
-                if (cat) {
-                    createMutation.mutate(cat)
-                }
-                setIsCreateDialogOpen(false)
-            }} />
+            <CreateDialog open={isCreateDialogOpen} projects={projects}
+                handleClose={(cat) => {
+                    if (cat) {
+                        createMutation.mutate(cat)
+                    }
+                    setIsCreateDialogOpen(false)
+                }} />
             {
-                categoryToEdit && <EditDialog open={isEditDialogOpen} category={categoryToEdit}
+                categoryToEdit && <EditDialog open={isEditDialogOpen} projects={projects}
+                    category={categoryToEdit}
                     handleClose={(cat) => {
                         if (cat) { editMutation.mutate(cat) }
                         setIsEditDialogOpen(false)
@@ -209,7 +209,8 @@ export const Categories = () => {
                 />
             }
             {
-                categoryToDelete && <DeleteDialog open={isDeleteDialogOpen} category={categoryToDelete}
+                categoryToDelete && <DeleteDialog open={isDeleteDialogOpen} projects={projects}
+                    category={categoryToDelete}
                     handleClose={(cat) => {
                         if (cat) { deleteMutation.mutate(cat) }
                         setIsDeleteDialogOpen(false)

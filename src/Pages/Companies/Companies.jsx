@@ -13,7 +13,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 export const Companies = () => {
   // TODO: Add company creation date and company subscription date.
 
-  // const { sampleData, setSampleData } = useContext(DataContext)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
