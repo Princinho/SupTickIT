@@ -70,7 +70,7 @@ function deleteEntry(data, type) {
     saveDataToLocalStorage({ ...storedData, [type]: updatedEntriesArray })
 }
 function getAllCompanies() {
-    return getAllEntries('companies')||[]
+    return getAllEntries('companies') || []
 }
 function createCompany(data) {
     create(data, 'companies')
@@ -82,6 +82,37 @@ function editCompany(company) {
 
 function deleteCompany(data) {
     deleteEntry(data, 'companies')
+}
+function getAllTickets() {
+    return getAllEntries('tickets') || []
+    // return [{
+    //     id: 1, name: "Need support for latest react version", description: "Having issues upgrading to react 18",
+    //     dateCreated: '2023/11/15',
+    //     projectId: 5,
+    //     userId: 2,
+    //     agentUserId: '',
+    //     status: '1',
+    //     priority: 1
+    // }]
+}
+function getCompanyProjects(companyId) {
+    if (!companyId) return [
+    ]
+    let projects = getAllProjects()
+    let company = getAllCompanies().find(c => c.id == companyId)
+    let companyProjects = projects.filter(project => company.projects.includes(project.id))
+    return companyProjects
+}
+function createTicket(data) {
+    create(data, 'tickets')
+}
+
+function editTicket(ticket) {
+    editEntry(ticket, 'tickets')
+}
+
+function deleteTicket(data) {
+    deleteEntry(data, 'tickets')
 }
 function getAllCategories() {
     return getAllEntries('categories')
@@ -142,9 +173,11 @@ function create(newEntry, type) {
 export {
     getOrInitData,
     getDataFromLocalStorage,
-    getAllProjects, createProject, editProject, deleteProject, assignProject,
+    getAllProjects, createProject, editProject, deleteProject, assignProject, getCompanyProjects,
     getAllCompanies, createCompany, editCompany, deleteCompany,
+    getAllTickets, createTicket, editTicket, deleteTicket,
     getAllCategories, createCategory, editCategory, deleteCategory,
     getAllUsers, createUser, editUser, deleteUser,
     getAllRoleAssignments, getAllRoles, addRoleToUser, removeRoleFromUser
 }
+

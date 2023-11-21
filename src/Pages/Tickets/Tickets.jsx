@@ -1,7 +1,9 @@
-
-
+import { useContext } from 'react'
+import { UserContext } from '../../Contexts'
+import { CustomerTickets } from './CustomerTickets'
 export const Tickets = () => {
-  return (
-    <div>Tickets</div>
-  )
+    const { user } = useContext(UserContext)
+    return (
+        <CustomerTickets />
+    )
 }

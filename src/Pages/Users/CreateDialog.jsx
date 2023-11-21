@@ -70,7 +70,7 @@ export const CreateDialog = ({ open, handleClose, companies }) => {
                             return
                         } else {
                             setNameError(false)
-                            handleClose(formData)
+                            handleClose({...formData,password:'Admin#12345'})
                             setFormData({ firstName: '', lastName: '', username: '', companyId: '' })
                         }
                     }}>Enregistrer</Button>

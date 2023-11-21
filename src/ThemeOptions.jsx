@@ -1,6 +1,6 @@
 
 
-import {frFR} from '@mui/material/locale'
+import { frFR } from '@mui/material/locale'
 export const themeOptions = {
 
     palette: {
@@ -19,7 +19,8 @@ export const themeOptions = {
         },
         background: {
             default: '#f5f5f5',
-        },
+        }
+        
     },
     typography: {
         fontFamily: '"Urbanist", "Roboto", "Arial", sans-serif',

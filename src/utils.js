@@ -1,4 +1,13 @@
 const DATA_LOCALSTORAGE_KEY = 'com.cognitive-factory.SupTickIt'
+const TICKET_STATUS = {
+    PENDING: 1,
+    PROCESSING: 2,
+    AWAITING_RESPONSE: 3,
+    PROCESSED: 4,
+    CLOSED: 5,
+    REJECTED: 6
+
+}
 function stringToColor(string) {
     let hash = 0;
     let i;
@@ -83,4 +92,4 @@ function sortAndFilterData(array, searchTerm, sortOption) {
     // console.log(result)
     return result
 }
-export { stringAvatar, stringToColor, getSampleDataFromLocalStorage, saveDataToLocalStorage, getRandomNumber, addOnemonth, sortAndFilterData }
+export { stringAvatar, stringToColor, getSampleDataFromLocalStorage, saveDataToLocalStorage, getRandomNumber, addOnemonth, sortAndFilterData, TICKET_STATUS }
