@@ -6,10 +6,12 @@ import { useState } from 'react'
 // import { EditDialog } from './EditDialog'
 // import { DeleteDialog } from './DeleteDialog'
 // import { DetailsDialog } from './DetailsDialog'
-import { createCompany, createTicket, deleteCompany, deleteTicket, editCompany, editTicket, getAllTickets } from '../../Api'
+import { createCompany, createTicket, deleteCompany, deleteTicket, editCompany, editTicket, getAllProjects, getAllTickets } from '../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { sortAndFilterData } from '../Companies/utils'
 import { CreateDialog } from './CreateDialog'
+import { EditDialog } from './EditDialog'
+import { DeleteDialog } from './DeleteDialog'
 
 export const CustomerTickets = () => {
   // TODO: Add company creation date and company subscription date.
@@ -26,12 +28,13 @@ export const CustomerTickets = () => {
   const BASE_QUERY_KEY = 'tickets'
   // const [companies, setCompanies] = useState([])
   const queryClient = useQueryClient()
-  const { data: companies } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllTickets })
-
+  const { data: tickets } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllTickets })
+  const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
+  console.log(projects)
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
-    count: companies?.length,
+    count: tickets?.length,
     handlePageChange: setCurrentPage,
     handleRowsPerPageChange: changeRowsPerPage
   })
@@ -173,7 +176,8 @@ export const CustomerTickets = () => {
       <Box sx={{ marginRight: '1em', mt: 2 }}>
         <TicketsTable
           options={tableOptions}
-          companies={sortAndFilterData(companies, searchTerm, sortOption)}
+          projects={projects}
+          tickets={sortAndFilterData(tickets, searchTerm, sortOption)}
           showDetailsDialog={showDetailsDialog}
           showEditDialog={showEditDialog}
           showDeleteDialog={showDeleteDialog} />
@@ -184,7 +188,7 @@ export const CustomerTickets = () => {
         }
         setIsCreateDialogOpen(false)
       }} />
-      {/* 
+
       {
         companyToEdit && <EditDialog open={isEditDialogOpen} entry={companyToEdit}
           handleClose={(company) => {
@@ -194,23 +198,23 @@ export const CustomerTickets = () => {
 
         />
       }
-      {
+      {/* {
         companyToDetail && <DetailsDialog open={isDetailsDialogOpen} entry={companyToDetail}
           handleClose={() => {
             setIsDetailsDialogOpen(false)
           }}
 
         />
-      }
+      } */}
       {
         companyToDelete && <DeleteDialog open={isDeleteDialogOpen} entry={companyToDelete}
-          handleClose={(app) => {
-            if (app) { deleteMutation.mutate(app) }
+          handleClose={(entry) => {
+            if (entry) { deleteMutation.mutate(entry) }
             setIsDeleteDialogOpen(false)
           }}
 
         />
-      } */}
+      }
 
     </Paper >
   )

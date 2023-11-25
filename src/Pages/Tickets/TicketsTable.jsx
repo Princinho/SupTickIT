@@ -1,15 +1,17 @@
 import { IconButton, ListItemIcon, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
 
 import PropTypes from 'prop-types'
-import {  Delete, Edit,  MoreVert } from '@mui/icons-material'
+import { Delete, Edit, MoreVert } from '@mui/icons-material'
 import { useState } from 'react'
 import { TicketStatus } from '../../Components/TicketStatus'
 
 
-export const TicketsTable = ({ companies, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
+export const TicketsTable = ({ tickets, projects, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
     function handleClose() {
         setAnchorEl(null)
     }
+    console.log(tickets)
+    console.log(projects)
     const [anchorEl, setAnchorEl] = useState(null)
     const [focusedEntry, setFocusedEntry] = useState(null)
     const appMoreMenuOpen = Boolean(anchorEl)
@@ -24,15 +26,16 @@ export const TicketsTable = ({ companies, showEditDialog, showDeleteDialog, show
                         <TableRow>
                             <TableCell>Id</TableCell>
                             <TableCell align="left">Aperçu</TableCell>
+                            <TableCell align="left">Projet</TableCell>
                             <TableCell align="left">Statut</TableCell>
                             <TableCell align="left">Options</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {companies.length > 0 ?
+                        {tickets.length > 0 ?
                             (rowsPerPage > 0
-                                ? companies.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                : companies
+                                ? tickets.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                : tickets
                             ).map((ticket) => (
                                 <TableRow
                                     key={'appli' + ticket.id}
@@ -64,7 +67,10 @@ export const TicketsTable = ({ companies, showEditDialog, showDeleteDialog, show
 
                                     </TableCell>
                                     <TableCell>
-                                        <TicketStatus status={ticket.status}/>
+                                        {projects?.find(p => p.id == ticket.projectId)?.title}
+                                    </TableCell>
+                                    <TableCell>
+                                        <TicketStatus status={ticket.status} />
                                     </TableCell>
                                     <TableCell>
                                         <IconButton onClick={event => {
@@ -73,7 +79,7 @@ export const TicketsTable = ({ companies, showEditDialog, showDeleteDialog, show
                                         }}
 
                                         ><MoreVert /></IconButton>
-                                        
+
 
                                     </TableCell>
                                 </TableRow>
@@ -90,7 +96,7 @@ export const TicketsTable = ({ companies, showEditDialog, showDeleteDialog, show
                                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                                 labelRowsPerPage="Eléments par page"
                                 colSpan={5}
-                                count={companies.length}
+                                count={tickets.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 SelectProps={{
@@ -167,9 +173,11 @@ export const TicketsTable = ({ companies, showEditDialog, showDeleteDialog, show
     )
 }
 TicketsTable.propTypes = {
-    companies: PropTypes.array.isRequired,
+    tickets: PropTypes.array.isRequired,
+    projects: PropTypes.array.isRequired,
     showEditDialog: PropTypes.func.isRequired,
     options: PropTypes.object.isRequired,
     showDetailsDialog: PropTypes.func.isRequired,
-    showDeleteDialog: PropTypes.func.isRequired
+    showDeleteDialog: PropTypes.func.isRequired,
+
 }

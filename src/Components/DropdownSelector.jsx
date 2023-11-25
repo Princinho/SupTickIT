@@ -1,8 +1,8 @@
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material'
 import { useState } from 'react'
 import PropTypes from 'prop-types'
-export const DropdownSelector = ({ options, handleChange, label, keyField = 'id', labelField = 'name' }) => {
-    const [selectedValue, setSelectedValue] = useState('')
+export const DropdownSelector = ({ options, handleChange, label, keyField = 'id', labelField = 'name', defaultValue }) => {
+    const [selectedValue, setSelectedValue] = useState(defaultValue)
     return (
         <FormControl fullWidth sx={{ marginTop: '1em' }}>
             <InputLabel id="company-select-label">{label}</InputLabel>
@@ -29,5 +29,6 @@ DropdownSelector.propTypes = {
     handleChange: PropTypes.func,
     label: PropTypes.string.isRequired,
     keyField: PropTypes.string,
-    labelField: PropTypes.string
+    labelField: PropTypes.string,
+    defaultValue: PropTypes.string
 }
