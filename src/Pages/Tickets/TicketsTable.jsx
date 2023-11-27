@@ -4,14 +4,15 @@ import PropTypes from 'prop-types'
 import { Delete, Edit, MoreVert } from '@mui/icons-material'
 import { useState } from 'react'
 import { TicketStatus } from '../../Components/TicketStatus'
+import { TICKET_STATUS } from '../../utils'
 
 
 export const TicketsTable = ({ tickets, projects, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
     function handleClose() {
         setAnchorEl(null)
     }
-    console.log(tickets)
     console.log(projects)
+    console.log(tickets)
     const [anchorEl, setAnchorEl] = useState(null)
     const [focusedEntry, setFocusedEntry] = useState(null)
     const appMoreMenuOpen = Boolean(anchorEl)
@@ -149,25 +150,29 @@ export const TicketsTable = ({ tickets, projects, showEditDialog, showDeleteDial
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
 
-                <MenuItem onClick={() => {
-                    handleClose()
-                    showEditDialog(focusedEntry)
-                }}>
+                {focusedEntry?.status == TICKET_STATUS.PENDING &&
+                    <MenuItem onClick={() => {
+                        handleClose()
+                        showEditDialog(focusedEntry)
+                    }}>
 
-                    <ListItemIcon>
-                        <Edit color='warning' fontSize='small' />
-                    </ListItemIcon>
-                    Modifier
-                </MenuItem>
-                <MenuItem onClick={() => {
-                    handleClose()
-                    showDeleteDialog(focusedEntry)
-                }}>
-                    <ListItemIcon>
-                        <Delete color='error' fontSize="small" />
-                    </ListItemIcon>
-                    Supprimer
-                </MenuItem>
+                        <ListItemIcon>
+                            <Edit color='warning' fontSize='small' />
+                        </ListItemIcon>
+                        Modifier
+                    </MenuItem>
+                }
+                {focusedEntry?.status == TICKET_STATUS.PENDING &&
+                    <MenuItem onClick={() => {
+                        handleClose()
+                        showDeleteDialog(focusedEntry)
+                    }}>
+                        <ListItemIcon>
+                            <Delete color='error' fontSize="small" />
+                        </ListItemIcon>
+                        Supprimer
+                    </MenuItem>
+                }
             </Menu >
         </>
     )

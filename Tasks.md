@@ -15,12 +15,12 @@ Afficher les entreprises concernees par le projet dans le listing des projets.
 Utiliser des cartes aulieu du tableau dans le listing des projets.
 Revoir les couleurs des boutons et de la sidebar
 Afficher le nom a cote de l'avatar dans la les listing
+Remplacer les app
 
 ===========
  LEFT
 ===========
 TODO:
-Remplacer les app
 Repercuter la selection des entreprises lors de la creation du modal sur les donnees
 Faire bosser la pagination sur la page des projets
 Lors de la creation d'un projet, permettre de choisir les entreprises dans lesquelles il est deja deploye

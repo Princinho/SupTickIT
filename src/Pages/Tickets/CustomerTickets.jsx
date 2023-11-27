@@ -2,28 +2,22 @@ import { AddCircleOutline, ArrowBack, ArrowForward, HighlightOff, Search } from 
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
 import { TicketsTable } from './TicketsTable'
 import { useState } from 'react'
-// import { CreateDialog } from './CreateDialog'
-// import { EditDialog } from './EditDialog'
-// import { DeleteDialog } from './DeleteDialog'
-// import { DetailsDialog } from './DetailsDialog'
-import { createCompany, createTicket, deleteCompany, deleteTicket, editCompany, editTicket, getAllProjects, getAllTickets } from '../../Api'
+import { createTicket, deleteTicket, editTicket, getAllProjects, getAllTickets } from '../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { sortAndFilterData } from '../Companies/utils'
 import { CreateDialog } from './CreateDialog'
 import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
+import { DetailsDialog } from './DetailsDialog'
 
 export const CustomerTickets = () => {
-  // TODO: Add company creation date and company subscription date.
-
+  
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [companyToEdit, setCompanyToEdit] = useState(null)
-  const [companyToDetail, setCompanyToDetail] = useState(null)
-  const [companyToDelete, setCompanyToDelete] = useState(null)
+  const [focusedEntry, setFocusedEntry] = useState(null)
   const [sortOption, setSortOption] = useState({ option: 'name' })
   const BASE_QUERY_KEY = 'tickets'
   // const [companies, setCompanies] = useState([])
@@ -44,15 +38,15 @@ export const CustomerTickets = () => {
   }
   function showEditDialog(company) {
     setIsEditDialogOpen(true)
-    setCompanyToEdit(company)
+    setFocusedEntry(company)
   }
   function showDeleteDialog(company) {
     setIsDeleteDialogOpen(true)
-    setCompanyToDelete(company)
+    setFocusedEntry(company)
   }
   function showDetailsDialog(company) {
     setIsDetailsDialogOpen(true)
-    setCompanyToDetail(company)
+    setFocusedEntry(company)
   }
   function setRowsPerPage(rowsPerPage) {
     setTableOptions(prev => ({ ...prev, rowsPerPage }))
@@ -190,7 +184,7 @@ export const CustomerTickets = () => {
       }} />
 
       {
-        companyToEdit && <EditDialog open={isEditDialogOpen} entry={companyToEdit}
+        focusedEntry && <EditDialog open={isEditDialogOpen} entry={focusedEntry}
           handleClose={(company) => {
             if (company) { editMutation.mutate(company) }
             setIsEditDialogOpen(false)
@@ -198,16 +192,16 @@ export const CustomerTickets = () => {
 
         />
       }
-      {/* {
-        companyToDetail && <DetailsDialog open={isDetailsDialogOpen} entry={companyToDetail}
+      {
+        focusedEntry && <DetailsDialog open={isDetailsDialogOpen} entry={focusedEntry}
           handleClose={() => {
             setIsDetailsDialogOpen(false)
           }}
 
         />
-      } */}
+      }
       {
-        companyToDelete && <DeleteDialog open={isDeleteDialogOpen} entry={companyToDelete}
+        focusedEntry && <DeleteDialog open={isDeleteDialogOpen} entry={focusedEntry}
           handleClose={(entry) => {
             if (entry) { deleteMutation.mutate(entry) }
             setIsDeleteDialogOpen(false)
