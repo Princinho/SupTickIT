@@ -85,15 +85,16 @@ function deleteCompany(data) {
 }
 function getAllTickets() {
     return getAllEntries('tickets') || []
-    // return [{
-    //     id: 1, name: "Need support for latest react version", description: "Having issues upgrading to react 18",
-    //     dateCreated: '2023/11/15',
-    //     projectId: 5,
-    //     userId: 2,
-    //     agentUserId: '',
-    //     status: '1',
-    //     priority: 1
-    // }]
+
+}
+function getCustomerTickets(customerId) {
+    // console.log(customerId)
+    if (!customerId) return []
+    let allTickets = getAllTickets()
+    // console.log(allTickets)
+    let customerTickets = allTickets.filter(ticket => ticket.createdBy == customerId)
+    // console.log(customerTickets)
+    return customerTickets
 }
 function getCompanyProjects(companyId) {
     if (!companyId) return [
@@ -108,6 +109,7 @@ function createTicket(data) {
 }
 
 function editTicket(ticket) {
+    console.log(ticket)
     editEntry(ticket, 'tickets')
 }
 
@@ -129,6 +131,10 @@ function editCategory(data) {
 function deleteCategory(data) {
     deleteEntry(data, 'categories')
 }
+function getProjectCategories(projectId) {
+    let allCategories = getAllCategories()
+    return allCategories.filter(cat => cat.projectId == projectId)
+}
 function getAllUsers() {
     return getAllEntries('users')
 }
@@ -143,6 +149,15 @@ function editUser(data) {
 
 function deleteUser(data) {
     deleteEntry(data, 'users')
+}
+function getAvailableAgents(companyId) {
+    let allUsers = getAllUsers()
+    let companyUsers = allUsers.filter(user => user.companyId == companyId)
+    let companyAgents = companyUsers.filter(user => isUserInRole(1, user.id))
+    return companyAgents
+}
+function isUserInRole(roleId, userId) {
+    return true
 }
 function getAllRoleAssignments() {
     return getAllEntries('roleAssignments')
@@ -175,9 +190,9 @@ export {
     getDataFromLocalStorage,
     getAllProjects, createProject, editProject, deleteProject, assignProject, getCompanyProjects,
     getAllCompanies, createCompany, editCompany, deleteCompany,
-    getAllTickets, createTicket, editTicket, deleteTicket,
-    getAllCategories, createCategory, editCategory, deleteCategory,
+    getAllTickets, createTicket, editTicket, deleteTicket, getCustomerTickets,
+    getAllCategories, createCategory, editCategory, deleteCategory, getProjectCategories,
     getAllUsers, createUser, editUser, deleteUser,
-    getAllRoleAssignments, getAllRoles, addRoleToUser, removeRoleFromUser
+    getAllRoleAssignments, getAllRoles, addRoleToUser, removeRoleFromUser, getAvailableAgents
 }
 

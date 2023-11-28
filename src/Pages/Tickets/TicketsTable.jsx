@@ -7,12 +7,12 @@ import { TicketStatus } from '../../Components/TicketStatus'
 import { TICKET_STATUS } from '../../utils'
 
 
-export const TicketsTable = ({ tickets, projects, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
+export const TicketsTable = ({ tickets, projects, categories, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
     function handleClose() {
         setAnchorEl(null)
     }
-    console.log(projects)
-    console.log(tickets)
+    // console.log(projects)
+    // console.log(tickets)
     const [anchorEl, setAnchorEl] = useState(null)
     const [focusedEntry, setFocusedEntry] = useState(null)
     const appMoreMenuOpen = Boolean(anchorEl)
@@ -28,6 +28,7 @@ export const TicketsTable = ({ tickets, projects, showEditDialog, showDeleteDial
                             <TableCell>Id</TableCell>
                             <TableCell align="left">Aperçu</TableCell>
                             <TableCell align="left">Projet</TableCell>
+                            <TableCell align="left">Catégorie</TableCell>
                             <TableCell align="left">Statut</TableCell>
                             <TableCell align="left">Options</TableCell>
                         </TableRow>
@@ -69,6 +70,9 @@ export const TicketsTable = ({ tickets, projects, showEditDialog, showDeleteDial
                                     </TableCell>
                                     <TableCell>
                                         {projects?.find(p => p.id == ticket.projectId)?.title}
+                                    </TableCell>
+                                    <TableCell>
+                                        {categories?.find(cat => cat.id == ticket.categoryId)?.name}
                                     </TableCell>
                                     <TableCell>
                                         <TicketStatus status={ticket.status} />
@@ -180,6 +184,7 @@ export const TicketsTable = ({ tickets, projects, showEditDialog, showDeleteDial
 TicketsTable.propTypes = {
     tickets: PropTypes.array.isRequired,
     projects: PropTypes.array.isRequired,
+    categories: PropTypes.array.isRequired,
     showEditDialog: PropTypes.func.isRequired,
     options: PropTypes.object.isRequired,
     showDetailsDialog: PropTypes.func.isRequired,

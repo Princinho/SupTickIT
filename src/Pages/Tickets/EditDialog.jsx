@@ -2,7 +2,7 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextFie
 import PropTypes from 'prop-types'
 import { useContext, useState } from "react"
 import { DropdownSelector } from "../../Components/DropdownSelector"
-import { getCompanyProjects } from "../../Api"
+import { getCompanyProjects, getProjectCategories } from "../../Api"
 import { UserContext } from "../../Contexts"
 export const EditDialog = ({ open, handleClose, entry }) => {
     const { user } = useContext(UserContext)
@@ -23,6 +23,12 @@ export const EditDialog = ({ open, handleClose, entry }) => {
                         options={getCompanyProjects(user?.companyId)}
                         defaultValue={entry.projectId}
                         handleChange={value => setFormData(prev => ({ ...prev, projectId: value }))}
+                    />
+                    <DropdownSelector label="Catégorie" labelField="name"
+                        disabled={!formData.projectId}
+                        options={getProjectCategories(formData?.projectId)}
+                        defaultValue={formData?.categoryId}
+                        handleChange={value => setFormData(prev => ({ ...prev, categoryId: value }))}
                     />
                     <TextField
                         autoFocus
@@ -56,7 +62,7 @@ export const EditDialog = ({ open, handleClose, entry }) => {
                         onClick={() => {
                             if (!formData.name) {
                                 setNameError(true)
-                                return
+                                
                             } else {
                                 setNameError(false)
                                 handleClose(formData)

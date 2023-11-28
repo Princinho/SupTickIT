@@ -1,22 +1,24 @@
 import { AddCircleOutline, ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
-import { TicketsTable } from './TicketsTable'
-import { useContext, useState } from 'react'
-import { createTicket, deleteTicket, editTicket, getAllCategories, getAllProjects, getCustomerTickets } from '../../Api'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { sortAndFilterData } from '../Companies/utils'
-import { CreateDialog } from './CreateDialog'
-import { EditDialog } from './EditDialog'
-import { DeleteDialog } from './DeleteDialog'
-import { DetailsDialog } from './DetailsDialog'
-import { UserContext } from '../../Contexts'
 
-export const CustomerTickets = () => {
+import { useContext, useState } from 'react'
+import { createTicket, deleteTicket, editTicket, getAllCategories, getAllProjects, getAllUsers, getCustomerTickets } from '../../../Api'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { sortAndFilterData } from '../../Companies/utils'
+// import { CreateDialog } from './CreateDialog'
+// import { EditDialog } from './EditDialog'
+// import { DeleteDialog } from './DeleteDialog'
+// import { DetailsDialog } from './DetailsDialog'
+import { UserContext } from '../../../Contexts'
+import { ModeratorTicketsTable } from './ModeratorTicketsTable'
+import { ModeratorTicketDetailsDialog } from './ModeratorTicketDetailsDialog'
+
+export const ModeratorTickets = () => {
 
   const { user } = useContext(UserContext)
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  // const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState(false)
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  // const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [focusedEntry, setFocusedEntry] = useState(null)
@@ -24,11 +26,9 @@ export const CustomerTickets = () => {
   const BASE_QUERY_KEY = 'tickets'
   // const [companies, setCompanies] = useState([])
   const queryClient = useQueryClient()
-  const { data: tickets } = useQuery({ queryKey: [BASE_QUERY_KEY, user?.id], queryFn: ()=>getCustomerTickets(user?.id) })
+  const { data: tickets } = useQuery({ queryKey: [BASE_QUERY_KEY, user?.id], queryFn: () => getCustomerTickets(user?.id) })
   const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
-  const { data: categories } = useQuery({ queryKey: ['categories'], queryFn: getAllCategories })
-  console.log(tickets)
-  // console.log(user)
+  const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
@@ -40,17 +40,17 @@ export const CustomerTickets = () => {
     setRowsPerPage(rowsPerPage)
     setCurrentPage(0)
   }
-  function showEditDialog(company) {
-    setIsEditDialogOpen(true)
-    setFocusedEntry(company)
-  }
-  function showDeleteDialog(company) {
+  // function showEditDialog(entry) {
+  //   setIsEditDialogOpen(true)
+  //   setFocusedEntry(entry)
+  // }
+  function showDeleteDialog(entry) {
     setIsDeleteDialogOpen(true)
-    setFocusedEntry(company)
+    setFocusedEntry(entry)
   }
-  function showDetailsDialog(company) {
+  function showDetailsDialog(entry) {
     setIsDetailsDialogOpen(true)
-    setFocusedEntry(company)
+    setFocusedEntry(entry)
   }
   function setRowsPerPage(rowsPerPage) {
     setTableOptions(prev => ({ ...prev, rowsPerPage }))
@@ -58,22 +58,23 @@ export const CustomerTickets = () => {
   function setCurrentPage(page) {
     setTableOptions(prev => ({ ...prev, page }))
   }
-  const createMutation = useMutation({
-    mutationFn: createTicket,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
-  })
+  console.log(focusedEntry)
+  // const createMutation = useMutation({
+  //   mutationFn: createTicket,
+  //   onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+  // })
   const editMutation = useMutation({
     mutationFn: editTicket,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
-  const deleteMutation = useMutation({
-    mutationFn: deleteTicket,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
-  })
+  // const deleteMutation = useMutation({
+  //   mutationFn: deleteTicket,
+  //   onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+  // })
 
   return (
     <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
-      <Typography variant='h5' component='span' sx={{ fontWeight: 'bold' }}>Mes tickets</Typography>
+      <Typography variant='h5' component='span' sx={{ fontWeight: 'bold' }}>Tous les tickets</Typography>
       <Stack direction='row' mb={2}>
         <Typography color='text.secondary' sx={{ fontWeight: 'bold' }}>Menu /</Typography>
         <Typography color='primary.light' sx={{ fontWeight: 'bold' }}>Tickets</Typography>
@@ -82,16 +83,16 @@ export const CustomerTickets = () => {
       <Grid container spacing={2}>
         <Grid item xs={12} sm={5}>
           <Stack direction='row' alignItems='center' spacing={2}>
-            <Button variant='contained'
+            {/* <Button variant='contained'
               onClick={() => setIsCreateDialogOpen(true)}
               startIcon={<AddCircleOutline />}
               sx={{
                 color: 'white',
                 background: (theme) => theme.palette.primary.light,
                 textTransform: 'none'
-              }}>Nouveau</Button>
+              }}>Nouveau</Button> */}
 
-            <FormControl sx={{ minWidth: '40%' }} size='small'>
+            <FormControl sx={{ minWidth: { xs: '85%', sm: '60%' } }} size='small'>
               <InputLabel id="demo-simple-select-label">Trier par</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
@@ -113,7 +114,7 @@ export const CustomerTickets = () => {
           <Stack direction='row' width='100%' spacing={{ xs: 1, sm: 2 }} justifyContent={{ xs: 'flex-start', sm: 'flex-end' }}>
             <TextField
               id="companies-index-search-box" size='small'
-              sx={{ minWidth: '30%' }}
+              sx={{ minWidth: { xs: '30%', sm: '50%' } }}
               onChange={(event) => setSearchTerm(event.target.value)}
               aria-label='search'
               InputProps={{
@@ -172,16 +173,17 @@ export const CustomerTickets = () => {
         </Grid>
       </Grid>
       <Box sx={{ marginRight: '1em', mt: 2 }}>
-        <TicketsTable
+        <ModeratorTicketsTable
           options={tableOptions}
           projects={projects}
-          categories={categories}
+          users={users}
           tickets={sortAndFilterData(tickets, searchTerm, sortOption)}
           showDetailsDialog={showDetailsDialog}
-          showEditDialog={showEditDialog}
-          showDeleteDialog={showDeleteDialog} />
+        // showEditDialog={showEditDialog}
+        // showDeleteDialog={showDeleteDialog}
+        />
       </Box>
-      <CreateDialog open={isCreateDialogOpen} handleClose={(entry) => {
+      {/* <CreateDialog open={isCreateDialogOpen} handleClose={(entry) => {
         if (entry) {
           createMutation.mutate(entry)
         }
@@ -190,21 +192,14 @@ export const CustomerTickets = () => {
 
       {
         focusedEntry && <EditDialog open={isEditDialogOpen} entry={focusedEntry}
-          handleClose={(company) => {
-            if (company) { editMutation.mutate(company) }
+          handleClose={(entry) => {
+            if (entry) { editMutation.mutate(entry) }
             setIsEditDialogOpen(false)
           }}
 
         />
       }
-      {
-        focusedEntry && <DetailsDialog open={isDetailsDialogOpen} entry={focusedEntry}
-          handleClose={() => {
-            setIsDetailsDialogOpen(false)
-          }}
-
-        />
-      }
+      
       {
         focusedEntry && <DeleteDialog open={isDeleteDialogOpen} entry={focusedEntry}
           handleClose={(entry) => {
@@ -213,8 +208,19 @@ export const CustomerTickets = () => {
           }}
 
         />
-      }
+      } */}
+      {
+        focusedEntry && <ModeratorTicketDetailsDialog open={isDetailsDialogOpen} entry={focusedEntry}
+          handleClose={(ticket) => {
+            if (ticket) {
+              console.log(ticket)
+              editMutation.mutate(ticket)
+            }
+            setIsDetailsDialogOpen(false)
+          }}
 
+        />
+      }
     </Paper >
   )
 }

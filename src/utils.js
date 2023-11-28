@@ -8,6 +8,12 @@ const TICKET_STATUS = {
     REJECTED: 6
 
 }
+const TICKET_PRIORITY = {
+    NORMAL: 1,
+    HIGH: 2,
+    CRITICAL: 3,
+
+}
 function stringToColor(string) {
     let hash = 0;
     let i;
@@ -92,4 +98,17 @@ function sortAndFilterData(array, searchTerm, sortOption) {
     // console.log(result)
     return result
 }
-export { stringAvatar, stringToColor, getSampleDataFromLocalStorage, saveDataToLocalStorage, getRandomNumber, addOnemonth, sortAndFilterData, TICKET_STATUS }
+function getAvailablePriorities() {
+    return [
+        { id: 1, name: 'Normale', },
+        { id: 2, name: 'Haute', },
+        { id: 3, name: 'Critique', }
+    ]
+}
+export {
+    stringAvatar, stringToColor,
+    getSampleDataFromLocalStorage, saveDataToLocalStorage,
+    getRandomNumber, addOnemonth, sortAndFilterData,
+    getAvailablePriorities,
+    TICKET_STATUS, TICKET_PRIORITY
+}

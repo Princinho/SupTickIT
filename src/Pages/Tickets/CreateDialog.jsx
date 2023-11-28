@@ -2,14 +2,12 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextFie
 import PropTypes from 'prop-types'
 import { useContext, useState } from "react"
 import { DropdownSelector } from "../../Components/DropdownSelector"
-import { getCompanyProjects } from "../../Api"
+import { getCompanyProjects, getProjectCategories } from "../../Api"
 import { UserContext } from "../../Contexts"
 import { TICKET_STATUS } from "../../utils"
 export const CreateDialog = ({ open, handleClose }) => {
     const { user } = useContext(UserContext)
-    console.log(user)
-    //TODO: Faire bosser la pagination
-    const initData = { name: "", description: "", status: TICKET_STATUS.PENDING, createdBy:user?.id }
+    const initData = { name: "", description: "", status: TICKET_STATUS.PENDING, createdBy: user?.id }
     const [formData, setFormData] = useState(initData)
     const [nameError, setNameError] = useState(false)
     function reset() {
@@ -22,7 +20,12 @@ export const CreateDialog = ({ open, handleClose }) => {
                 <DialogContent>
                     <DropdownSelector label="Projet *" labelField="title"
                         options={getCompanyProjects(user?.companyId)}
-                        handleChange={value => setFormData(prev => ({ ...prev, projectId: value }))}
+                        handleChange={value => setFormData(prev => ({ ...prev, projectId: value, categoryId: "" }))}
+                    />
+                    <DropdownSelector label="Catégorie" labelField="name"
+                        disabled={!formData.projectId}
+                        options={getProjectCategories(formData?.projectId)}
+                        handleChange={value => setFormData(prev => ({ ...prev, categoryId: value }))}
                     />
                     <TextField
                         autoFocus
@@ -56,7 +59,6 @@ export const CreateDialog = ({ open, handleClose }) => {
                         onClick={() => {
                             if (!formData.name) {
                                 setNameError(true)
-                                return
                             } else {
                                 setNameError(false)
                                 handleClose(formData)

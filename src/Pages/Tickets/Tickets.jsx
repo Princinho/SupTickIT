@@ -1,9 +1,9 @@
-import { useContext } from 'react'
-import { UserContext } from '../../Contexts'
+
 import { CustomerTickets } from './CustomerTickets'
+import { ModeratorTickets } from './ModeratorTickets/ModeratorTickets'
 export const Tickets = () => {
-    const { user } = useContext(UserContext)
     return (
-        <CustomerTickets />
+        // <CustomerTickets />
+        <ModeratorTickets/>
     )
 }
