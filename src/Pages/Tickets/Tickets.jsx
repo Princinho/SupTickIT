@@ -1,9 +1,10 @@
 
 import { CustomerTickets } from './CustomerTickets'
-import { ModeratorTickets } from './ModeratorTickets/ModeratorTickets'
+import { TicketsDashboard } from './AgentTickets/TicketsDashboard'
 export const Tickets = () => {
     return (
-        // <CustomerTickets />
-        <ModeratorTickets/>
+        <TicketsDashboard />
+
+
     )
 }

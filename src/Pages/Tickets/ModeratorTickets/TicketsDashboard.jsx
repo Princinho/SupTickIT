@@ -1,26 +1,21 @@
-import { AddCircleOutline, ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-material'
+import { ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
 
 import { useContext, useState } from 'react'
-import { createTicket, deleteTicket, editTicket, getAllCategories, getAllProjects, getAllUsers, getCustomerTickets } from '../../../Api'
+import {  editTicket,  getAllProjects, getAllUsers, getCustomerTickets } from '../../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { sortAndFilterData } from '../../Companies/utils'
-// import { CreateDialog } from './CreateDialog'
-// import { EditDialog } from './EditDialog'
-// import { DeleteDialog } from './DeleteDialog'
-// import { DetailsDialog } from './DetailsDialog'
 import { UserContext } from '../../../Contexts'
-import { ModeratorTicketsTable } from './ModeratorTicketsTable'
-import { ModeratorTicketDetailsDialog } from './ModeratorTicketDetailsDialog'
+import { TicketsTable } from './TicketsTable'
+import { TicketDetailsDialog } from './TicketDetailsDialog'
 
-export const ModeratorTickets = () => {
+export const TicketsDashboard = () => {
 
   const { user } = useContext(UserContext)
   // const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState(false)
   // const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [focusedEntry, setFocusedEntry] = useState(null)
   const [sortOption, setSortOption] = useState({ option: 'name' })
   const BASE_QUERY_KEY = 'tickets'
@@ -40,14 +35,6 @@ export const ModeratorTickets = () => {
     setRowsPerPage(rowsPerPage)
     setCurrentPage(0)
   }
-  // function showEditDialog(entry) {
-  //   setIsEditDialogOpen(true)
-  //   setFocusedEntry(entry)
-  // }
-  function showDeleteDialog(entry) {
-    setIsDeleteDialogOpen(true)
-    setFocusedEntry(entry)
-  }
   function showDetailsDialog(entry) {
     setIsDetailsDialogOpen(true)
     setFocusedEntry(entry)
@@ -58,19 +45,10 @@ export const ModeratorTickets = () => {
   function setCurrentPage(page) {
     setTableOptions(prev => ({ ...prev, page }))
   }
-  console.log(focusedEntry)
-  // const createMutation = useMutation({
-  //   mutationFn: createTicket,
-  //   onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
-  // })
   const editMutation = useMutation({
     mutationFn: editTicket,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
-  // const deleteMutation = useMutation({
-  //   mutationFn: deleteTicket,
-  //   onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
-  // })
 
   return (
     <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
@@ -173,44 +151,17 @@ export const ModeratorTickets = () => {
         </Grid>
       </Grid>
       <Box sx={{ marginRight: '1em', mt: 2 }}>
-        <ModeratorTicketsTable
+        <TicketsTable
           options={tableOptions}
           projects={projects}
           users={users}
           tickets={sortAndFilterData(tickets, searchTerm, sortOption)}
           showDetailsDialog={showDetailsDialog}
-        // showEditDialog={showEditDialog}
-        // showDeleteDialog={showDeleteDialog}
         />
       </Box>
-      {/* <CreateDialog open={isCreateDialogOpen} handleClose={(entry) => {
-        if (entry) {
-          createMutation.mutate(entry)
-        }
-        setIsCreateDialogOpen(false)
-      }} />
-
-      {
-        focusedEntry && <EditDialog open={isEditDialogOpen} entry={focusedEntry}
-          handleClose={(entry) => {
-            if (entry) { editMutation.mutate(entry) }
-            setIsEditDialogOpen(false)
-          }}
-
-        />
-      }
       
       {
-        focusedEntry && <DeleteDialog open={isDeleteDialogOpen} entry={focusedEntry}
-          handleClose={(entry) => {
-            if (entry) { deleteMutation.mutate(entry) }
-            setIsDeleteDialogOpen(false)
-          }}
-
-        />
-      } */}
-      {
-        focusedEntry && <ModeratorTicketDetailsDialog open={isDetailsDialogOpen} entry={focusedEntry}
+        focusedEntry && <TicketDetailsDialog open={isDetailsDialogOpen} entry={focusedEntry}
           handleClose={(ticket) => {
             if (ticket) {
               console.log(ticket)

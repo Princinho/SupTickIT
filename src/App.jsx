@@ -16,6 +16,7 @@ import { Categories } from './Pages/Categories/Categories.jsx'
 import { LoginRegister } from './Pages/Login/LoginRegister.jsx'
 import { Tickets } from './Pages/Tickets/Tickets.jsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { TicketDetails } from './Pages/Tickets/AgentTickets/TicketDetails.jsx'
 
 function App() {
   const [user, setUser] = useState(null)
@@ -57,6 +58,7 @@ function App() {
           <Route path='users/:id' element={<UserDetails />} />
           <Route path='categories' element={<Categories />} />
           <Route path='tickets' element={<Tickets />} />
+          <Route path='tickets/:id' element={<TicketDetails />} />
 
         </Route>
       </Route>

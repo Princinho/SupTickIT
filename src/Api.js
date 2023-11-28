@@ -96,6 +96,37 @@ function getCustomerTickets(customerId) {
     // console.log(customerTickets)
     return customerTickets
 }
+function getTicket(id) {
+    return getAllTickets().find(ticket => ticket.id == id) || null
+}
+
+function getTicketMessages(ticketId) {
+    return getAllMessages.filter(m => m.ticketId == ticketId) || []
+}
+function getAllMessages() {
+    return getAllEntries('messages') || []
+}
+function createMessage(entry) {
+    create(entry, 'messages')
+}
+
+function editMessage(entry) {
+    editEntry(entry, 'messages')
+}
+
+function deleteMessage(entry) {
+    deleteEntry(entry, 'messages')
+}
+
+function getAgentTickets(agentId) {
+    // console.log(customerId)
+    if (!agentId) return []
+    let allTickets = getAllTickets()
+    // console.log(allTickets)
+    let agentTickets = allTickets.filter(ticket => ticket.agentId == agentId)
+    // console.log(customerTickets)
+    return agentTickets
+}
 function getCompanyProjects(companyId) {
     if (!companyId) return [
     ]
@@ -188,11 +219,13 @@ function create(newEntry, type) {
 export {
     getOrInitData,
     getDataFromLocalStorage,
+    createMessage, editMessage, deleteMessage,
     getAllProjects, createProject, editProject, deleteProject, assignProject, getCompanyProjects,
     getAllCompanies, createCompany, editCompany, deleteCompany,
-    getAllTickets, createTicket, editTicket, deleteTicket, getCustomerTickets,
+    getAllTickets, createTicket, editTicket, deleteTicket,
+    getCustomerTickets, getTicket,  getTicketMessages,
     getAllCategories, createCategory, editCategory, deleteCategory, getProjectCategories,
     getAllUsers, createUser, editUser, deleteUser,
-    getAllRoleAssignments, getAllRoles, addRoleToUser, removeRoleFromUser, getAvailableAgents
+    getAllRoleAssignments, getAllRoles, addRoleToUser, removeRoleFromUser, getAvailableAgents, getAgentTickets
 }
 

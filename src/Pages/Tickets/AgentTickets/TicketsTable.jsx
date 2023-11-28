@@ -6,7 +6,7 @@ import { PriorityTag } from '../../../Components/PriorityTag'
 import dayjs from 'dayjs'
 import { timeSince } from '../../Companies/utils'
 
-export const ModeratorTicketsTable = ({ tickets, users, showDetailsDialog, options }) => {
+export const TicketsTable = ({ tickets, users, showDetailsDialog, options }) => {
     
 
     dayjs.locale('fr')
@@ -19,11 +19,9 @@ export const ModeratorTicketsTable = ({ tickets, users, showDetailsDialog, optio
                         <TableRow>
                             <TableCell>Id</TableCell>
                             <TableCell align="left">Aperçu</TableCell>
-                            <TableCell align="left">Responsable</TableCell>
                             <TableCell align="left">Statut</TableCell>
                             <TableCell align="left">Priorité</TableCell>
                             <TableCell align="left">Soumis il y a </TableCell>
-                            {/* <TableCell align="left">Options</TableCell> */}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -66,19 +64,15 @@ export const ModeratorTicketsTable = ({ tickets, users, showDetailsDialog, optio
                                         </Typography>
 
                                     </TableCell>
-                                    <TableCell>
-                                        {ticket.agentId ? users?.find(user => user.id == ticket.agentId)?.firstName
-                                            : <Chip size='small' label="Non assigné" color="default" />
-                                        }
-                                    </TableCell>
+                                    
                                     <TableCell>
                                         <TicketStatus status={ticket.status} />
                                     </TableCell>
                                     <TableCell>
-                                        <PriorityTag priority={ticket.priority} />
+                                        <PriorityTag priority={ticket.priority} size="small" />
                                     </TableCell>
                                     <TableCell>
-                                        <Typography variant='subtitle2'>{timeSince(new Date(ticket.dateCreated))}</Typography>
+                                        <Typography variant='subtitle2'>{timeSince(new Date(ticket?.dateCreated))}</Typography>
                                     </TableCell>
 
                                 </TableRow>
@@ -115,7 +109,7 @@ export const ModeratorTicketsTable = ({ tickets, users, showDetailsDialog, optio
            
     )
 }
-ModeratorTicketsTable.propTypes = {
+TicketsTable.propTypes = {
     tickets: PropTypes.array.isRequired,
     users: PropTypes.array.isRequired,
     options: PropTypes.object.isRequired,

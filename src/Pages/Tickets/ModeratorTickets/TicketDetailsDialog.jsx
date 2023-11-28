@@ -5,7 +5,8 @@ import { getAvailableAgents, getCompanyProjects } from "../../../Api"
 import { UserContext } from "../../../Contexts"
 import { DropdownSelector } from "../../../Components/DropdownSelector"
 import { getAvailablePriorities } from "../../../utils"
-export const ModeratorTicketDetailsDialog = ({ open, handleClose, entry }) => {
+import { TicketStatus } from "../../../Components/TicketStatus"
+export const TicketDetailsDialog = ({ open, handleClose, entry }) => {
     const { user } = useContext(UserContext)
     const [formData, setFormData] = useState({ ...entry })
     useEffect(() => setFormData({ ...entry }), [entry])
@@ -28,6 +29,10 @@ export const ModeratorTicketDetailsDialog = ({ open, handleClose, entry }) => {
                             <Typography variant="h6" fontWeight='bold'>{entry.name}</Typography>
                         </Grid>
                         <Grid item xs={12}>
+                            <TicketStatus status={entry.status} />
+                        </Grid>
+
+                        <Grid item xs={12}>
                             <Typography variant="span">Projet {getCompanyProjects(user?.companyId).find(p => p.id == entry.projectId)?.title}</Typography>
                         </Grid>
 
@@ -38,7 +43,7 @@ export const ModeratorTicketDetailsDialog = ({ open, handleClose, entry }) => {
                             {entry.description}
                         </Grid>
                         <Grid item xs={6}>
-                            <DropdownSelector label="Responsable" labelField="name"
+                            <DropdownSelector label="Responsable Assigné" labelField="name"
                                 size="small"
                                 options={availableAgents}
                                 defaultValue={entry?.agentId || ""}
@@ -71,7 +76,7 @@ export const ModeratorTicketDetailsDialog = ({ open, handleClose, entry }) => {
         </Box >
     )
 }
-ModeratorTicketDetailsDialog.propTypes = {
+TicketDetailsDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
     entry: PropTypes.object.isRequired
