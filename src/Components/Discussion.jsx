@@ -3,11 +3,14 @@ import { Message } from './Message'
 import { Send } from '@mui/icons-material'
 import PropTypes from 'prop-types'
 import { useState } from 'react'
-export const Discussion = ({ messages, addMessage }) => {
+export const Discussion = ({ messages, addMessage, users }) => {
     const [message, setMessage] = useState('')
+    console.log(messages)
+
     return (
         <Box>
-            {messages?.map(m => <Message key={m.id} message={m} />)}
+            {messages.sort((a, b) => (new Date(a.date) - new Date(b.date)))
+                .map((m, index, array) => <Message key={m.id} message={({ ...m, userFullName: getUserFullName(m.userId, users) })} />)}
             <Stack direction='row' mt={2}>
                 <TextField ml={7}
                     id="outlined-multiline-flexible"
@@ -24,19 +27,29 @@ export const Discussion = ({ messages, addMessage }) => {
                     maxRows={4}
                 />
                 <Button variant='contained' disableElevation
-                    onClick={() => addMessage(message)}
+                    onClick={() => {
+                        addMessage(message)
+                        setMessage('')
+                    }}
                     sx={{
                         borderRadius: 0,
                         borderTopRightRadius: '4px',
                         borderBottomRightRadius: '4px',
                         backgroundColor: (theme) => theme.palette.primary.light,
-                        color: 'white', marginRight: '1em'
+                        color: 'white'
                     }}><Send /></Button>
             </Stack>
         </Box>
     )
 }
+function getUserFullName(userId, users) {
+    if (!users) return ""
+    let targetUser = users.find(u => u.id == userId)
+    if (targetUser) return targetUser.firstName + " " + targetUser.lastName
+    return "N/A"
+}
 Discussion.propTypes = {
     messages: PropTypes.array.isRequired,
+    users: PropTypes.array.isRequired,
     addMessage: PropTypes.func.isRequired,
 }

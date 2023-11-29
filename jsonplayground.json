@@ -136,10 +136,21 @@
     ],
     "users": [
         {
+            "username": "abdosseh@gmail.com",
+            "password": "Admin#123",
+            "lastName": "ABALO",
+            "firstName": "Dosseh",
+            "companyId": "1",
+            "passwordConfirmation": "Admin#123",
+            "id": 4,
+            "dateCreated": "2023-11-29T09:05:28.168Z",
+            "createdBy": 3
+        },
+        {
             "username": "kdn@gmail.com",
             "password": "Admin#123",
-            "lastName": "kamougue",
-            "firstName": "dassoa nanimpo",
+            "lastName": "KOFFI",
+            "firstName": "Lometoh",
             "companyId": "1",
             "passwordConfirmation": "Admin#123",
             "id": 3,
@@ -294,6 +305,26 @@
         }
     ],
     "messages": [
+        {
+            "ticketId": "5",
+            "body": "Un nouveau message",
+            "date": "2023-11-29T08:51:41.145Z",
+            "userId": 3,
+            "userFullName": "dassoa nanimpo kamougue",
+            "id": 5,
+            "dateCreated": "2023-11-29T08:51:41.145Z",
+            "createdBy": 3
+        },
+        {
+            "ticketId": "5",
+            "body": "Vivamus rhoncus efficitur tellus a sodales. Donec malesuada consectetur nibh ac tincidunt. Maecenas scelerisque eros a ipsum accumsan blandit. Fusce feugiat accumsan sem vitae consectetur. Phasellus auctor iaculis nisl, sed mollis odio porta nec. Ut et ligula neque. Mauris sed augue non mi malesuada dapibus eget a leo. Donec accumsan maximus rutrum. Curabitur viverra vehicula interdum. Cras eleifend dui at arcu aliquet, pulvinar pretium libero bibendum. Phasellus hendrerit, nisi eget imperdiet ultricies, turpis lectus efficitur lectus, non sodales nisl dui at mi. Duis consequat est id tellus cursus condimentum. Duis mattis sit amet elit ac tincidunt. Sed vitae leo vel tortor interdum sagittis. Pellentesque sit amet porta eros, quis posuere arcu. Proin efficitur commodo eros ut vestibulum.",
+            "date": "2023-11-29T08:49:20.173Z",
+            "userId": 3,
+            "userFullName": "dassoa nanimpo kamougue",
+            "id": 4,
+            "dateCreated": "2023-11-29T08:49:20.174Z",
+            "createdBy": 3
+        }
         
     ]
 }

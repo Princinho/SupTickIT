@@ -1,8 +1,10 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography } from "@mui/material"
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Stack, Typography } from "@mui/material"
 import PropTypes from 'prop-types'
 import { useContext } from "react"
 import { getCompanyProjects } from "../../Api"
 import { UserContext } from "../../Contexts"
+import { Link } from "react-router-dom"
+import { OpenInNew } from "@mui/icons-material"
 export const DetailsDialog = ({ open, handleClose, entry }) => {
     const { user } = useContext(UserContext)
     console.log(user)
@@ -13,8 +15,13 @@ export const DetailsDialog = ({ open, handleClose, entry }) => {
                 <DialogContent>
                     <Grid container direction='row' spacing={2} justifyContent='flex-start'>
 
-                        <Grid item xs={12}>
-                            <Typography variant="h6" fontWeight='bold'>{entry.name}</Typography>
+                    <Grid item xs={12}>
+                            <Stack direction='row' justifyContent='space-between'>
+                                <Typography variant="h6" fontWeight='bold'>{entry.name}</Typography>
+                                <Link to={`${entry.id}`}>
+                                    <OpenInNew sx={{ color: (theme) => theme.palette.primary.light }} />
+                                </Link>
+                            </Stack>
                         </Grid>
                         <Grid item xs={6}>
                             <Typography variant="span">Projet</Typography>

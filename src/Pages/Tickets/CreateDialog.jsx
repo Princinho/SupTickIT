@@ -13,6 +13,7 @@ export const CreateDialog = ({ open, handleClose }) => {
     function reset() {
         setFormData(initData)
     }
+    console.log(user)
     return (
         <Box>
             <Dialog open={open} onClose={() => handleClose()}>

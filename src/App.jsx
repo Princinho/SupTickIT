@@ -17,6 +17,7 @@ import { LoginRegister } from './Pages/Login/LoginRegister.jsx'
 import { Tickets } from './Pages/Tickets/Tickets.jsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { TicketDetails } from './Pages/Tickets/AgentTickets/TicketDetails.jsx'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 function App() {
   const [user, setUser] = useState(null)
@@ -71,6 +72,7 @@ function App() {
         <DataContext.Provider value={{ sampleData, setSampleData }}>
           <ThemeProvider theme={theme}>
             <RouterProvider router={router} />
+            <ReactQueryDevtools initialIsOpen={false} />
           </ThemeProvider>
         </DataContext.Provider>
       </UserContext.Provider>

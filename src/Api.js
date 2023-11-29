@@ -1,4 +1,4 @@
-import { getSampleDataFromLocalStorage, saveDataToLocalStorage } from "./utils"
+import { SYSTEM_ROLES, getSampleDataFromLocalStorage, saveDataToLocalStorage } from "./utils"
 import { sampleData as initialData } from './SampleData.js'
 
 function getAllEntries(type) {
@@ -96,15 +96,34 @@ function getCustomerTickets(customerId) {
     // console.log(customerTickets)
     return customerTickets
 }
+function getModeratorTickets(moderatorId) {
+    // console.log(customerId)
+    if (!moderatorId) return []
+    let moderator = getAllUsers().find(u => u.id == moderatorId)
+    if (moderator) {
+
+        let allTickets = getAllTickets()
+        console.log('all tickets',allTickets)
+        let companyUsers = getAllUsers().filter(u => u.companyId == moderator.companyId)
+        console.log('company users',companyUsers)
+        let moderatorTickets = allTickets.filter(ticket => companyUsers.some(u => u.id == ticket.createdBy))
+        return moderatorTickets
+    }
+
+}
 function getTicket(id) {
     return getAllTickets().find(ticket => ticket.id == id) || null
 }
 
 function getTicketMessages(ticketId) {
-    return getAllMessages.filter(m => m.ticketId == ticketId) || []
+    let ticketMessages = getAllMessages().filter(m => m.ticketId == ticketId)
+    console.log(ticketMessages)
+    return ticketMessages
 }
 function getAllMessages() {
-    return getAllEntries('messages') || []
+    let messages = getAllEntries('messages')
+    console.log(messages)
+    return messages
 }
 function createMessage(entry) {
     create(entry, 'messages')
@@ -184,11 +203,33 @@ function deleteUser(data) {
 function getAvailableAgents(companyId) {
     let allUsers = getAllUsers()
     let companyUsers = allUsers.filter(user => user.companyId == companyId)
-    let companyAgents = companyUsers.filter(user => isUserInRole(1, user.id))
+    let companyAgents = companyUsers.filter(user => isUserInRole(SYSTEM_ROLES.AGENT, user.id))
     return companyAgents
 }
+function isRoleAssignmentActive(roleAssignment) {
+    let startDate = new Date(roleAssignment.startDate)
+    let roleIsActive = true
+    if (startDate > new Date()) roleIsActive = false
+    if (roleAssignment.endDate) {
+        let endDate = new Date(roleAssignment.endDate)
+        if (endDate < new Date()) roleIsActive = false
+    }
+    return roleIsActive
+}
+function getActiveRolesForUser(userId) {
+    let allRoles = getAllRoles()
+    let activeRoles = getActiveRoleAssignmentsForUser(userId).map(roleAssignment => allRoles.find(role => role.id == roleAssignment.roleId))
+return activeRoles
+}
+function getActiveRoleAssignmentsForUser(userId) {
+    if (!userId) return []
+    let allRoleAssignments = getAllRoleAssignments()
+    let roleAssignments = allRoleAssignments.filter(roleAssignment => roleAssignment.userId == userId && isRoleAssignmentActive(roleAssignment))
+return roleAssignments
+}
 function isUserInRole(roleId, userId) {
-    return true
+    let userActiveRoles = getActiveRolesForUser(userId)
+    return userActiveRoles.some(role => role.id == roleId)
 }
 function getAllRoleAssignments() {
     return getAllEntries('roleAssignments')
@@ -210,7 +251,7 @@ function removeRoleFromUser(roleAssignment) {
 function create(newEntry, type) {
     let allEntries = getAllEntries(type)
     let storedData = getOrInitData()
-    let updatedEntriesArray = [{ ...newEntry, id: allEntries.length + 1, dateCreated: new Date().toISOString(), createdBy: 3 }, ...allEntries]
+    let updatedEntriesArray = [{ ...newEntry, id: allEntries.length + 1, dateCreated: new Date().toISOString() }, ...allEntries]
     const result = { ...storedData, [type]: updatedEntriesArray }
     // console.log(result)
     saveDataToLocalStorage(result)
@@ -223,9 +264,10 @@ export {
     getAllProjects, createProject, editProject, deleteProject, assignProject, getCompanyProjects,
     getAllCompanies, createCompany, editCompany, deleteCompany,
     getAllTickets, createTicket, editTicket, deleteTicket,
-    getCustomerTickets, getTicket,  getTicketMessages,
+    getCustomerTickets, getTicket, getTicketMessages, getModeratorTickets,
     getAllCategories, createCategory, editCategory, deleteCategory, getProjectCategories,
     getAllUsers, createUser, editUser, deleteUser,
-    getAllRoleAssignments, getAllRoles, addRoleToUser, removeRoleFromUser, getAvailableAgents, getAgentTickets
+    getAllRoleAssignments, getAllRoles, addRoleToUser, getActiveRolesForUser, getActiveRoleAssignmentsForUser,
+    removeRoleFromUser, getAvailableAgents, getAgentTickets
 }
 

@@ -14,6 +14,12 @@ const TICKET_PRIORITY = {
     CRITICAL: 3,
 
 }
+const SYSTEM_ROLES = {
+    ADMIN: 1,
+    MODERATOR: 2,
+    AGENT: 3,
+    CUSTOMER: 4
+}
 function stringToColor(string) {
     let hash = 0;
     let i;
@@ -110,5 +116,5 @@ export {
     getSampleDataFromLocalStorage, saveDataToLocalStorage,
     getRandomNumber, addOnemonth, sortAndFilterData,
     getAvailablePriorities,
-    TICKET_STATUS, TICKET_PRIORITY
+    TICKET_STATUS, TICKET_PRIORITY, SYSTEM_ROLES
 }

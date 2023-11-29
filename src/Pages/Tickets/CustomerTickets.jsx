@@ -24,7 +24,7 @@ export const CustomerTickets = () => {
   const BASE_QUERY_KEY = 'tickets'
   // const [companies, setCompanies] = useState([])
   const queryClient = useQueryClient()
-  const { data: tickets } = useQuery({ queryKey: [BASE_QUERY_KEY, user?.id], queryFn: ()=>getCustomerTickets(user?.id) })
+  const { data: tickets } = useQuery({ queryKey: [BASE_QUERY_KEY, user?.id], queryFn: () => getCustomerTickets(user?.id) })
   const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
   const { data: categories } = useQuery({ queryKey: ['categories'], queryFn: getAllCategories })
   console.log(tickets)
@@ -183,6 +183,7 @@ export const CustomerTickets = () => {
       </Box>
       <CreateDialog open={isCreateDialogOpen} handleClose={(entry) => {
         if (entry) {
+          console.log(entry)
           createMutation.mutate(entry)
         }
         setIsCreateDialogOpen(false)

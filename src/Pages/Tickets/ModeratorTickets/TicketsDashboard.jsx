@@ -2,7 +2,7 @@ import { ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-materi
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
 
 import { useContext, useState } from 'react'
-import {  editTicket,  getAllProjects, getAllUsers, getCustomerTickets } from '../../../Api'
+import {  editTicket,  getAllProjects, getAllUsers, getModeratorTickets } from '../../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { sortAndFilterData } from '../../Companies/utils'
 import { UserContext } from '../../../Contexts'
@@ -18,10 +18,10 @@ export const TicketsDashboard = () => {
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
   const [focusedEntry, setFocusedEntry] = useState(null)
   const [sortOption, setSortOption] = useState({ option: 'name' })
-  const BASE_QUERY_KEY = 'tickets'
+  const BASE_QUERY_KEY = 'moderator-tickets'
   // const [companies, setCompanies] = useState([])
   const queryClient = useQueryClient()
-  const { data: tickets } = useQuery({ queryKey: [BASE_QUERY_KEY, user?.id], queryFn: () => getCustomerTickets(user?.id) })
+  const { data: tickets } = useQuery({ queryKey: [BASE_QUERY_KEY, user?.id], queryFn: () => getModeratorTickets(user?.id) })
   const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
   const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
   const [tableOptions, setTableOptions] = useState({

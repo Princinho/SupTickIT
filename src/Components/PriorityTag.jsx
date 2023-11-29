@@ -24,6 +24,6 @@ export const PriorityTag = ({ priority, size }) => {
 
 }
 PriorityTag.propTypes = {
-    priority: PropTypes.bool,
+    priority: PropTypes.number,
     size: PropTypes.string
 }

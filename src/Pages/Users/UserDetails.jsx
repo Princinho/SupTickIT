@@ -7,7 +7,7 @@ import { Delete, MoreVert } from "@mui/icons-material"
 import { SimpleButton } from "../../Components/SimpleButton"
 import { RemoveRoleDialog } from "./RemoveRoleDialog"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { addRoleToUser, getAllRoleAssignments, getAllRoles, getAllUsers, removeRoleFromUser } from "../../Api"
+import { addRoleToUser, getActiveRoleAssignmentsForUser, getAllRoles, getAllUsers, removeRoleFromUser } from "../../Api"
 import { useState } from "react"
 export const UserDetails = () => {
     const [isAddRoleDialogOpen, setIsAddRoleDialogOpen] = useState(false)
@@ -15,16 +15,16 @@ export const UserDetails = () => {
     const [anchorEl, setAnchorEl] = useState(null)
     const [roleOptionsMenuOpen, setRoleOptionsMenuOpen] = useState(false)
     const [roleToDelete, setRoleToDelete] = useState(false)
-
     const navigate = useNavigate()
     const { id } = useParams()
+    const BASE_QUERY_KEY = ['activeRoleAssignments', id]
 
     const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
-    const { data: roleAssignments } = useQuery({ queryKey: ['roleAssignments'], queryFn: getAllRoleAssignments })
+    const { data: roleAssignments } = useQuery({ queryKey: BASE_QUERY_KEY, queryFn: () => getActiveRoleAssignmentsForUser(id) })
     const { data: roles } = useQuery({ queryKey: ['roles'], queryFn: getAllRoles })
     const queryClient = useQueryClient()
     const user = users?.find(u => u.id == id)
-    console.log(users)
+    // console.log(user)
     // TODO: Ecrire une fonction qui va recuperer les roles affectes a l'utilisateur en tenant compte des dates de debut et de fin
     function handleMenuClose() {
         setAnchorEl(null)
@@ -47,6 +47,7 @@ export const UserDetails = () => {
         setIsRemoveRoleDialogOpen(false)
         if (!roleAssignMent) { return }
         removeFromUserMutation.mutate(roleAssignMent)
+
     }
     // function removeRoleFromUser(roleId) {
     //     var roleAssignments = roleAssignments ? [...roleAssignments] : []
@@ -56,11 +57,11 @@ export const UserDetails = () => {
     // }
     const addRoleToUserMutation = useMutation({
         mutationFn: addRoleToUser,
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['roleAssignments'] })
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: BASE_QUERY_KEY })
     })
     const removeFromUserMutation = useMutation({
         mutationFn: removeRoleFromUser,
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['roleAssignments'] })
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: BASE_QUERY_KEY })
     })
     return (
         <Paper sx={{ padding: '1em' }}>
@@ -80,7 +81,7 @@ export const UserDetails = () => {
                         </Grid>
                         <Grid item xs={12} sm={6} lg={6}>
                             <Typography variant="body1">
-                                {user.lastName}
+                                {user?.lastName}
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={6} lg={6}>
@@ -90,7 +91,7 @@ export const UserDetails = () => {
                         </Grid>
                         <Grid item xs={12} sm={6} lg={6}>
                             <Typography variant="body1">
-                                {user.firstName}
+                                {user?.firstName}
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={6} lg={6}>
@@ -100,7 +101,7 @@ export const UserDetails = () => {
                         </Grid>
                         <Grid item xs={12} sm={6} lg={6}>
                             <Typography variant="body1">
-                                {user.username}
+                                {user?.username}
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={6} lg={6}>
@@ -110,7 +111,7 @@ export const UserDetails = () => {
                         </Grid>
                         <Grid item xs={12} sm={6} lg={6}>
                             <Typography variant="body1">
-                                {user.lastLoginDate || "-"}
+                                {user?.lastLoginDate || "-"}
                             </Typography>
                         </Grid>
                     </Grid>
@@ -122,9 +123,9 @@ export const UserDetails = () => {
                         <AddButton onClick={() => setIsAddRoleDialogOpen(true)} />
                     </Stack>
                     <Stack direction='row' spacing={2} flexWrap='wrap' alignItems='flex-start' useFlexGap paddingBlock='1em'>
-                        {roleAssignments?.filter(r => r.userId == user.id).map(
+                        {roleAssignments?.filter(r => r.userId == user?.id).map(
                             roleAssignment => <ActionableTag key={`role=${roleAssignment.userId}-${roleAssignment.roleId}`}
-                                secondaryText={`(Jusqu'au ${new Date(roleAssignment.expiryDate).toLocaleDateString("FR-fr")})` || ""}
+                                secondaryText={roleAssignment.expiryDate && `(Jusqu'au ${new Date(roleAssignment.expiryDate).toLocaleDateString("FR-fr")})` || ""}
                                 label={roles.find(r => r.id == roleAssignment.roleId)?.nom}
                                 icon={<MoreVert fontSize="1em" />}
                                 handleButtonClick={(event) => openOptionsMenu(event, roleAssignment)} />
