@@ -1,27 +1,29 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Stack, Typography } from "@mui/material"
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography } from "@mui/material"
 import PropTypes from 'prop-types'
 import { useContext } from "react"
-import { getCompanyProjects } from "../../Api"
-import { UserContext } from "../../Contexts"
-import { Link } from "react-router-dom"
-import { OpenInNew } from "@mui/icons-material"
-export const DetailsDialog = ({ open, handleClose, entry }) => {
+import { getAllCategories, getCompanyProjects } from "../../../Api"
+import { UserContext } from "../../../Contexts"
+export const DeleteDialog = ({ open, handleClose, entry }) => {
     const { user } = useContext(UserContext)
     console.log(user)
+    //TODO: Faire bosser la pagination
+
+
     return (
         <Box>
             <Dialog open={open} onClose={() => handleClose()}>
-                <DialogTitle>Details du ticket #{entry.id}</DialogTitle>
+                <DialogTitle>Supprimer le ticket</DialogTitle>
                 <DialogContent>
                     <Grid container direction='row' spacing={2} justifyContent='flex-start'>
 
-                    <Grid item xs={12}>
-                            <Stack direction='row' justifyContent='space-between'>
-                                <Typography variant="h6" fontWeight='bold'>{entry.name}</Typography>
-                                <Link to={`${entry.id}`}>
-                                    <OpenInNew sx={{ color: (theme) => theme.palette.primary.light }} />
-                                </Link>
-                            </Stack>
+                        <Grid item xs={12}>
+                            <Typography variant="h6" fontWeight='bold'>{entry.name}</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography variant="span">Catégorie</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography variant="span">{getAllCategories().find(p => p.id == entry?.categoryId)?.name}</Typography>
                         </Grid>
                         <Grid item xs={6}>
                             <Typography variant="span">Projet</Typography>
@@ -41,14 +43,19 @@ export const DetailsDialog = ({ open, handleClose, entry }) => {
                 <DialogActions>
                     <Button onClick={() => {
                         handleClose()
-                    }}>Fermer</Button>
+                    }}>Annuler</Button>
+                    <Button
 
+                        color="error"
+                        onClick={
+                            () => handleClose(entry)
+                        }>Supprimer</Button>
                 </DialogActions>
             </Dialog>
         </Box >
     )
 }
-DetailsDialog.propTypes = {
+DeleteDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
     entry: PropTypes.object.isRequired

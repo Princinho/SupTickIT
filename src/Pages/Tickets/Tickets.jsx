@@ -1,6 +1,6 @@
 
 import { useContext } from 'react'
-import { CustomerTickets } from './CustomerTickets'
+import { CustomerTickets } from './CustomerTickets/CustomerTickets'
 import { TicketsDashboard as ModeratorDashBoard } from './ModeratorTickets/TicketsDashboard'
 import { TicketsDashboard as AgentDashboard } from './AgentTickets/TicketsDashboard'
 import { UserContext } from '../../Contexts'

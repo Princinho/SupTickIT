@@ -2,14 +2,14 @@ import { AddCircleOutline, ArrowBack, ArrowForward, HighlightOff, Search } from 
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
 import { TicketsTable } from './TicketsTable'
 import { useContext, useState } from 'react'
-import { createTicket, deleteTicket, editTicket, getAllCategories, getAllProjects, getCustomerTickets } from '../../Api'
+import { createTicket, deleteTicket, editTicket, getAllCategories, getAllProjects, getCustomerTickets } from '../../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { sortAndFilterData } from '../Companies/utils'
+import { sortAndFilterData } from '../../Companies/utils'
 import { CreateDialog } from './CreateDialog'
 import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { DetailsDialog } from './DetailsDialog'
-import { UserContext } from '../../Contexts'
+import { UserContext } from '../../../Contexts'
 
 export const CustomerTickets = () => {
 

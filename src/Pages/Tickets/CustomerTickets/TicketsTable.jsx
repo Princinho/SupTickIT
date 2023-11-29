@@ -3,8 +3,8 @@ import { IconButton, ListItemIcon, Menu, MenuItem, Table, TableBody, TableCell, 
 import PropTypes from 'prop-types'
 import { Delete, Edit, MoreVert } from '@mui/icons-material'
 import { useState } from 'react'
-import { TicketStatus } from '../../Components/TicketStatus'
-import { TICKET_STATUS } from '../../utils'
+import { TicketStatus } from '../../../Components/TicketStatus'
+import { TICKET_STATUS } from '../../../utils'
 
 
 export const TicketsTable = ({ tickets, projects, categories, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
@@ -28,7 +28,7 @@ export const TicketsTable = ({ tickets, projects, categories, showEditDialog, sh
                             <TableCell>Id</TableCell>
                             <TableCell align="left">Aperçu</TableCell>
                             <TableCell align="left">Projet</TableCell>
-                            <TableCell align="left">Catégorie</TableCell>
+                            <TableCell align="left" sx={{ display: { xs: 'none', sm: 'inline-block' } }} >Catégorie</TableCell>
                             <TableCell align="left">Statut</TableCell>
                             <TableCell align="left">Options</TableCell>
                         </TableRow>
@@ -52,7 +52,14 @@ export const TicketsTable = ({ tickets, projects, categories, showEditDialog, sh
                                         onClick={() => showDetailsDialog(ticket)}
                                     >
 
-                                        <Typography variant='span' sx={{ my: 0, fontWeight: 'bold', }}>{ticket.name}</Typography>
+                                        <Typography variant='span' sx={{
+                                            my: 0, fontWeight: 'bold',
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            display: "-webkit-box",
+                                            "WebkitLineClamp": '1',
+                                            "WebkitBoxOrient": "vertical"
+                                        }}>{ticket.name}</Typography>
                                         <br />
                                         <Typography color='text.secondary' sx={{
                                             overflow: "hidden",
@@ -71,7 +78,7 @@ export const TicketsTable = ({ tickets, projects, categories, showEditDialog, sh
                                     <TableCell>
                                         {projects?.find(p => p.id == ticket.projectId)?.title}
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell sx={{ display: { xs: 'none', sm: 'inline-block' } }}>
                                         {categories?.find(cat => cat.id == ticket.categoryId)?.name}
                                     </TableCell>
                                     <TableCell>
