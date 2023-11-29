@@ -103,9 +103,9 @@ function getModeratorTickets(moderatorId) {
     if (moderator) {
 
         let allTickets = getAllTickets()
-        console.log('all tickets',allTickets)
+        console.log('all tickets', allTickets)
         let companyUsers = getAllUsers().filter(u => u.companyId == moderator.companyId)
-        console.log('company users',companyUsers)
+        console.log('company users', companyUsers)
         let moderatorTickets = allTickets.filter(ticket => companyUsers.some(u => u.id == ticket.createdBy))
         return moderatorTickets
     }
@@ -219,13 +219,13 @@ function isRoleAssignmentActive(roleAssignment) {
 function getActiveRolesForUser(userId) {
     let allRoles = getAllRoles()
     let activeRoles = getActiveRoleAssignmentsForUser(userId).map(roleAssignment => allRoles.find(role => role.id == roleAssignment.roleId))
-return activeRoles
+    return activeRoles
 }
 function getActiveRoleAssignmentsForUser(userId) {
     if (!userId) return []
     let allRoleAssignments = getAllRoleAssignments()
     let roleAssignments = allRoleAssignments.filter(roleAssignment => roleAssignment.userId == userId && isRoleAssignmentActive(roleAssignment))
-return roleAssignments
+    return roleAssignments
 }
 function isUserInRole(roleId, userId) {
     let userActiveRoles = getActiveRolesForUser(userId)
@@ -267,7 +267,8 @@ export {
     getCustomerTickets, getTicket, getTicketMessages, getModeratorTickets,
     getAllCategories, createCategory, editCategory, deleteCategory, getProjectCategories,
     getAllUsers, createUser, editUser, deleteUser,
-    getAllRoleAssignments, getAllRoles, addRoleToUser, getActiveRolesForUser, getActiveRoleAssignmentsForUser,
+    getAllRoleAssignments, getAllRoles, addRoleToUser,
+    getActiveRolesForUser, getActiveRoleAssignmentsForUser, isUserInRole,
     removeRoleFromUser, getAvailableAgents, getAgentTickets
 }
 

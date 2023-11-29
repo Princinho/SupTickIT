@@ -1,14 +1,16 @@
 
-import { Paper, Stack, Typography } from '@mui/material'
+import { Button, Divider, FormControl, InputLabel, MenuItem, Paper, Select, Stack, Typography } from '@mui/material'
 
 import { useContext } from 'react'
-import { createMessage, getAllUsers, getTicket, getTicketMessages } from '../../../Api'
+import { createMessage, editTicket, getAllUsers, getTicket, getTicketMessages, isUserInRole } from '../../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { UserContext } from '../../../Contexts'
 import { useNavigate, useParams } from 'react-router-dom'
 import { timeSince } from '../../Companies/utils'
 import { SimpleButton } from '../../../Components/SimpleButton'
 import { Discussion } from '../../../Components/Discussion'
+import { SYSTEM_ROLES, TICKET_STATUS } from '../../../utils'
+import { TicketStatus } from '../../../Components/TicketStatus'
 
 export const TicketDetails = () => {
     const { id } = useParams()
@@ -25,6 +27,10 @@ export const TicketDetails = () => {
         mutationFn: createMessage,
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['messages', `ticket${id}`] })
     })
+    const editMutation = useMutation({
+        mutationFn: editTicket,
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY, id] })
+    })
     function addMessage(body) {
         let message = {
             ticketId: id,
@@ -34,9 +40,11 @@ export const TicketDetails = () => {
         }
         createMutation.mutate(message)
     }
-
+    function changeTicketStatus(status) {
+        editMutation.mutate({ ...ticket, status })
+    }
     return (
-        <Paper sx={{ padding: '1em',  flexGrow: 1 }} elevation={2}>
+        <Paper sx={{ padding: '1em', flexGrow: 1 }} elevation={2}>
             <Typography variant='h6' component='span' sx={{ fontWeight: 'bold' }}>Détails du ticket </Typography>
             <Stack direction='row' justifyContent='space-between' >
                 <Stack direction='row' mb={2}>
@@ -60,7 +68,7 @@ export const TicketDetails = () => {
                 </Stack>
                 <Stack direction="row" gap='.2em'>
                     <Typography variant='subtitle2'>Auteur: </Typography>
-                    <Typography variant='subtitle2' fontWeight='bold'>{author?.firstName + " " + author.lastName}</Typography>
+                    <Typography variant='subtitle2' fontWeight='bold'>{author?.firstName + " " + author?.lastName}</Typography>
                 </Stack>
 
             </Stack>
@@ -69,6 +77,43 @@ export const TicketDetails = () => {
             </Typography>
 
             <Typography variant='body1' color='text.secondary' mb={2}> Pièces jointes</Typography>
+
+            <Divider sx={{ marginBlock: '1em' }} />
+            <Stack justifyContent='space-between' direction='row'>
+                <Typography variant='body1' fontWeight='bold' mb={2}> Etat</Typography>
+                {isUserInRole(SYSTEM_ROLES.AGENT, user?.id) ?
+                    <FormControl sx={{ minWidth: '15%' }} size='small'>
+                        <InputLabel id="status-select-label">Etat</InputLabel>
+                        <Select
+                            labelId="status-select-label"
+                            id="status-label"
+                            label="Etat"
+                            value={ticket?.status}
+                            onChange={event => changeTicketStatus(event.target.value)}
+                        >
+                            <MenuItem value={TICKET_STATUS.PROCESSING}>
+                                <TicketStatus status={TICKET_STATUS.PROCESSING} />
+                            </MenuItem>
+                            <MenuItem value={TICKET_STATUS.AWAITING_RESPONSE}>
+                                <TicketStatus status={TICKET_STATUS.AWAITING_RESPONSE} />
+                            </MenuItem>
+                            <MenuItem value={TICKET_STATUS.PROCESSED}>
+                                <TicketStatus status={TICKET_STATUS.PROCESSED} />
+                            </MenuItem>
+
+                        </Select>
+                    </FormControl>
+                    :
+                    <Stack gap={1}>
+                        <TicketStatus status={ticket?.status} />
+                        <Stack direction='row' gap={1}>
+                            <Button color='success' variant='contained' size='small'>Confirmer</Button>
+                            <Button color='error' variant='contained' size='small'>Rejeter</Button>
+                        </Stack>
+                    </Stack>
+                }
+
+            </Stack>
             <Typography variant='body1' fontWeight='bold' mb={2}> Messages</Typography>
             <Discussion messages={messages || []} addMessage={addMessage} users={users} />
         </Paper >
