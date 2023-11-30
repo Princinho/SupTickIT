@@ -228,6 +228,7 @@ function getActiveRoleAssignmentsForUser(userId) {
     return roleAssignments
 }
 function isUserInRole(roleId, userId) {
+    if (!userId || !roleId) return false
     let userActiveRoles = getActiveRolesForUser(userId)
     return userActiveRoles.some(role => role.id == roleId)
 }

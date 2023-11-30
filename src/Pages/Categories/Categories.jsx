@@ -1,7 +1,7 @@
 import { ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
 import { CategoriesTable } from './CategoriesTable'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CreateDialog } from './CreateDialog'
 import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
@@ -9,8 +9,11 @@ import { sortAndFilterData } from '../../utils'
 import { DetailsDialog } from './DetailsDialog'
 import { createCategory, deleteCategory, editCategory, getAllCategories, getAllProjects } from '../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useAuthorization } from '../../Hooks/useAuthorization'
+import { useNavigate } from 'react-router-dom'
 
 export const Categories = () => {
+    const BASE_QUERY_KEY = 'categories'
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
     const [searchTerm, setSearchTerm] = useState(false)
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -20,15 +23,23 @@ export const Categories = () => {
     const [categoryToDetail, setCategoryToDetail] = useState(null)
     const [categoryToDelete, setCategoryToDelete] = useState(null)
     const [sortOption, setSortOption] = useState({ option: 'name' })
-
-    const BASE_QUERY_KEY = 'categories'
+    const { isUserAuthorized } = useAuthorization()
+    const navigate = useNavigate()
+    const queryClient = useQueryClient()
     const { data: categories } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCategories })
     const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
-    const queryClient = useQueryClient()
     const [tableOptions, setTableOptions] = useState({
         rowsPerPage: 5, page: 0, count: categories?.length, handlePageChange: setCurrentPage,
         handleRowsPerPageChange: changeRowsPerPage
     })
+
+
+    useEffect(() => {
+        if (!isUserAuthorized()) {
+            navigate("/accessdenied")
+        }
+    }, [])
+
     function changeRowsPerPage(rowsPerPage) {
         setRowsPerPage(rowsPerPage)
         setCurrentPage(0)
@@ -78,12 +89,11 @@ export const Categories = () => {
         mutationFn: deleteCategory,
         onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
     })
-
     return (
         <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
             <Typography variant='h5' component='span' sx={{ fontWeight: 'bold' }}>Catégories de ticket</Typography>
             <Stack direction='row'
-            mb={2}><Typography color='text.secondary' sx={{ fontWeight: 'bold' }}>Menu /</Typography><Typography color='primary.light' sx={{ fontWeight: 'bold' }}>Catégories</Typography></Stack>
+                mb={2}><Typography color='text.secondary' sx={{ fontWeight: 'bold' }}>Menu /</Typography><Typography color='primary.light' sx={{ fontWeight: 'bold' }}>Catégories</Typography></Stack>
 
             <Grid container spacing={2}>
                 <Grid item xs={12} sm={5}>

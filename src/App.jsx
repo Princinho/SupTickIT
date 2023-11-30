@@ -18,6 +18,7 @@ import { Tickets } from './Pages/Tickets/Tickets.jsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { TicketDetails } from './Pages/Tickets/AgentTickets/TicketDetails.jsx'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { AccessDenied } from './Pages/Login/AccessDenied.jsx'
 
 function App() {
   const [user, setUser] = useState(null)
@@ -50,6 +51,7 @@ function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path='/' element={<Outlet />} >
+          <Route path='accessdenied' element={<AccessDenied />} />
         <Route path='login' element={<LoginRegister />} />
         <Route path='/' element={<Layout />} >
           <Route path='projects' element={<Projects />} />

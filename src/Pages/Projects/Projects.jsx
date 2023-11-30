@@ -1,6 +1,6 @@
 import { ArrowBack, ArrowForward, Delete, Edit, HighlightOff, MoreVert, OpenInNew, Search } from '@mui/icons-material'
 import { Avatar, Button, ButtonGroup, Divider, FormControl, Grid, IconButton, InputAdornment, InputLabel, ListItemIcon, Menu, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CreateDialog } from './CreateDialog'
 import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
@@ -9,6 +9,8 @@ import { DetailsDialog } from './DetailsDialog'
 import { stringAvatar } from '../../utils'
 import { createProject, deleteProject, editProject, getAllCompanies, getAllProjects, getAllUsers } from '../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useAuthorization } from '../../Hooks/useAuthorization'
+import { useNavigate } from 'react-router-dom'
 
 export const Projects = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
@@ -22,9 +24,17 @@ export const Projects = () => {
   const [anchorEl, setAnchorEl] = useState(null)
   const [focusedEntry, setFocusedEntry] = useState(null)
   const [sortOption, setSortOption] = useState({ option: 'title' })
+  const { isUserAuthorized } = useAuthorization()
+  const navigate = useNavigate()
+  
+  useEffect(() => {
+    if (!isUserAuthorized()) {
+        navigate("/accessdenied")
+    }
+}, [])
   // const [projects, setProjects] = useState([])
   const BASE_QUERY_KEY = 'projects'
-  const { data: projects} = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllProjects })
+  const { data: projects } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllProjects })
   const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
   const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompanies })
   const [tableOptions, setTableOptions] = useState({
@@ -193,7 +203,7 @@ export const Projects = () => {
       </Box> */}
 
 
-        {companies&&<CreateDialog open={isCreateDialogOpen}
+        {companies && <CreateDialog open={isCreateDialogOpen}
           companies={companies || []}
           handleClose={(project) => {
             if (project) {
