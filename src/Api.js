@@ -9,6 +9,11 @@ function getAllEntries(type) {
 function getAllProjects() {
     return getAllEntries('projects')
 }
+function getProject(id) {
+    if (!id) return null
+    return getAllEntries('projects').find(p => p.id == id)
+}
+
 function getOrInitData() {
     let storedData = getSampleDataFromLocalStorage()
     if (!storedData) {
@@ -169,7 +174,13 @@ function deleteTicket(data) {
 function getAllCategories() {
     return getAllEntries('categories')
 }
-
+function getCategory(id) {
+    if (!id) return null
+    let allCategories = getAllEntries('categories')
+    let category = allCategories.find(p => p.id == id)
+    console.log(category)
+    return category
+}
 function createCategory(data) {
     create(data, 'categories')
 }
@@ -262,11 +273,11 @@ export {
     getOrInitData,
     getDataFromLocalStorage,
     createMessage, editMessage, deleteMessage,
-    getAllProjects, createProject, editProject, deleteProject, assignProject, getCompanyProjects,
+    getAllProjects, getProject, createProject, editProject, deleteProject, assignProject, getCompanyProjects,
     getAllCompanies, createCompany, editCompany, deleteCompany,
     getAllTickets, createTicket, editTicket, deleteTicket,
     getCustomerTickets, getTicket, getTicketMessages, getModeratorTickets,
-    getAllCategories, createCategory, editCategory, deleteCategory, getProjectCategories,
+    getAllCategories, createCategory, editCategory, deleteCategory, getProjectCategories, getCategory,
     getAllUsers, createUser, editUser, deleteUser,
     getAllRoleAssignments, getAllRoles, addRoleToUser,
     getActiveRolesForUser, getActiveRoleAssignmentsForUser, isUserInRole,

@@ -15,6 +15,9 @@ export const useAuthorization = () => {
     if (matchPath('/projects/*', pathname)) {
       return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
     }
+    if (matchPath('/users/*', pathname)) {
+      return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
+    }
     return true
   }
   return { isUserAuthorized }

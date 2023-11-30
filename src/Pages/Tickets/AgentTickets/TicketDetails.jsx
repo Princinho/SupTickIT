@@ -1,8 +1,8 @@
 
-import { Button, Divider, FormControl, InputLabel, MenuItem, Paper, Select, Stack, Typography } from '@mui/material'
+import { Button, Chip, Divider, FormControl, InputLabel, MenuItem, Paper, Select, Stack, Typography } from '@mui/material'
 
 import { useContext } from 'react'
-import { createMessage, editTicket, getAllUsers, getTicket, getTicketMessages, isUserInRole } from '../../../Api'
+import { createMessage, editTicket, getAllUsers, getCategory, getProject, getTicket, getTicketMessages, isUserInRole } from '../../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { UserContext } from '../../../Contexts'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -21,6 +21,8 @@ export const TicketDetails = () => {
     const { data: ticket } = useQuery({ queryKey: [BASE_QUERY_KEY, id], queryFn: () => getTicket(id) })
     const { data: messages } = useQuery({ queryKey: ['messages', `ticket${id}`], queryFn: () => getTicketMessages(id) })
     const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
+    const { data: project } = useQuery({ queryKey: ['projects', id], queryFn: () => getProject(id) })
+    const { data: category } = useQuery({ queryKey: ['categories', ticket?.categoryId], queryFn: () => getCategory(id) })
     const author = users?.find(u => u.id == ticket?.createdBy)
     console.log(ticket)
     const createMutation = useMutation({
@@ -56,7 +58,16 @@ export const TicketDetails = () => {
             </Stack>
 
             <Typography variant='subtitle1'>#{id}</Typography>
-            <Typography variant='h5' component='h2' fontWeight='bold'>{ticket?.name}</Typography>
+            <Stack direction='row' alignItems='center' spacing={1}>
+                <Typography variant='h5' component='h2' fontWeight='bold'>{ticket?.name}</Typography>
+                <Stack direction='row'>
+
+                    <Chip size="small" label={project?.title} sx={{ fontWeight: 'bold', backgroundColor: (theme) => theme.palette.primary.light, color: 'white' }} color="default" />
+                    {category && <>
+                        /<Chip size="small" label={category?.name} color="primary" variant='outlined' />
+                    </>}
+                </Stack>
+            </Stack>
             <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent='flex-start' gap='.2em' mb={2}>
                 <Stack direction="row" gap='.2em'>
                     <Typography variant='subtitle2'>Soumis le: </Typography>

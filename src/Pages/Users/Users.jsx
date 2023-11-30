@@ -1,5 +1,5 @@
 import { Paper } from '@mui/material'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { PageHeader } from '../../Components/PageHeader'
 import { UsersTable } from './UsersTable'
 import { CreateDialog } from './CreateDialog'
@@ -8,6 +8,8 @@ import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from '../../utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createUser, deleteUser, editUser, getAllCompanies, getAllUsers } from '../../Api'
+import { useNavigate } from 'react-router-dom'
+import { useAuthorization } from '../../Hooks/useAuthorization'
 
 export const Users = () => {
   // TODO: Add entry creation date and entry subscription date.
@@ -22,10 +24,8 @@ export const Users = () => {
   const queryClient = useQueryClient()
   const { data: users } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllUsers })
   const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompanies })
-  // useEffect(() => {
-  //   setUsers(sampleData?.users || [])
-  // }, [sampleData])
-
+  const navigate = useNavigate()
+  const { isUserAuthorized } = useAuthorization()
 
 
   const [tableOptions, setTableOptions] = useState({
@@ -35,6 +35,13 @@ export const Users = () => {
     handlePageChange: setCurrentPage,
     handleRowsPerPageChange: changeRowsPerPage
   })
+
+
+  useEffect(() => {
+    if (!isUserAuthorized()) {
+      navigate("/accessdenied")
+    }
+  }, [])
   function changeRowsPerPage(rowsPerPage) {
     setRowsPerPage(rowsPerPage)
     setCurrentPage(0)
@@ -113,14 +120,14 @@ export const Users = () => {
         showEditDialog={showEditDialog}
         showDeleteDialog={showDeleteDialog}
       />
-      <CreateDialog open={isCreateDialogOpen} 
-      companies={companies}
-      handleClose={(user) => {
-        if (user) {
-          createMutation.mutate(user)
-        }
-        setIsCreateDialogOpen(false)
-      }} />
+      <CreateDialog open={isCreateDialogOpen}
+        companies={companies}
+        handleClose={(user) => {
+          if (user) {
+            createMutation.mutate(user)
+          }
+          setIsCreateDialogOpen(false)
+        }} />
       {focusedEntry && <EditDialog open={isEditDialogOpen} entry={focusedEntry} handleClose={closeEditDialog} />}
       {focusedEntry && <DeleteDialog open={isDeleteDialogOpen} entry={focusedEntry} handleClose={closeDeleteDialog} />}
 
