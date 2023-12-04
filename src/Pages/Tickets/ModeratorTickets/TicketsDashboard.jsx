@@ -46,6 +46,9 @@ export const TicketsDashboard = () => {
   function setCurrentPage(page) {
     setTableOptions(prev => ({ ...prev, page }))
   }
+  function getAvailableAgents() {
+    return users
+  }
   const editMutation = useMutation({
     mutationFn: editTicket,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
@@ -179,8 +182,8 @@ export const TicketsDashboard = () => {
         </Paper >
       </Grid>
       <Grid item xs={0} lg={3}>
-        <Paper sx={{ width: '100%', minHeight: '40vh',padding:'1.5em' }}>
-          <FiltersContainer />
+        <Paper sx={{ width: '100%', minHeight: '40vh', padding: '1em' }}>
+          <FiltersContainer agents={getAvailableAgents()} />
         </Paper>
       </Grid>
     </Grid>
