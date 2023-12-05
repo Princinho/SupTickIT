@@ -1,7 +1,7 @@
 import { useTheme } from '@emotion/react'
-import { Box } from '@mui/material'
 import { Dot } from './Dot'
 import { TICKET_PRIORITY } from '../utils'
+import PropTypes from 'prop-types'
 
 export const PriorityDot = ({ type }) => {
     let theme = useTheme()
@@ -19,4 +19,7 @@ export const PriorityDot = ({ type }) => {
             color = theme.palette.error.main
             return <Dot color={color} />
     }
+}
+PriorityDot.propTypes = {
+    type: PropTypes.number
 }

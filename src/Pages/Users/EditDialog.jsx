@@ -1,10 +1,10 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material"
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Switch, TextField } from "@mui/material"
 import PropTypes from 'prop-types'
-import { useContext, useState } from "react"
-import { DataContext } from "../../Contexts"
-export const EditDialog = ({ open, handleClose, entry }) => {
+import { useState } from "react"
+
+export const EditDialog = ({ open, handleClose, companies, entry }) => {
     //TODO: Faire bosser la pagination
-    const { sampleData } = useContext(DataContext)
+
     const [formData, setFormData] = useState({ id: entry.id, firstName: entry.firstName, lastName: entry.lastName, companyId: entry.companyId, username: entry.username })
     const [nameError, setNameError] = useState(false)
     return (
@@ -45,21 +45,28 @@ export const EditDialog = ({ open, handleClose, entry }) => {
                         fullWidth
                         variant="standard"
                     />
-                    <FormControl fullWidth sx={{ marginTop: '1em' }}>
-                        <InputLabel id="company-select-label">Entreprise</InputLabel>
-                        <Select
-                            labelId="company-select-label"
-                            id="company-select"
-                            value={formData.companyId}
-                            label="Entreprise"
-                            onChange={event => setFormData(prev => ({ ...prev, companyId: event.target.value }))}
-                        >
-                            {sampleData.companies.map(
-                                company => <MenuItem key={`projet-${company.id}`} value={company.id}>{company.name}</MenuItem>
-                            )}
+                    <FormControlLabel control={<Switch checked={formData.isCompanyAccount || formData.companyId} onChange={() => setFormData(prev => ({ ...prev, isCompanyAccount: !prev.isCompanyAccount }))} />} label="Compte Partenaire" />
+                    {formData.isCompanyAccount || formData.companyId &&
+                        <>
+                            <FormControl fullWidth sx={{ marginTop: '1em' }}>
+                                <InputLabel id="company-select-label">Entreprise partenaire </InputLabel>
+                                <Select
+                                    labelId="company-select-label"
+                                    id="company-select"
+                                    value={formData.companyId}
+                                    label="Entreprise partenaire"
+                                    onChange={event => setFormData(prev => ({ ...prev, companyId: event.target.value }))}
+                                >
+                                    {companies?.map(
+                                        company => <MenuItem key={`projet-${company.id}`} value={company.id}>{company.name}</MenuItem>
+                                    )}
 
-                        </Select>
-                    </FormControl>
+                                </Select>
+                            </FormControl>
+                            {formData.companyId &&
+                                <FormControlLabel control={<Switch checked={formData.canManagePartnerUsers} onChange={() => setFormData(prev => ({ ...prev, canManagePartnerUsers: !prev.canManagePartnerUsers }))} />} label="Autoriser a gerer les utilisateurs du partenaire" />}
+                        </>
+                    }
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => {
@@ -83,6 +90,7 @@ export const EditDialog = ({ open, handleClose, entry }) => {
 }
 EditDialog.propTypes = {
     open: PropTypes.bool.isRequired,
+    companies: PropTypes.array.isRequired,
     handleClose: PropTypes.func.isRequired,
     entry: PropTypes.shape({
         id: PropTypes.string,

@@ -128,7 +128,7 @@ export const Users = () => {
           }
           setIsCreateDialogOpen(false)
         }} />
-      {focusedEntry && <EditDialog open={isEditDialogOpen} entry={focusedEntry} handleClose={closeEditDialog} />}
+      {focusedEntry && <EditDialog open={isEditDialogOpen} entry={focusedEntry} companies={companies} handleClose={closeEditDialog} />}
       {focusedEntry && <DeleteDialog open={isDeleteDialogOpen} entry={focusedEntry} handleClose={closeDeleteDialog} />}
 
     </Paper >

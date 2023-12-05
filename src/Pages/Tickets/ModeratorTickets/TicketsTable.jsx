@@ -27,7 +27,7 @@ export const TicketsTable = ({ tickets, users, showDetailsDialog, options }) => 
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {tickets.length > 0 ?
+                        {tickets?.length > 0 ?
                             (rowsPerPage > 0
                                 ? tickets.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 : tickets
@@ -95,7 +95,7 @@ export const TicketsTable = ({ tickets, users, showDetailsDialog, options }) => 
                                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                                 labelRowsPerPage="Eléments par page"
                                 colSpan={6}
-                                count={tickets.length}
+                                count={tickets?.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 SelectProps={{

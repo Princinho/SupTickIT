@@ -1,25 +1,39 @@
-import { ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-material'
-import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
+import { ArrowBack, ArrowForward, HighlightOff, Search, Tune } from '@mui/icons-material'
+import { Box, Button, ButtonGroup, FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 
-import { useContext, useState } from 'react'
-import { editTicket, getAllProjects, getAllUsers, getModeratorTickets } from '../../../Api'
+import { useContext, useEffect, useState } from 'react'
+import { editTicket, getAllProjects, getAllUsers, getModeratorTickets, isUserInRole } from '../../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { sortAndFilterData } from '../../Companies/utils'
 import { UserContext } from '../../../Contexts'
 import { TicketsTable } from './TicketsTable'
 import { TicketDetailsDialog } from './TicketDetailsDialog'
 import { FiltersContainer } from './FiltersContainer'
+import { SYSTEM_ROLES, TICKET_STATUS } from '../../../utils'
+import { FiltersDialog } from './FiltersDialog'
+import { useTheme } from '@emotion/react'
 
 export const TicketsDashboard = () => {
-
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"));
   const { user } = useContext(UserContext)
-  // const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const [searchTerm, setSearchTerm] = useState(false)
-  // const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const initialFilters = {
+    startDate: null,
+    endDate: null,
+    includeClosedTickets: false,
+    agentIds: [],
+    customerIds: [],
+    statuses: [],
+    priorities: [],
+    agentSearchTerm: '',
+    customerSearchTerm: ''
+  }
+  const [filters, setFilters] = useState(initialFilters)
+  const [filteredTickets, setFilteredTickets] = useState([])
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
   const [focusedEntry, setFocusedEntry] = useState(null)
   const [sortOption, setSortOption] = useState({ option: 'name' })
   const BASE_QUERY_KEY = 'moderator-tickets'
+  const [isFiltersDialogOpen, setIsFiltersDialogOpen] = useState(false)
   // const [companies, setCompanies] = useState([])
   const queryClient = useQueryClient()
   const { data: tickets } = useQuery({ queryKey: [BASE_QUERY_KEY, user?.id], queryFn: () => getModeratorTickets(user?.id) })
@@ -32,6 +46,7 @@ export const TicketsDashboard = () => {
     handlePageChange: setCurrentPage,
     handleRowsPerPageChange: changeRowsPerPage
   })
+  useEffect(() => setFilteredTickets(tickets), [tickets])
   function changeRowsPerPage(rowsPerPage) {
     setRowsPerPage(rowsPerPage)
     setCurrentPage(0)
@@ -47,14 +62,66 @@ export const TicketsDashboard = () => {
     setTableOptions(prev => ({ ...prev, page }))
   }
   function getAvailableAgents() {
-    return users
+    return users?.filter(user => isUserInRole(SYSTEM_ROLES.AGENT, user.id))
+  }
+  function getTicketCustomers() {
+    let ticketsCustomerIds = tickets?.reduce((prev, current) => {
+      return prev.includes(current.createdBy) ? prev : [...prev, current.createdBy]
+    }, [])
+    return ticketsCustomerIds?.map(id => users?.find(user => user.id == id))
+  }
+  function filterBySearchTerm(event) {
+    const newFilters = { ...filters, searchTerm: event.target.value }
+    setFilters(newFilters)
+    applyFilters(newFilters)
+  }
+
+  function applyFilters(updatedFilters) {
+    if (!tickets) {
+      return []
+    }
+
+    let newFilteredTickets = [...tickets]
+    if (updatedFilters?.startDate) newFilteredTickets = newFilteredTickets.filter(
+      t => new Date(t.dateCreated) > new Date(updatedFilters.startDate)
+    )
+    if (updatedFilters?.endDate) newFilteredTickets = newFilteredTickets.filter(
+      t => new Date(t.dateCreated) < new Date(updatedFilters.endDate)
+    )
+    if (!updatedFilters.includeClosedTickets) {
+      newFilteredTickets = newFilteredTickets.filter(ticket => ticket.status != TICKET_STATUS.CLOSED)
+    }
+    if (updatedFilters.agentIds?.length > 0) {
+      newFilteredTickets = newFilteredTickets.filter(ticket => updatedFilters.agentIds.includes(ticket.agentId))
+    }
+    if (updatedFilters.customerIds?.length > 0) {
+      newFilteredTickets = newFilteredTickets.filter(ticket => updatedFilters.agentIds.includes(ticket.agentId))
+    }
+    if (updatedFilters.customerIds?.length > 0) {
+      newFilteredTickets = newFilteredTickets.filter(ticket => updatedFilters.agentIds.includes(ticket.agentId))
+    }
+    if (updatedFilters.priorities?.length > 0) {
+      newFilteredTickets = newFilteredTickets.filter(ticket => updatedFilters.priorities.includes(ticket.priority))
+    }
+    if (updatedFilters.statuses?.length > 0) {
+      newFilteredTickets = newFilteredTickets.filter(ticket => updatedFilters.statuses.includes(ticket.status))
+    }
+    if (filters.searchTerm) {
+      newFilteredTickets = newFilteredTickets.filter(
+        ticket => ticket.name.toLowerCase().includes(filters.searchTerm.toLowerCase())
+          || ticket.description.toLowerCase().includes(filters.searchTerm.toLowerCase()))
+    }
+    console.log(newFilteredTickets)
+
+    setFilteredTickets(newFilteredTickets)
+    return newFilteredTickets
   }
   const editMutation = useMutation({
     mutationFn: editTicket,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
 
-  return (
+  return (<>
     <Grid container spacing={2}>
       <Grid item xs={12} lg={9}>
         <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
@@ -67,14 +134,7 @@ export const TicketsDashboard = () => {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={5}>
               <Stack direction='row' alignItems='center' spacing={2}>
-                {/* <Button variant='contained'
-              onClick={() => setIsCreateDialogOpen(true)}
-              startIcon={<AddCircleOutline />}
-              sx={{
-                color: 'white',
-                background: (theme) => theme.palette.primary.light,
-                textTransform: 'none'
-              }}>Nouveau</Button> */}
+
 
                 <FormControl sx={{ minWidth: { xs: '85%', sm: '60%' } }} size='small'>
                   <InputLabel id="demo-simple-select-label">Trier par</InputLabel>
@@ -99,7 +159,7 @@ export const TicketsDashboard = () => {
                 <TextField
                   id="companies-index-search-box" size='small'
                   sx={{ minWidth: { xs: '30%', sm: '50%' } }}
-                  onChange={(event) => setSearchTerm(event.target.value)}
+                  onChange={filterBySearchTerm}
                   aria-label='search'
                   InputProps={{
                     startAdornment: (
@@ -138,7 +198,7 @@ export const TicketsDashboard = () => {
                     onClick={() => setCurrentPage(tableOptions.page + 1)}
                     sx={{ backgroundColor: 'white', color: (theme) => theme.palette.text.secondary }}><ArrowForward /></Button>
                 </ButtonGroup>
-
+                <IconButton onClick={() => setIsFiltersDialogOpen(true)}><Tune /></IconButton>
                 <Button sx={{
                   backgroundColor: 'white', color: (theme) => theme.palette.primary.light,
                   borderTopRightRadius: 0,
@@ -162,7 +222,7 @@ export const TicketsDashboard = () => {
               options={tableOptions}
               projects={projects}
               users={users}
-              tickets={sortAndFilterData(tickets, searchTerm, sortOption)}
+              tickets={filteredTickets}
               showDetailsDialog={showDetailsDialog}
             />
           </Box>
@@ -181,12 +241,33 @@ export const TicketsDashboard = () => {
           }
         </Paper >
       </Grid>
-      <Grid item xs={0} lg={3}>
-        <Paper sx={{ width: '100%', minHeight: '40vh', padding: '1em' }}>
-          <FiltersContainer agents={getAvailableAgents()} />
-        </Paper>
+      <Grid item xs={0} lg={3} >
+        {!isSmallScreen && <Paper sx={{ width: '100%', minHeight: '40vh', padding: '1em', display: { xs: 'none', lg: 'block' } }}>
+          <FiltersContainer
+            agents={getAvailableAgents()}
+            filters={filters}
+            initialFilters={initialFilters}
+            setFilters={setFilters}
+            customers={getTicketCustomers()}
+            applyFilters={(filters) => applyFilters(filters)} />
+        </Paper>}
       </Grid>
     </Grid>
+    <FiltersDialog agents={getAvailableAgents()}
+      open={isFiltersDialogOpen}
+      customers={getTicketCustomers()}
+      filters={filters}
+      initialFilters={initialFilters}
+      setFilters={setFilters}
+      handleClose={(newFilters) => {
+        console.log(newFilters)
+        setIsFiltersDialogOpen(false)
+        if (newFilters) {
+          setFilters(newFilters)
+          applyFilters(filters)
+        }
+      }} />
 
+  </>
   )
 }

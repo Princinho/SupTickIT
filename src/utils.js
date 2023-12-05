@@ -111,10 +111,16 @@ function getAvailablePriorities() {
         { id: 3, name: 'Critique', }
     ]
 }
+function formatToInput(dateObject) {
+    // let result = `${dateObject.getFullYear()}-${dateObject.getMonth()}-${dateObject.getDate()}`
+    let result = dateObject.toISOString().split('T')[0]
+    // console.log(result)
+    return result
+}
 export {
     stringAvatar, stringToColor,
     getSampleDataFromLocalStorage, saveDataToLocalStorage,
     getRandomNumber, addOnemonth, sortAndFilterData,
-    getAvailablePriorities,
+    getAvailablePriorities, formatToInput,
     TICKET_STATUS, TICKET_PRIORITY, SYSTEM_ROLES
 }

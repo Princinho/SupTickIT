@@ -1,55 +1,93 @@
 import { RestartAlt } from "@mui/icons-material"
 import { Box, Button, Checkbox, FormControlLabel, Link, Stack, TextField, Typography } from "@mui/material"
 import { PriorityDot } from "../../../Components/PriorityDot"
-import { TICKET_PRIORITY, TICKET_STATUS } from "../../../utils"
+import { TICKET_PRIORITY, TICKET_STATUS, formatToInput } from "../../../utils"
 import { StatusDot } from "../../../Components/StatusDot"
 import { useTheme } from "@emotion/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { SelectListDialog } from "./SelectListDialog"
 import PropTypes from "prop-types"
-export const FiltersContainer = ({ agents, customers }) => {
+export const FiltersContainer = ({ agents, customers, applyFilters, filters, setFilters, initialFilters }) => {
+
     let theme = useTheme()
     const [isAddAgentsDialogOpen, setIsAddAgentsDialogOpen] = useState(false)
+    const [isAddCustomersDialogOpen, setIsAddCustomersDialogOpen] = useState(false)
     const MAX_DISPLAYED_ENTRIES = 3
     let resetBtnColor = theme.palette.primary.light
-    const [filters, setFilters] = useState({
-        startDate: null,
-        endDate: null,
-        includeClosedTickets: false,
-        agentIds: [],
-        customerIds: [],
-        statuses: [],
-        priorities: []
-    })
-    console.log(isAddAgentsDialogOpen)
+    function resetAllFilters() {
+        setFilters(initialFilters)
+    }
+    function resetDates() {
+        setFilters(prev => ({ ...prev, startDate: null, endDate: null }))
+    }
+    function resetAgents() {
+        setFilters(prev => ({ ...prev, agentSearchTerm: '', agentIds: [] }))
+    }
+    function resetCustomers() {
+        setFilters(prev => ({ ...prev, customerSearchTerm: '', customerIds: [] }))
+    }
+    function resetPriorities() {
+        setFilters(prev => ({ ...prev, priorities: [] }))
+    }
+    function resetStatuses() {
+        setFilters(prev => ({ ...prev, statuses: [] }))
+    }
+    useEffect(() => {
+        console.log('Apply FIlters is ', applyFilters)
+        if (applyFilters) applyFilters(filters)
+    }, [filters])
     function closeAddAgentsDialog() {
         setIsAddAgentsDialogOpen(false)
     }
-    console.log(filters)
+    function closeAddCustomersDialog() {
+        setIsAddCustomersDialogOpen(false)
+    }
+    function togglePriority(priority) {
+        setFilters(
+            prev => ({
+                ...prev, priorities: filters?.priorities?.includes(priority) ?
+                    prev.priorities.filter(p => p != priority) :
+                    [...prev.priorities, priority]
+            })
+        )
+    }
+    function toggleStatus(status) {
+        setFilters(
+            prev => ({
+                ...prev, statuses: filters?.statuses?.includes(status) ?
+                    prev.statuses?.filter(p => p != status) :
+                    [...prev.statuses, status]
+            })
+        )
+    }
     return (
         <Stack>
             <Stack direction='row' mb={2} justifyContent='space-between'>
                 <Typography variant="h5" fontWeight='bold'>Filtrer les tickets</Typography>
-                <Button variant="outlined" size="small" sx={{ color: resetBtnColor }}><RestartAlt sx={{ color: resetBtnColor }} /></Button>
+                <Button variant="outlined" size="small"
+                    onClick={resetAllFilters}
+                    sx={{ color: resetBtnColor }}><RestartAlt sx={{ color: resetBtnColor }} /></Button>
             </Stack>
             <Stack direction='row' mb={1} justifyContent='space-between'>
 
                 <Typography variant="body1" fontWeight='bold'>Filtrer par date</Typography>
-                <Button variant="outlined" size="small" sx={{ color: resetBtnColor }}><RestartAlt sx={{ color: resetBtnColor }} /></Button>
+                <Button variant="outlined" size="small"
+                    onClick={resetDates}
+                    sx={{ color: resetBtnColor }}><RestartAlt sx={{ color: resetBtnColor }} /></Button>
             </Stack>
             <Stack direction='row' spacing={1} alignItems='center' justifyContent='space-between'>
                 <Typography variant="subtitle2">Du</Typography>
-                <TextField id="start-date" type="date" value={filters.startDate}
+                <TextField id="start-date" type="date" value={filters?.startDate ? formatToInput(new Date(filters?.startDate)) : ""}
                     onChange={event => setFilters(prev => ({ ...prev, startDate: event.target.value }))}
                     size='small' aria-label="Du" variant="outlined" />
                 <Typography variant="subtitle2">Au</Typography>
-                <TextField id="end-date" type="date" value={filters.endDate}
+                <TextField id="end-date" type="date" value={filters?.endDate ? formatToInput(new Date(filters?.endDate)) : ""}
                     onChange={event => setFilters(prev => ({ ...prev, endDate: event.target.value }))}
                     aria-label="Au" size='small' variant="outlined" />
             </Stack>
             <FormControlLabel
                 control={
-                    <Checkbox name="showClosed" checked={filters.includeClosedTickets}
+                    <Checkbox checked={filters?.includeClosedTickets}
                         onChange={() => setFilters(
                             prev => ({ ...prev, includeClosedTickets: !prev.includeClosedTickets }))
                         } />
@@ -60,28 +98,32 @@ export const FiltersContainer = ({ agents, customers }) => {
             <Stack direction='row' mb={1} justifyContent='space-between'>
 
                 <Typography variant="body1" fontWeight='bold'>Filtrer par agent</Typography>
-                <Button variant="outlined" size="small" sx={{ color: resetBtnColor }}><RestartAlt sx={{ color: resetBtnColor }} /></Button>
+                <Button variant="outlined" size="small"
+                    onClick={resetAgents}
+                    sx={{ color: resetBtnColor }}><RestartAlt sx={{ color: resetBtnColor }} /></Button>
             </Stack>
             <TextField id="search-by-agent"
                 size="small" aria-label="Filtrer par agent"
                 label="Recherche agent" variant="outlined" sx={{ marginBottom: '1em' }} />
             <Stack mb={2} >
-                {agents?.slice(0, MAX_DISPLAYED_ENTRIES)
+                {agents?.filter(agent => filters.agentSearchTerm ? (agent.firstName + " " + agent.lastName).includes(filters.agentSearchTerm) : true)
+                    .slice(0, MAX_DISPLAYED_ENTRIES)
                     .map(agent => <FormControlLabel key={`agent-${agent.id}`} sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                         control={
-                            <Checkbox name="showClosed" />
+                            <Checkbox />
                         }
                         label={agent.firstName + " " + agent.lastName}
                     />
                     )}
 
-                {agents.length > MAX_DISPLAYED_ENTRIES &&
+                {agents?.length > MAX_DISPLAYED_ENTRIES &&
                     <>
                         <Link sx={{ cursor: 'pointer' }}
                             onClick={() => setIsAddAgentsDialogOpen(true)}
                         >{agents?.length - MAX_DISPLAYED_ENTRIES} de plus</Link>
                         <SelectListDialog
-                            entries={agents.map(agent => ({ ...agent, fullName: `${agent.firstName} ${agent.lastName}` }))}
+                            entries={agents.map(agent => ({ ...agent, fullName: `${agent.firstName} ${agent.lastName}` }))
+                            }
                             keyField='id' labelField='fullName'
                             placeholder={"Nom Complet"}
                             open={isAddAgentsDialogOpen}
@@ -90,56 +132,69 @@ export const FiltersContainer = ({ agents, customers }) => {
                 }
             </Stack>
 
-            <Stack direction='row' mb={1} justifyContent='space-between'>
+            {customers && <>
+                <Stack direction='row' mb={1} justifyContent='space-between'>
 
-                <Typography variant="body1" fontWeight='bold'>Filtrer par client</Typography>
-                <Button variant="outlined" size="small" sx={{ color: resetBtnColor }}><RestartAlt sx={{ color: resetBtnColor }} /></Button>
-            </Stack>
-            <TextField id="search-by-client"
-                size="small" aria-label="Filtrer par client"
-                label="Recherche client" variant="outlined" sx={{ marginBottom: '1em' }} />
-            <Stack mb={2} >
-                <FormControlLabel sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
-                    control={
-                        <Checkbox name="showClosed" />
+                    <Typography variant="body1" fontWeight='bold'>Filtrer par client</Typography>
+                    <Button variant="outlined" size="small"
+                        onClick={resetCustomers}
+                        sx={{ color: resetBtnColor }}><RestartAlt sx={{ color: resetBtnColor }} /></Button>
+                </Stack>
+                <TextField id="search-by-client"
+                    size="small" aria-label="Filtrer par client"
+                    label="Recherche client" variant="outlined" sx={{ marginBottom: '1em' }} />
+                <Stack mb={2} >
+                    {customers?.slice(0, MAX_DISPLAYED_ENTRIES)
+                        .map(agent => <FormControlLabel key={`agent-${agent.id}`} sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
+                            control={
+                                <Checkbox />
+                            }
+                            label={agent.firstName + " " + agent.lastName}
+                        />
+                        )}
+
+                    {customers?.length > MAX_DISPLAYED_ENTRIES &&
+                        <>
+                            <Link sx={{ cursor: 'pointer' }}
+                                onClick={() => setIsAddCustomersDialogOpen(true)}
+                            >{customers?.length - MAX_DISPLAYED_ENTRIES} de plus</Link>
+                            <SelectListDialog
+                                entries={customers.map(agent => ({ ...agent, fullName: `${agent.firstName} ${agent.lastName}` }))}
+                                keyField='id' labelField='fullName'
+                                placeholder={"Nom Complet"}
+                                open={isAddCustomersDialogOpen}
+                                handleClose={closeAddCustomersDialog} title={'Choisir les clients a inclure'} />
+                        </>
                     }
-                    label="Client 001"
-                />
-                <FormControlLabel sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
-                    control={
-                        <Checkbox name="showClosed" />
-                    }
-                    label="Client 005"
-                />
-                <FormControlLabel sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
-                    control={
-                        <Checkbox name="showClosed" />
-                    }
-                    label="Client 007"
-                />
-                <Link>5 de plus</Link>
-            </Stack>
+                </Stack>
+            </>}
             <Stack direction='row' mb={1} justifyContent='space-between'>
 
                 <Typography variant="body1" fontWeight='bold'>Priorité et statut</Typography>
-                <Button variant="outlined" size="small" color="primary"><RestartAlt sx={{ color: resetBtnColor }} /></Button>
+                <Button variant="outlined" size="small"
+                    onClick={() => { resetPriorities(); resetStatuses() }}
+                    color="primary"><RestartAlt sx={{ color: resetBtnColor }} /></Button>
             </Stack>
             <Stack direction='row'>
                 <Box sx={{ width: '50%' }}>
                     <Typography variant="body1" fontWeight='bold'>Statut</Typography>
                     <FormControlLabel sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                         control={
-                            <Checkbox name="showClosed" />
+                            <Checkbox checked={filters?.statuses?.includes(TICKET_STATUS.PENDING)}
+                                onChange={() => toggleStatus(TICKET_STATUS.PENDING)}
+                            />
                         }
                         label={
                             <Stack direction='row' alignItems='center' spacing={1}>
                                 <StatusDot type={TICKET_STATUS.PENDING} />
-                                <Typography variant="body1" >En attente</Typography>
+                                <Typography variant="body1" >Non démarré</Typography>
                             </Stack>}
                     />
                     <FormControlLabel sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                         control={
-                            <Checkbox name="showClosed" />
+                            <Checkbox checked={filters?.statuses?.includes(TICKET_STATUS.PROCESSED)}
+                                onChange={() => toggleStatus(TICKET_STATUS.PROCESSED)}
+                            />
                         }
                         label={
                             <Stack direction='row' alignItems='center' spacing={1}>
@@ -149,7 +204,9 @@ export const FiltersContainer = ({ agents, customers }) => {
                     />
                     <FormControlLabel sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                         control={
-                            <Checkbox name="showClosed" />
+                            <Checkbox checked={filters?.statuses?.includes(TICKET_STATUS.REJECTED)}
+                                onChange={() => toggleStatus(TICKET_STATUS.REJECTED)}
+                            />
                         }
                         label={
                             <Stack direction='row' alignItems='center' spacing={1}>
@@ -162,7 +219,9 @@ export const FiltersContainer = ({ agents, customers }) => {
                     <Typography variant="body1" fontWeight='bold'>Priorité</Typography>
                     <FormControlLabel sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                         control={
-                            <Checkbox name="showClosed" />
+                            <Checkbox checked={filters?.priorities?.includes(TICKET_PRIORITY.CRITICAL)}
+                                onChange={() => togglePriority(TICKET_PRIORITY.CRITICAL)}
+                            />
                         }
                         label={
                             <Stack direction='row' alignItems='center' spacing={1}>
@@ -172,7 +231,9 @@ export const FiltersContainer = ({ agents, customers }) => {
                     />
                     <FormControlLabel sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                         control={
-                            <Checkbox name="showClosed" />
+                            <Checkbox checked={filters?.priorities?.includes(TICKET_PRIORITY.HIGH)}
+                                onChange={() => togglePriority(TICKET_PRIORITY.HIGH)}
+                            />
                         }
                         label={
                             <Stack direction='row' alignItems='center' spacing={1}>
@@ -182,7 +243,9 @@ export const FiltersContainer = ({ agents, customers }) => {
                     />
                     <FormControlLabel sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                         control={
-                            <Checkbox name="showClosed" />
+                            <Checkbox checked={filters?.priorities?.includes(TICKET_PRIORITY.NORMAL)}
+                                onChange={() => togglePriority(TICKET_PRIORITY.NORMAL)}
+                            />
                         }
                         label={
                             <Stack direction='row' alignItems='center' spacing={1}>
@@ -190,6 +253,7 @@ export const FiltersContainer = ({ agents, customers }) => {
                                 <Typography variant="body1" >Normale</Typography>
                             </Stack>}
                     />
+
                 </Box>
             </Stack>
 
@@ -199,5 +263,10 @@ export const FiltersContainer = ({ agents, customers }) => {
 }
 FiltersContainer.propTypes = {
     agents: PropTypes.array,
-    customers: PropTypes.array
+    customers: PropTypes.array,
+    applyFilters: PropTypes.func,
+    setFilters: PropTypes.func,
+    filters: PropTypes.object,
+    initialFilters: PropTypes.object
+
 }
