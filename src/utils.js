@@ -5,8 +5,8 @@ const TICKET_STATUS = {
     AWAITING_RESPONSE: 3,
     PROCESSED: 4,
     CLOSED: 5,
-    REJECTED: 6
-
+    REJECTED: 6,
+    APPROVED: 7
 }
 const TICKET_PRIORITY = {
     NORMAL: 1,

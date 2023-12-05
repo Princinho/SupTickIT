@@ -1,18 +1,19 @@
-import { IconButton, ListItemIcon, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
+import { IconButton, ListItemIcon, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography, useMediaQuery } from '@mui/material'
 
 import PropTypes from 'prop-types'
 import { Delete, Edit, MoreVert } from '@mui/icons-material'
 import { useState } from 'react'
 import { TicketStatus } from '../../../Components/TicketStatus'
 import { TICKET_STATUS } from '../../../utils'
+import { useTheme } from '@emotion/react'
 
 
 export const TicketsTable = ({ tickets, projects, categories, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
     function handleClose() {
         setAnchorEl(null)
     }
-    // console.log(projects)
-    // console.log(tickets)
+    const theme = useTheme()
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
     const [anchorEl, setAnchorEl] = useState(null)
     const [focusedEntry, setFocusedEntry] = useState(null)
     const appMoreMenuOpen = Boolean(anchorEl)
@@ -28,7 +29,7 @@ export const TicketsTable = ({ tickets, projects, categories, showEditDialog, sh
                             <TableCell>Id</TableCell>
                             <TableCell align="left">Aperçu</TableCell>
                             <TableCell align="left">Projet</TableCell>
-                            <TableCell align="left" sx={{ display: { xs: 'none', sm: 'inline-block' } }} >Catégorie</TableCell>
+                            <TableCell align="left" sx={{ display: { xs: 'none', sm: 'table-cell' } }} >Catégorie</TableCell>
                             <TableCell align="left">Statut</TableCell>
                             <TableCell align="left">Options</TableCell>
                         </TableRow>
@@ -78,8 +79,10 @@ export const TicketsTable = ({ tickets, projects, categories, showEditDialog, sh
                                     <TableCell>
                                         {projects?.find(p => p.id == ticket.projectId)?.title}
                                     </TableCell>
-                                    <TableCell sx={{ display: { xs: 'none', sm: 'inline-block' } }}>
-                                        {categories?.find(cat => cat.id == ticket.categoryId)?.name}
+                                    <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
+                                        <Typography variant='body2'>
+                                            {categories?.find(cat => cat.id == ticket.categoryId)?.name || "---"}
+                                        </Typography>
                                     </TableCell>
                                     <TableCell>
                                         <TicketStatus status={ticket.status} />
@@ -107,7 +110,7 @@ export const TicketsTable = ({ tickets, projects, categories, showEditDialog, sh
                             <TablePagination
                                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                                 labelRowsPerPage="Eléments par page"
-                                colSpan={5}
+                                colSpan={isSmallScreen ? 5 : 6}
                                 count={tickets.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
