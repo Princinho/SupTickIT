@@ -5,6 +5,7 @@ import { Delete, Edit, MoreVert, Tune } from '@mui/icons-material'
 import { useContext, useState } from 'react'
 import { DataContext } from '../../Contexts'
 import { Link, useNavigate } from 'react-router-dom'
+import { RoleChip } from '../Companies/RoleChip'
 
 
 export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options }) => {
@@ -17,6 +18,7 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
     const appMoreMenuOpen = Boolean(anchorEl)
     const navigate = useNavigate()
     const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } = options
+    console.log(users)
     // TODO: Permettre de reset les champs au clic du bouton reset a droite.
     return (
         <>
@@ -29,6 +31,7 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                             <TableCell>Id</TableCell>
                             <TableCell align="left">Nom Complet</TableCell>
                             <TableCell align="left">Identifiant</TableCell>
+                            <TableCell align="left">Roles</TableCell>
                             <TableCell align="left">Derniere Connexion</TableCell>
                             <TableCell align="left">Entreprise</TableCell>
                             <TableCell align="left">Options</TableCell>
@@ -70,6 +73,9 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                                                 {user.username}
                                             </Typography>
                                         </Link>
+                                    </TableCell>
+                                    <TableCell>
+                                        {user.roles.map(role => <RoleChip key={`role-${role.id}`} roleId={role.id} />)}
                                     </TableCell>
                                     <TableCell>
                                         {user.lastLoginDate}

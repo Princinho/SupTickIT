@@ -2,7 +2,7 @@ import { ArrowBack, ArrowForward, HighlightOff, Search, Tune } from '@mui/icons-
 import { Box, Button, ButtonGroup, FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 
 import { useContext, useEffect, useState } from 'react'
-import { editTicket, getAllProjects, getAllTickets, getAllUsers, getModeratorTickets, isUserInRole } from '../../../Api'
+import { editTicket, getAllProjects, getAllTickets, getAllUsers, isUserInRole } from '../../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { UserContext } from '../../../Contexts'
 import { TicketsTable } from './TicketsTable'
@@ -95,10 +95,7 @@ export const TicketsDashboard = () => {
       newFilteredTickets = newFilteredTickets.filter(ticket => updatedFilters.agentIds.includes(ticket.agentId))
     }
     if (updatedFilters.customerIds?.length > 0) {
-      newFilteredTickets = newFilteredTickets.filter(ticket => updatedFilters.agentIds.includes(ticket.agentId))
-    }
-    if (updatedFilters.customerIds?.length > 0) {
-      newFilteredTickets = newFilteredTickets.filter(ticket => updatedFilters.agentIds.includes(ticket.agentId))
+      newFilteredTickets = newFilteredTickets.filter(ticket => updatedFilters.customerIds.includes(ticket.createdBy))
     }
     if (updatedFilters.priorities?.length > 0) {
       newFilteredTickets = newFilteredTickets.filter(ticket => updatedFilters.priorities.includes(ticket.priority))
@@ -112,7 +109,7 @@ export const TicketsDashboard = () => {
           || ticket.description.toLowerCase().includes(filters.searchTerm.toLowerCase()))
     }
     console.log(newFilteredTickets)
-
+    // setFilters(updatedFilters)
     setFilteredTickets(newFilteredTickets)
     return newFilteredTickets
   }
@@ -198,7 +195,7 @@ export const TicketsDashboard = () => {
                     onClick={() => setCurrentPage(tableOptions.page + 1)}
                     sx={{ backgroundColor: 'white', color: (theme) => theme.palette.text.secondary }}><ArrowForward /></Button>
                 </ButtonGroup>
-                <IconButton onClick={() => setIsFiltersDialogOpen(true)} sx={{display:{lg:'none'}}}><Tune /></IconButton>
+                <IconButton onClick={() => setIsFiltersDialogOpen(true)} sx={{ display: { lg: 'none' } }}><Tune /></IconButton>
                 <Button sx={{
                   backgroundColor: 'white', color: (theme) => theme.palette.primary.light,
                   borderTopRightRadius: 0,

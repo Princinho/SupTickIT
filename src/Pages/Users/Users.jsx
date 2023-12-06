@@ -7,7 +7,7 @@ import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from '../../utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createUser, deleteUser, editUser, getAllCompanies, getAllUsers } from '../../Api'
+import { createUser, deleteUser, editUser, getActiveRolesForUser, getAllCompanies, getAllUsers } from '../../Api'
 import { useNavigate } from 'react-router-dom'
 import { useAuthorization } from '../../Hooks/useAuthorization'
 
@@ -36,7 +36,13 @@ export const Users = () => {
     handleRowsPerPageChange: changeRowsPerPage
   })
 
-
+  function getUsersWithRoles() {
+    let result = users?.map(user => {
+      let userRoles = getActiveRolesForUser(user.id)
+      return { ...user, roles: userRoles }
+    })
+    return result
+  }
   useEffect(() => {
     if (!isUserAuthorized()) {
       navigate("/accessdenied")
@@ -115,7 +121,7 @@ export const Users = () => {
       />
 
       <UsersTable
-        users={sortAndFilterData(users, searchTerm, tableOptions.sortOption || "")}
+        users={sortAndFilterData(getUsersWithRoles(), searchTerm, tableOptions.sortOption || "")}
         options={({ ...tableOptions, handlePageChange, handleRowsPerPageChange })}
         showEditDialog={showEditDialog}
         showDeleteDialog={showDeleteDialog}

@@ -14,6 +14,7 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
     const [isAddCustomersDialogOpen, setIsAddCustomersDialogOpen] = useState(false)
     const MAX_DISPLAYED_ENTRIES = 3
     let resetBtnColor = theme.palette.primary.light
+    console.log(filters)
     function resetAllFilters() {
         setFilters(initialFilters)
     }
@@ -48,6 +49,24 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                 ...prev, priorities: filters?.priorities?.includes(priority) ?
                     prev.priorities.filter(p => p != priority) :
                     [...prev.priorities, priority]
+            })
+        )
+    }
+    function toggleAgent(agentId) {
+        setFilters(
+            prev => ({
+                ...prev, agentIds: filters?.agentIds?.includes(agentId) ?
+                    prev.agentIds.filter(p => p != agentId) :
+                    [...prev.agentIds, agentId]
+            })
+        )
+    }
+    function toggleCustomer(customerId) {
+        setFilters(
+            prev => ({
+                ...prev, customerIds: filters?.customerIds?.includes(customerId) ?
+                    prev.customerIds.filter(p => p != customerId) :
+                    [...prev.customerIds, customerId]
             })
         )
     }
@@ -110,7 +129,7 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                     .slice(0, MAX_DISPLAYED_ENTRIES)
                     .map(agent => <FormControlLabel key={`agent-${agent.id}`} sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                         control={
-                            <Checkbox />
+                            <Checkbox checked={filters.agentIds.includes(agent.id)} onChange={() => toggleAgent(agent.id)} />
                         }
                         label={agent.firstName + " " + agent.lastName}
                     />
@@ -145,11 +164,11 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                     label="Recherche client" variant="outlined" sx={{ marginBottom: '1em' }} />
                 <Stack mb={2} >
                     {customers?.slice(0, MAX_DISPLAYED_ENTRIES)
-                        .map(agent => <FormControlLabel key={`agent-${agent.id}`} sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
+                        .map(customer => <FormControlLabel key={`customer-${customer.id}`} sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                             control={
-                                <Checkbox />
+                                <Checkbox checked={filters.customerIds.includes(customer.id)} onChange={() => toggleCustomer(customer.id)} />
                             }
-                            label={agent.firstName + " " + agent.lastName}
+                            label={customer.firstName + " " + customer.lastName}
                         />
                         )}
 
