@@ -5,15 +5,15 @@ export const PriorityTag = ({ priority, size }) => {
     switch (priority) {
         case TICKET_PRIORITY.NORMAL:
             return (
-                <Chip size={size} label="Normale" sx={{color:'white'}} color="primary" />
+                <Chip size={size} label="Normale" color="default" />
             )
         case TICKET_PRIORITY.HIGH:
             return (
-                <Chip size={size} label="Haute" color="warning" />
+                <Chip size={size} label="Haute" color="lightblue" />
             )
         case TICKET_PRIORITY.CRITICAL:
             return (
-                <Chip size={size} label="Critique" color="error" />
+                <Chip size={size} label="Critique" color="warning" />
             )
         default:
             return (

@@ -10,7 +10,7 @@ export const PriorityDot = ({ type }) => {
     let color = theme.palette.primary
     switch (type) {
         case TICKET_PRIORITY.NORMAL:
-            color = theme.palette.primary.main
+            color = theme.palette.primary.light
             return <Dot color={color} />
         case TICKET_PRIORITY.HIGH:
             color = theme.palette.warning.main

@@ -26,6 +26,7 @@ export const TicketDetails = () => {
     const { data: category } = useQuery({ queryKey: ['categories', ticket?.categoryId], queryFn: () => getCategory(id) })
     const author = users?.find(u => u.id == ticket?.createdBy)
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+    const [isCloseTicketDialogOpen, setIsCloseTicketDialogOpen] = useState(false)
     const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false)
     const createMutation = useMutation({
         mutationFn: createMessage,
@@ -35,15 +36,22 @@ export const TicketDetails = () => {
         mutationFn: editTicket,
         onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY, id] })
     })
-    function rejectTicket(reject) {
-        if (reject) {
+    function rejectTicket(proceed) {
+        if (proceed) {
             console.warn('Ticket has been rejected')
             editMutation.mutate({ ...ticket, status: TICKET_STATUS.REJECTED })
         }
         setIsRejectDialogOpen(false)
     }
-    function confirmTicket(confirm) {
-        if (confirm) {
+    function closeTicket(proceed) {
+        if (proceed) {
+            console.warn('Ticket has been rejected')
+            editMutation.mutate({ ...ticket, status: TICKET_STATUS.CLOSED })
+        }
+        setIsCloseTicketDialogOpen(false)
+    }
+    function confirmTicket(proceed) {
+        if (proceed) {
             console.info('Ticket has been confirmed')
             editMutation.mutate({ ...ticket, status: TICKET_STATUS.APPROVED })
         }
@@ -71,7 +79,7 @@ export const TicketDetails = () => {
                 </Stack>
                 <SimpleButton text="Retour" handleClick={() => { navigate(-1) }} />
             </Stack>
-            <Box sx={{ maxHeight: '30vh', overflowY: 'scroll' }}>
+            <Box sx={{ maxHeight: '40vh', overflowY: 'scroll' }}>
                 <Typography variant='subtitle1'>#{id}</Typography>
                 <Stack direction='row' alignItems='center' spacing={1}>
                     <Typography variant='h5' component='h2' fontWeight='bold'>{ticket?.name}</Typography>
@@ -131,13 +139,17 @@ export const TicketDetails = () => {
                                 <Button color='success' onClick={() => setIsConfirmDialogOpen(true)} variant='contained' size='small'>Approuver</Button>
                                 <Button color='error' onClick={() => setIsRejectDialogOpen(true)} variant='contained' size='small'>Rejeter</Button>
                             </Stack>}
+
+                            {ticket?.status == TICKET_STATUS.APPROVED && isUserInRole(SYSTEM_ROLES.MODERATOR, user?.id) && <Stack direction='row' gap={1}>
+                                <Button color='success' onClick={() => setIsCloseTicketDialogOpen(true)} variant='contained' size='small'>Cloturer</Button>
+                            </Stack>}
                         </Stack>
                     }
 
                 </Stack>
             </Box>
             <Box sx={{ position: 'relative' }}>
-                <Box sx={{ maxHeight: '50vh', overflowY: 'scroll' }}>
+                <Box sx={{ maxHeight: '40vh', overflowY: 'scroll' }}>
                     <Typography variant='body1' fontWeight='bold' mb={1}> Messages</Typography>
                     <Discussion messages={messages || []} addMessage={addMessage} users={users} />
                 </Box>
@@ -150,6 +162,11 @@ export const TicketDetails = () => {
             <SimpleDialog open={isRejectDialogOpen} handleClose={rejectTicket}
                 dialogContent={<Typography variant="body1">Rejeter le ticket?</Typography>}
                 dialogTitle='Confirmation' confirmationButtonColor='error'
+                approveText='Oui'
+            />
+            <SimpleDialog open={isCloseTicketDialogOpen} handleClose={closeTicket}
+                dialogContent={<Typography variant="body1">Cloturer le ticket?</Typography>}
+                dialogTitle='Confirmation de cloture' confirmationButtonColor='error'
                 approveText='Oui'
             />
         </Paper >

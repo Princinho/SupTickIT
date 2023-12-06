@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography } from "@mui/material"
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Stack, Typography } from "@mui/material"
 import PropTypes from 'prop-types'
 import { useContext, useEffect, useState } from "react"
 import { getAvailableAgents, getCompanyProjects } from "../../../Api"
@@ -6,6 +6,8 @@ import { UserContext } from "../../../Contexts"
 import { DropdownSelector } from "../../../Components/DropdownSelector"
 import { getAvailablePriorities } from "../../../utils"
 import { TicketStatus } from "../../../Components/TicketStatus"
+import { Link } from "react-router-dom"
+import { OpenInNew } from "@mui/icons-material"
 export const TicketDetailsDialog = ({ open, handleClose, entry }) => {
     const { user } = useContext(UserContext)
     const [formData, setFormData] = useState({ ...entry })
@@ -24,10 +26,15 @@ export const TicketDetailsDialog = ({ open, handleClose, entry }) => {
                 <DialogTitle>Ticket #{entry.id}</DialogTitle>
                 <DialogContent>
                     <Grid container direction='row' spacing={2} justifyContent='flex-start'>
-
                         <Grid item xs={12}>
-                            <Typography variant="h6" fontWeight='bold'>{entry.name}</Typography>
+                            <Stack direction='row' justifyContent='space-between'>
+                                <Typography variant="h6" fontWeight='bold'>{entry.name}</Typography>
+                                <Link to={`${entry.id}`}>
+                                    <OpenInNew sx={{ color: (theme) => theme.palette.primary.light }} />
+                                </Link>
+                            </Stack>
                         </Grid>
+                        
                         <Grid item xs={12}>
                             <TicketStatus status={entry.status} />
                         </Grid>

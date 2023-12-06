@@ -13,10 +13,13 @@ export const StatusDot = ({ type }) => {
             color = theme.palette.grey[400]
             return <Dot color={color} borderColor={theme.palette.grey[600]} />
         case TICKET_STATUS.PROCESSED:
-            color = theme.palette.success.light
-            return <Dot color={color} borderColor={theme.palette.success.main} />
+            color = theme.palette.primary.main
+            return <Dot color={"white"} borderColor={theme.palette.success.main} />
         case TICKET_STATUS.REJECTED:
             color = theme.palette.error.light
             return <Dot color={color} borderColor={theme.palette.error.main} />
+        case TICKET_STATUS.APPROVED:
+            color = theme.palette.success.main
+            return <Dot color={color} borderColor={theme.palette.success.main} />
     }
 }

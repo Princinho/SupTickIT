@@ -1,13 +1,14 @@
 import { ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
 
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { editTicket, getAgentTickets, getAllProjects, getAllUsers } from '../../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { sortAndFilterData } from '../../Companies/utils'
 import { UserContext } from '../../../Contexts'
 import { TicketsTable } from './TicketsTable'
 import { TicketDetailsDialog } from './TicketDetailsDialog'
+import { TICKET_STATUS } from '../../../utils'
 
 export const TicketsDashboard = () => {
 
@@ -31,6 +32,7 @@ export const TicketsDashboard = () => {
         handlePageChange: setCurrentPage,
         handleRowsPerPageChange: changeRowsPerPage
     })
+    useEffect(() => { setTableOptions(prev => ({ ...prev, count: tickets?.length })) }, [tickets?.length])
     function changeRowsPerPage(rowsPerPage) {
         setRowsPerPage(rowsPerPage)
         setCurrentPage(0)
@@ -146,7 +148,7 @@ export const TicketsDashboard = () => {
                     options={tableOptions}
                     projects={projects}
                     users={users}
-                    tickets={sortAndFilterData(tickets, searchTerm, sortOption)}
+                    tickets={sortAndFilterData(tickets?.filter(t => t.status != TICKET_STATUS.CLOSED), searchTerm, sortOption)}
                     showDetailsDialog={showDetailsDialog}
                 />
             </Box>

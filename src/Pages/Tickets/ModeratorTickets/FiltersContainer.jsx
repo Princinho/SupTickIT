@@ -214,6 +214,18 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                                 <Typography variant="body1" >Rejeté</Typography>
                             </Stack>}
                     />
+                    <FormControlLabel sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
+                        control={
+                            <Checkbox checked={filters?.statuses?.includes(TICKET_STATUS.APPROVED)}
+                                onChange={() => toggleStatus(TICKET_STATUS.APPROVED)}
+                            />
+                        }
+                        label={
+                            <Stack direction='row' alignItems='center' spacing={1}>
+                                <StatusDot type={TICKET_STATUS.APPROVED} />
+                                <Typography variant="body1" >Approuvé</Typography>
+                            </Stack>}
+                    />
                 </Box>
                 <Box sx={{ width: '50%' }}>
                     <Typography variant="body1" fontWeight='bold'>Priorité</Typography>

@@ -2,7 +2,7 @@ import { ArrowBack, ArrowForward, HighlightOff, Search, Tune } from '@mui/icons-
 import { Box, Button, ButtonGroup, FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 
 import { useContext, useEffect, useState } from 'react'
-import { editTicket, getAllProjects, getAllUsers, getModeratorTickets, isUserInRole } from '../../../Api'
+import { editTicket, getAllProjects, getAllTickets, getAllUsers, getModeratorTickets, isUserInRole } from '../../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { UserContext } from '../../../Contexts'
 import { TicketsTable } from './TicketsTable'
@@ -19,7 +19,7 @@ export const TicketsDashboard = () => {
   const initialFilters = {
     startDate: null,
     endDate: null,
-    includeClosedTickets: false,
+    includeClosedTickets: true,
     agentIds: [],
     customerIds: [],
     statuses: [],
@@ -36,7 +36,7 @@ export const TicketsDashboard = () => {
   const [isFiltersDialogOpen, setIsFiltersDialogOpen] = useState(false)
   // const [companies, setCompanies] = useState([])
   const queryClient = useQueryClient()
-  const { data: tickets } = useQuery({ queryKey: [BASE_QUERY_KEY, user?.id], queryFn: () => getModeratorTickets(user?.id) })
+  const { data: tickets } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: () => getAllTickets(user?.id) })
   const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
   const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
   const [tableOptions, setTableOptions] = useState({
@@ -198,7 +198,7 @@ export const TicketsDashboard = () => {
                     onClick={() => setCurrentPage(tableOptions.page + 1)}
                     sx={{ backgroundColor: 'white', color: (theme) => theme.palette.text.secondary }}><ArrowForward /></Button>
                 </ButtonGroup>
-                <IconButton onClick={() => setIsFiltersDialogOpen(true)}><Tune /></IconButton>
+                <IconButton onClick={() => setIsFiltersDialogOpen(true)} sx={{display:{lg:'none'}}}><Tune /></IconButton>
                 <Button sx={{
                   backgroundColor: 'white', color: (theme) => theme.palette.primary.light,
                   borderTopRightRadius: 0,

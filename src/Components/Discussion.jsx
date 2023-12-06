@@ -13,7 +13,7 @@ export const Discussion = ({ messages, addMessage, users }) => {
                 {messages.sort((a, b) => (new Date(a.date) - new Date(b.date)))
                     .map(m => <Message key={m.id} message={({ ...m, userFullName: getUserFullName(m.userId, users) })} />)}
             </Box>
-            <Stack direction='row' mt={2} alignItems='flex-start' sx={{ position: 'absolute', bottom: 0, right: 0, left: 0 }}>
+            <Stack direction='row' mt={2} alignItems='flex-start' sx={{ position: 'absolute', bottom: 0, right: '1em', left: 0 }}>
                 <TextField ml={7}
                     id="outlined-multiline-flexible"
                     label="Ecrivez un message" fullWidth
