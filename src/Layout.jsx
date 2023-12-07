@@ -5,6 +5,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { stringAvatar } from './utils';
 import { UserContext } from './Contexts';
+import { useAuthorization } from './Hooks/useAuthorization';
 
 const drawerWidth = 240;
 
@@ -22,6 +23,7 @@ export const Layout = (props) => {
     function handleClose() {
         setAnchorEl(null)
     }
+    const { isPathAuthorizedForUser } = useAuthorization()
     const menuIconWidth = '32px'
     const menuItemColor = 'whitesmoke'
     // const selectedMenuItemColor = 'white'
@@ -34,48 +36,50 @@ export const Layout = (props) => {
             <Divider />
             <Box color='primary.light'>
                 <List sx={{ paddingBlock: '0' }}>
+                    {isPathAuthorizedForUser('/projects') &&
+                        < ListItem disablePadding  >
+                            <ListItemButton onClick={() => navigate('projects')} >
+                                <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
+                                    <ListAltIcon sx={{ color: menuItemColor }} />
+                                </ListItemIcon>
+                                <ListItemText primary={"Projets"} sx={{ ...listItemStyles, textDecoration: 'none' }} />
+                            </ListItemButton>
 
-                    <ListItem disablePadding  >
-                        <ListItemButton onClick={() => navigate('projects')} >
-                            <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
-                                <ListAltIcon sx={{ color: menuItemColor }} />
-                            </ListItemIcon>
-                            <ListItemText primary={"Projets"} sx={{ ...listItemStyles, textDecoration: 'none' }} />
-                        </ListItemButton>
-
-                    </ListItem>
-                    <ListItem disablePadding  >
-                        <ListItemButton onClick={() => navigate('companies')} >
-                            <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
-                                <ListAltIcon sx={{ color: menuItemColor }} />
-                            </ListItemIcon>
-                            <ListItemText primary={"Entreprises"} sx={{ ...listItemStyles, textDecoration: 'none' }} />
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem disablePadding  >
+                        </ListItem>}
+                    {isPathAuthorizedForUser('/companies') &&
+                        <ListItem disablePadding  >
+                            <ListItemButton onClick={() => navigate('companies')} >
+                                <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
+                                    <ListAltIcon sx={{ color: menuItemColor }} />
+                                </ListItemIcon>
+                                <ListItemText primary={"Entreprises"} sx={{ ...listItemStyles, textDecoration: 'none' }} />
+                            </ListItemButton>
+                        </ListItem>
+                    }
+                    {isPathAuthorizedForUser('/categories') && <ListItem disablePadding  >
                         <ListItemButton onClick={() => navigate('Categories')}>
                             <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
                                 <ListAltIcon sx={{ color: menuItemColor }} />
                             </ListItemIcon>
                             <ListItemText primary={"Catégories"} sx={listItemStyles} />
                         </ListItemButton>
-                    </ListItem>
-                    <ListItem disablePadding  >
+                    </ListItem>}
+                    {isPathAuthorizedForUser('/users') && <ListItem disablePadding  >
                         <ListItemButton onClick={() => navigate('users')}>
                             <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
                                 <ListAltIcon sx={{ color: menuItemColor }} />
                             </ListItemIcon>
                             <ListItemText primary={"Utilisateurs"} sx={listItemStyles} />
                         </ListItemButton>
-                    </ListItem>
-                    <ListItem disablePadding  >
+                    </ListItem>}
+                    {isPathAuthorizedForUser('/tickets/') && <ListItem disablePadding  >
                         <ListItemButton onClick={() => navigate('tickets')}>
                             <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
                                 <ListAltIcon sx={{ color: menuItemColor }} />
                             </ListItemIcon>
                             <ListItemText primary={"Tickets"} sx={listItemStyles} />
                         </ListItemButton>
-                    </ListItem>
+                    </ListItem>}
                     <ListItem disablePadding  >
                         <ListItemButton >
                             <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
@@ -97,7 +101,7 @@ export const Layout = (props) => {
 
             </Box>
 
-        </Box>
+        </Box >
     );
 
     const container = window !== undefined ? () => window().document.body : undefined;

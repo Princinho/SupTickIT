@@ -36,7 +36,7 @@ export const CreateDialog = ({ open, handleClose, projects }) => {
                     <TextField
                         autoFocus
                         margin="dense"
-                        label="Nom *"
+                        label="Nom de la catégorie *"
                         error={titleError}
                         type="text"
                         value={formData.name}

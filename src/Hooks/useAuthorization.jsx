@@ -8,17 +8,29 @@ export const useAuthorization = () => {
   let pathname = useLocation().pathname
   const { user } = useContext(UserContext)
   function isUserAuthorized() {
-    console.log(pathname)
-    if (matchPath('/categories/*', pathname)) {
-      return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
-    }
-    if (matchPath('/projects/*', pathname)) {
-      return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
-    }
-    if (matchPath('/users/*', pathname)) {
-      return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
-    }
-    return true
+    return isPathAuthorizedForUser(pathname)
   }
-  return { isUserAuthorized }
+  function isPathAuthorizedForUser(path) {
+    console.log(path)
+    if (matchPath('/categories/*', path)) {
+      return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
+    }
+    if (matchPath('/companies/*', path)) {
+      return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
+    }
+    if (matchPath('/projects/*', path)) {
+      return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
+    }
+    if (matchPath('/users/*', path)) {
+      return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
+    }
+    if (matchPath('/tickets/*', path)) {
+      return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
+        || isUserInRole(SYSTEM_ROLES.CUSTOMER, user?.id)
+        || isUserInRole(SYSTEM_ROLES.AGENT, user?.id)
+        || isUserInRole(SYSTEM_ROLES.MODERATOR, user?.id)
+    }
+    return false
+  }
+  return { isUserAuthorized, isPathAuthorizedForUser }
 }

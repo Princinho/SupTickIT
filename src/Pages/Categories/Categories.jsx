@@ -190,6 +190,7 @@ export const Categories = () => {
                 <CategoriesTable
                     options={tableOptions}
                     categories={sortAndFilterData(categories, searchTerm, sortOption)}
+                    projects={projects}
                     showDetailsDialog={showDetailsDialog}
                     showEditDialog={showEditDialog}
                     showDeleteDialog={showDeleteDialog} />

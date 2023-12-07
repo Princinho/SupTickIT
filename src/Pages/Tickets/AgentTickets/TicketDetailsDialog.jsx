@@ -1,13 +1,10 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Stack, Typography } from "@mui/material"
 import PropTypes from 'prop-types'
-import { useContext } from "react"
-import { getCompanyProjects } from "../../../Api"
-import { UserContext } from "../../../Contexts"
+import { getAllProjects } from "../../../Api"
 import { TicketStatus } from "../../../Components/TicketStatus"
 import { OpenInNew } from "@mui/icons-material"
 import { Link } from "react-router-dom"
 export const TicketDetailsDialog = ({ open, handleClose, entry }) => {
-    const { user } = useContext(UserContext)
 
     return (
         <Box>
@@ -29,7 +26,7 @@ export const TicketDetailsDialog = ({ open, handleClose, entry }) => {
                         </Grid>
 
                         <Grid item xs={12}>
-                            <Typography variant="span">Projet {getCompanyProjects(user?.companyId).find(p => p.id == entry.projectId)?.title}</Typography>
+                            <Typography variant="span">Projet {getAllProjects().find(p => p.id == entry.projectId)?.title}</Typography>
                         </Grid>
 
                         <Grid item xs={12}>

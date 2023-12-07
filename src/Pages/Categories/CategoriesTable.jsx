@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getAllUsers } from '../../Api'
 
 
-export const CategoriesTable = ({ categories, showEditDialog, showDeleteDialog, showDetailsDialog, options }) => {
+export const CategoriesTable = ({ categories, showEditDialog, showDeleteDialog, projects, showDetailsDialog, options }) => {
     function handleClose() {
         setAnchorEl(null)
     }
@@ -28,6 +28,7 @@ export const CategoriesTable = ({ categories, showEditDialog, showDeleteDialog, 
                         <TableRow>
                             <TableCell>Id</TableCell>
                             <TableCell align="left">Aperçu</TableCell>
+                            <TableCell align="left">Projet</TableCell>
                             <TableCell align="left">Ajouté par</TableCell>
                             <TableCell align="left">Date d&apos;ajout</TableCell>
                             <TableCell align="left">Actions</TableCell>
@@ -68,6 +69,9 @@ export const CategoriesTable = ({ categories, showEditDialog, showDeleteDialog, 
                                                 {cat.description}
                                             </Typography>
 
+                                        </TableCell>
+                                        <TableCell>
+                                            {projects?.find(p => p.id == cat.projectId).title}
                                         </TableCell>
                                         <TableCell align="left">
                                             <Stack direction='row' alignItems='center' spacing={2}>
@@ -182,6 +186,7 @@ export const CategoriesTable = ({ categories, showEditDialog, showDeleteDialog, 
 }
 CategoriesTable.propTypes = {
     categories: PropTypes.array.isRequired,
+    projects: PropTypes.array.isRequired,
     showEditDialog: PropTypes.func.isRequired,
     options: PropTypes.object.isRequired,
     showDetailsDialog: PropTypes.func.isRequired,
