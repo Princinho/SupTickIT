@@ -203,6 +203,10 @@ function getAllUsers() {
 function createUser(data) {
     create(data, 'users')
 }
+function createCustomer(data) {
+    let result = create(data, 'users')
+    addRoleToUser({ roleId: SYSTEM_ROLES.CUSTOMER, startDate: new Date().toISOString(), userId: result.id })
+}
 
 function editUser(data) {
     editEntry(data, 'users')
@@ -212,10 +216,14 @@ function deleteUser(data) {
     deleteEntry(data, 'users')
 }
 function getAvailableAgents(companyId) {
+    let companyAgents = getCompanyUsers(companyId).filter(user => isUserInRole(SYSTEM_ROLES.AGENT, user.id))
+    return companyAgents
+}
+function getCompanyUsers(companyId) {
     let allUsers = getAllUsers()
     let companyUsers = allUsers.filter(user => user.companyId == companyId)
-    let companyAgents = companyUsers.filter(user => isUserInRole(SYSTEM_ROLES.AGENT, user.id))
-    return companyAgents
+
+    return companyUsers
 }
 function isRoleAssignmentActive(roleAssignment) {
     let startDate = new Date(roleAssignment.startDate)
@@ -261,12 +269,15 @@ function removeRoleFromUser(roleAssignment) {
     saveDataToLocalStorage({ ...storedData, roleAssignments: updatedEntriesArray })
 }
 function create(newEntry, type) {
+    console.log(type, newEntry)
     let allEntries = getAllEntries(type)
     let storedData = getOrInitData()
-    let updatedEntriesArray = [{ ...newEntry, id: allEntries.length + 1, dateCreated: new Date().toISOString() }, ...allEntries]
+    let createdEntry = { ...newEntry, id: allEntries.length + 1, dateCreated: new Date().toISOString() }
+    let updatedEntriesArray = [createdEntry, ...allEntries]
     const result = { ...storedData, [type]: updatedEntriesArray }
     // console.log(result)
     saveDataToLocalStorage(result)
+    return createdEntry
 }
 
 export {
@@ -278,7 +289,7 @@ export {
     getAllTickets, createTicket, editTicket, deleteTicket,
     getCustomerTickets, getTicket, getTicketMessages, getModeratorTickets,
     getAllCategories, createCategory, editCategory, deleteCategory, getProjectCategories, getCategory,
-    getAllUsers, createUser, editUser, deleteUser,
+    getAllUsers, getCompanyUsers, createUser, editUser, deleteUser, createCustomer,
     getAllRoleAssignments, getAllRoles, addRoleToUser,
     getActiveRolesForUser, getActiveRoleAssignmentsForUser, isUserInRole,
     removeRoleFromUser, getAvailableAgents, getAgentTickets

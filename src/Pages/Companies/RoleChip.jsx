@@ -3,8 +3,6 @@ import { SYSTEM_ROLES } from "../../utils";
 
 
 export const RoleChip = ({ roleId }) => {
-    console.log(SYSTEM_ROLES)
-    console.log(+roleId)
     let chip = null
     switch (+roleId) {
         case SYSTEM_ROLES.ADMIN:
@@ -18,6 +16,9 @@ export const RoleChip = ({ roleId }) => {
             break;
         case SYSTEM_ROLES.CUSTOMER:
             chip = <Chip size="medium" label="C" sx={{ fontWeight: 'bold' }} color="default" />
+            break;
+        case SYSTEM_ROLES.CUSTOMER_ADMIN:
+            chip = <Chip size="medium" label="A" sx={{ fontWeight: 'bold' }} color="default" />
             break;
     }
     return (

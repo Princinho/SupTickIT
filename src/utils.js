@@ -18,7 +18,8 @@ const SYSTEM_ROLES = {
     ADMIN: 1,
     MODERATOR: 2,
     AGENT: 3,
-    CUSTOMER: 4
+    CUSTOMER: 4,
+    CUSTOMER_ADMIN: 5
 }
 function stringToColor(string) {
     let hash = 0;
@@ -80,6 +81,13 @@ function addOnemonth(date) {
     }
     return date;
 }
+function getHighestId(array) {
+    if (!array) return 0
+    console.log(array)
+    return array.reduce((prev, curr) => { 
+        curr.id > prev.id ? curr.id : prev.id
+    }, 0)
+}
 function sortAndFilterData(array, searchTerm, sortOption) {
     if (!array) return []
     let result = array
@@ -121,6 +129,6 @@ export {
     stringAvatar, stringToColor,
     getSampleDataFromLocalStorage, saveDataToLocalStorage,
     getRandomNumber, addOnemonth, sortAndFilterData,
-    getAvailablePriorities, formatToInput,
+    getAvailablePriorities, formatToInput, getHighestId,
     TICKET_STATUS, TICKET_PRIORITY, SYSTEM_ROLES
 }

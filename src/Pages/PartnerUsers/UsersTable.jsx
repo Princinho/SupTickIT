@@ -1,10 +1,9 @@
 import { Divider, IconButton, ListItemIcon, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
 
 import PropTypes from 'prop-types'
-import { Delete, Edit, MoreVert, Tune } from '@mui/icons-material'
+import { Delete, Edit, MoreVert } from '@mui/icons-material'
 import { useContext, useState } from 'react'
 import { DataContext } from '../../Contexts'
-import { Link, useNavigate } from 'react-router-dom'
 import { RoleChip } from '../Companies/RoleChip'
 
 
@@ -16,9 +15,7 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
     const { sampleData } = useContext(DataContext)
     const [focusedEntry, setFocusedEntry] = useState(null)
     const appMoreMenuOpen = Boolean(anchorEl)
-    const navigate = useNavigate()
     const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } = options
-    console.log(users)
     // TODO: Permettre de reset les champs au clic du bouton reset a droite.
     return (
         <>
@@ -56,10 +53,10 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                                             {`${user.firstName} ${user.lastName}`}
                                         </Typography>
                                     </TableCell>
-                                    <TableCell align="left" sx={{ cursor: 'pointer', }}
+                                    <TableCell align="left" 
                                     // onClick={() => navigate(`${user.id}`)}
                                     >
-                                        <Link to={`${user.id}`}>
+                                        
                                             <Typography color='text.secondary' sx={{
                                                 overflow: "hidden",
                                                 textOverflow: "ellipsis",
@@ -72,7 +69,7 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
 
                                                 {user.username}
                                             </Typography>
-                                        </Link>
+                                        
                                     </TableCell>
                                     <TableCell>
                                         {user.roles.map(role => <RoleChip key={`role-${role.id}`} roleId={role.id} />)}
@@ -169,15 +166,7 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                     </ListItemIcon>
                     Modifier
                 </MenuItem>
-                <MenuItem onClick={() => {
-                    navigate(`${focusedEntry?.id}`)
-                }}>
-
-                    <ListItemIcon>
-                        <Tune color='primary' fontSize='small' />
-                    </ListItemIcon>
-                    Roles et Accès
-                </MenuItem>
+                
                 <MenuItem onClick={() => {
                     handleClose()
                     showDeleteDialog(focusedEntry)

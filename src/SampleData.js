@@ -141,10 +141,11 @@ export const sampleData = {
         }
     ],
     roles: [
-        { id: '1', code: 'admin', nom: 'Administrateur', description: 'Administrateur' },
-        { id: '2', code: 'mod', nom: 'Moderateur', description: 'Moderateur' },
-        { id: '3', code: 'agent', nom: 'Agent', description: 'Agent' },
-        { id: '4', code: 'client', nom: 'Client', description: 'Client' },
+        { id: 1, code: 'admin', nom: 'Administrateur', description: 'Administrateur' },
+        { id: 2, code: 'mod', nom: 'Moderateur', description: 'Moderateur' },
+        { id: 3, code: 'agent', nom: 'Agent', description: 'Agent' },
+        { id: 4, code: 'client', nom: 'Client', description: 'Client' },
+        { id: 5, code: 'customer_admin', nom: 'Administrateur Client', description: 'Administrateur Client' },
     ],
     rolesAffectations: [
         { id: 1, userId: 1, roleId: 1, startDate: '2023/10/27', endDate: null }

@@ -1,9 +1,11 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Switch, TextField } from "@mui/material"
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material"
 import PropTypes from 'prop-types'
-import { useState } from "react"
-export const CreateDialog = ({ open, handleClose, companies }) => {
+import { useContext, useState } from "react"
+import { UserContext } from "../../Contexts"
+export const CreateDialog = ({ open, handleClose }) => {
+    const { user } = useContext(UserContext)
     //TODO: Faire bosser la pagination
-    const [formData, setFormData] = useState({ firstName: "", lastName: "", isCompanyAccount: false, companyId: '', username: '' })
+    const [formData, setFormData] = useState({ firstName: "", lastName: "", companyId: user?.companyId, username: '' })
     const [nameError, setNameError] = useState(false)
     return (
         <Box>
@@ -43,26 +45,7 @@ export const CreateDialog = ({ open, handleClose, companies }) => {
                         fullWidth
                         variant="standard"
                     />
-                    <FormControlLabel control={<Switch checked={formData.isCompanyAccount} onChange={() => setFormData(prev => ({ ...prev, isCompanyAccount: !prev.isCompanyAccount }))} />} label="Compte Partenaire" />
-                    {formData.isCompanyAccount &&
-                        <>
-                            <FormControl fullWidth sx={{ marginTop: '1em' }}>
-                                <InputLabel id="company-select-label">Entreprise partenaire </InputLabel>
-                                <Select
-                                    labelId="company-select-label"
-                                    id="company-select"
-                                    value={formData.companyId}
-                                    label="Entreprise partenaire"
-                                    onChange={event => setFormData(prev => ({ ...prev, companyId: event.target.value }))}
-                                >
-                                    {companies?.map(
-                                        company => <MenuItem key={`projet-${company.id}`} value={company.id}>{company.name}</MenuItem>
-                                    )}
 
-                                </Select>
-                            </FormControl>
-                        </>
-                    }
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => {
@@ -78,7 +61,7 @@ export const CreateDialog = ({ open, handleClose, companies }) => {
                             let createObject = { ...formData }
                             delete createObject.isCompanyAccount
                             if (!formData.isCompanyAccount) delete createObject.companyId
-                            handleClose({ ...createObject, password: 'Admin#12345' })
+                            handleClose({ ...createObject, password: 'Admin#12345', companyId: user?.companyId })
                             setFormData({ firstName: '', lastName: '', username: '', companyId: '' })
                         }
                     }}>Enregistrer</Button>

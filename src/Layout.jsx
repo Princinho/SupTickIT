@@ -80,6 +80,14 @@ export const Layout = (props) => {
                             <ListItemText primary={"Tickets"} sx={listItemStyles} />
                         </ListItemButton>
                     </ListItem>}
+                    {isPathAuthorizedForUser('/partnerusers') && <ListItem disablePadding  >
+                        <ListItemButton onClick={() => navigate('partnerusers')}>
+                            <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
+                                <ListAltIcon sx={{ color: menuItemColor }} />
+                            </ListItemIcon>
+                            <ListItemText primary={"Comptes Utilisateur"} sx={listItemStyles} />
+                        </ListItemButton>
+                    </ListItem>}
                     <ListItem disablePadding  >
                         <ListItemButton >
                             <ListItemIcon sx={{ minWidth: menuIconWidth }}  >

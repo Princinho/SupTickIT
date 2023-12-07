@@ -1,5 +1,5 @@
 import { Paper, Stack, Typography } from '@mui/material'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { PageHeader } from '../../Components/PageHeader'
 import { UsersTable } from './UsersTable'
 import { CreateDialog } from './CreateDialog'
@@ -7,12 +7,13 @@ import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { SYSTEM_ROLES, sortAndFilterData } from '../../utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createUser, deleteUser, editUser, getActiveRolesForUser, getAllCompanies, getAllUsers } from '../../Api'
+import { addRoleToUser, createCustomer, deleteUser, editUser, getActiveRolesForUser, getAllCompanies, getCompanyUsers } from '../../Api'
 import { useNavigate } from 'react-router-dom'
 import { useAuthorization } from '../../Hooks/useAuthorization'
 import { RoleChip } from '../Companies/RoleChip'
+import { UserContext } from '../../Contexts'
 
-export const Users = () => {
+export const PartnerUsers = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -21,22 +22,22 @@ export const Users = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const BASE_QUERY_KEY = 'users'
   const queryClient = useQueryClient()
-  const { data: users } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllUsers })
+  const { user } = useContext(UserContext)
+  const { data: companyUsers } = useQuery({ queryKey: [BASE_QUERY_KEY, user?.companyId], queryFn: () => getCompanyUsers(user?.companyId) })
   const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompanies })
   const navigate = useNavigate()
   const { isUserAuthorized } = useAuthorization()
 
-
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
-    count: users?.length,
+    count: companyUsers?.length,
     handlePageChange: setCurrentPage,
     handleRowsPerPageChange: changeRowsPerPage
   })
 
   function getUsersWithRoles() {
-    let result = users?.map(user => {
+    let result = companyUsers?.map(user => {
       let userRoles = getActiveRolesForUser(user.id)
       return { ...user, roles: userRoles }
     })
@@ -47,6 +48,10 @@ export const Users = () => {
       navigate("/accessdenied")
     }
   }, [])
+  const addRoleToUserMutation = useMutation({
+    mutationFn: addRoleToUser,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: BASE_QUERY_KEY })
+  })
   function changeRowsPerPage(rowsPerPage) {
     setRowsPerPage(rowsPerPage)
     setCurrentPage(0)
@@ -81,17 +86,29 @@ export const Users = () => {
     setIsDeleteDialogOpen(false)
   }
 
-  const createMutation = useMutation({
-    mutationFn: createUser,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+
+  const createCustomerMutation = useMutation({
+    mutationFn: createCustomer,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY, user?.companyId] })
+      queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+    }, onError: (e) => {
+      console.warn(e)
+    }
   })
   const editMutation = useMutation({
     mutationFn: editUser,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY, user?.companyId] })
+      queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+    }
   })
   const deleteMutation = useMutation({
     mutationFn: deleteUser,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY, user?.companyId] })
+      queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+    }
   })
   function updateTableOptions(key, value) {
     setTableOptions(prev =>
@@ -103,7 +120,6 @@ export const Users = () => {
   function handleRowsPerPageChange(value) {
     updateTableOptions('rowsPerPage', value)
   }
-  console.log(isEditDialogOpen, isDeleteDialogOpen)
   return (
     <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
       <PageHeader pageTitle={"Utilisateurs"} pagePath={["Menu"]}
@@ -129,16 +145,14 @@ export const Users = () => {
         companies={companies}
         handleClose={(user) => {
           if (user) {
-            createMutation.mutate(user)
+            createCustomerMutation.mutate(user)
+
           }
           setIsCreateDialogOpen(false)
         }} />
       {focusedEntry && <EditDialog open={isEditDialogOpen} entry={focusedEntry} companies={companies} handleClose={closeEditDialog} />}
       {focusedEntry && <DeleteDialog open={isDeleteDialogOpen} entry={focusedEntry} handleClose={closeDeleteDialog} />}
       <Stack direction={{ md: 'row' }} gap={2} justifyContent='flex-end' padding={2}>
-        <Stack direction='row' alignItems='center' gap={1}><RoleChip roleId={SYSTEM_ROLES.ADMIN} /><Typography variant='body2'>Administrateur</Typography></Stack>
-        <Stack direction='row' alignItems='center' gap={1}><RoleChip roleId={SYSTEM_ROLES.MODERATOR} /><Typography variant='body2'>Moderateur</Typography></Stack>
-        <Stack direction='row' alignItems='center' gap={1}><RoleChip roleId={SYSTEM_ROLES.AGENT} /><Typography variant='body2'>Agent</Typography></Stack>
         <Stack direction='row' alignItems='center' gap={1}><RoleChip roleId={SYSTEM_ROLES.CUSTOMER} /><Typography variant='body2'>Client</Typography></Stack>
         <Stack direction='row' alignItems='center' gap={1}><RoleChip roleId={SYSTEM_ROLES.CUSTOMER_ADMIN} /><Typography variant='body2'>Administrateur client</Typography></Stack>
       </Stack>

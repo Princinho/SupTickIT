@@ -37,10 +37,10 @@ export const CompanyDetails = () => {
             // TODO: Code pour retirer le projet a l'entreprise
 
 
-            let editedCompany = companies.find(c => c.id == id)
+            let editedCompany = companies.find(c => c?.id == id)
             editMutation.mutate({
                 ...editedCompany,
-                projects: [...editedCompany.projects.filter(projId => projId != project.id)]
+                projects: [...editedCompany.projects.filter(projId => projId != project?.id)]
             })
         }
         setFocusedProject(null)
@@ -113,9 +113,9 @@ export const CompanyDetails = () => {
                             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Projets en cours</Typography>
                             <AddButton onClick={() => setIsAddProjectDialogOpen(true)} />
                         </Stack>
-                        <DataTable columns={projectColumns}
+                        {projects && companies && <DataTable columns={projectColumns}
                             data={company.projects?.map(projId => projects?.find(p => p?.id == projId)) || []}
-                            responsive={false} />
+                            responsive={false} />}
                     </Paper>
                 </Grid>
             </Grid>

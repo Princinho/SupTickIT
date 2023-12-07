@@ -11,6 +11,7 @@ import { CompanyDetails } from './Pages/Companies/CompanyDetails.jsx'
 import { sampleData as initialData } from './SampleData.js'
 import { getSampleDataFromLocalStorage, saveDataToLocalStorage } from './utils.js'
 import { Users } from './Pages/Users/Users.jsx'
+import { PartnerUsers } from './Pages/PartnerUsers/PartnerUsers.jsx'
 import { UserDetails } from './Pages/Users/UserDetails.jsx'
 import { Categories } from './Pages/Categories/Categories.jsx'
 import { LoginRegister } from './Pages/Login/LoginRegister.jsx'
@@ -51,7 +52,7 @@ function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path='/' element={<Outlet />} >
-          <Route path='accessdenied' element={<AccessDenied />} />
+        <Route path='accessdenied' element={<AccessDenied />} />
         <Route path='login' element={<LoginRegister />} />
         <Route path='/' element={<Layout />} >
           <Route path='projects' element={<Projects />} />
@@ -59,6 +60,7 @@ function App() {
           <Route path='companies/:id' element={<CompanyDetails />} />
           <Route path='users' element={<Users />} />
           <Route path='users/:id' element={<UserDetails />} />
+          <Route path='partnerusers' element={<PartnerUsers />} />
           <Route path='categories' element={<Categories />} />
           <Route path='tickets' element={<Tickets />} />
           <Route path='tickets/:id' element={<TicketDetails />} />

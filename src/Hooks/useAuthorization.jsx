@@ -11,7 +11,6 @@ export const useAuthorization = () => {
     return isPathAuthorizedForUser(pathname)
   }
   function isPathAuthorizedForUser(path) {
-    console.log(path)
     if (matchPath('/categories/*', path)) {
       return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
     }
@@ -23,6 +22,9 @@ export const useAuthorization = () => {
     }
     if (matchPath('/users/*', path)) {
       return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
+    }
+    if (matchPath('/partnerusers/*', path)) {
+      return isUserInRole(SYSTEM_ROLES.CUSTOMER_ADMIN, user?.id)
     }
     if (matchPath('/tickets/*', path)) {
       return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)

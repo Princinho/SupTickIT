@@ -204,6 +204,12 @@
             "code": "client",
             "nom": "Client",
             "description": "Client"
+        },
+        {
+            "id": 5,
+            "code": "customer_admin",
+            "nom": "Administrateur Client",
+            "description": "Administrateur Client"
         }
     ],
     "rolesAffectations": [
@@ -217,12 +223,20 @@
     ],
     "roleAssignments": [
         {
+            "roleId": "4",
+            "startDate": "2023-12-06T14:22:28.491Z",
+            "expiryDate": null,
+            "userId": "4",
+            "id": 4,
+            "dateCreated": "2023-12-06T14:22:50.610Z"
+        },
+        {
             "roleId": "2",
-            "startDate": "2023-11-14T11:38:00.321Z",
-            "expiryDate": "2023-12-14T11:38:00.321Z",
-            "userId": "2",
-            "id": 3,
-            "dateCreated": "2023-11-14T11:38:09.206Z",
+            "startDate": "2023-11-29T09:58:51.164Z",
+            "expiryDate": "2023-12-29T09:58:51.164Z",
+            "userId": "3",
+            "id": 4,
+            "dateCreated": "2023-11-29T09:59:13.603Z",
             "createdBy": 3
         },
         {
@@ -250,6 +264,42 @@
     ],
     "tickets": [
         {
+            "name": "Stuttering during playback",
+            "description": "Serious issue, makes videos unplayable.",
+            "status": 2,
+            "createdBy": 4,
+            "projectId": 2,
+            "categoryId": "",
+            "id": 8,
+            "dateCreated": "2023-12-05T16:54:53.097Z",
+            "agentId": 2,
+            "priority": 2
+        },
+        {
+            "name": "Tagging others not working correctly",
+            "description": "No need to describe, try it for yourself",
+            "status": 5,
+            "createdBy": 4,
+            "projectId": 9,
+            "categoryId": "",
+            "id": 7,
+            "dateCreated": "2023-11-29T11:07:52.920Z",
+            "agentId": 2,
+            "priority": 3
+        },
+        {
+            "name": "Attached files not workin properly",
+            "description": "Some kind of description",
+            "status": 2,
+            "createdBy": 3,
+            "projectId": 7,
+            "categoryId": "",
+            "id": 6,
+            "dateCreated": "2023-11-29T11:07:03.478Z",
+            "agentId": 2,
+            "priority": 1
+        },
+        {
             "name": "Lorem Ipsum",
             "description": "Nulla ex justo, varius id nisl quis, interdum euismod risus. Pellentesque sit amet mollis sapien, id viverra magna. Phasellus sed erat vel dolor egestas laoreet et at velit. Nam feugiat ante eget libero dictum, sed sodales massa vestibulum. Ut convallis eget lectus a dictum. Aenean venenatis pretium leo a imperdiet. Praesent rhoncus massa vel mi aliquam facilisis. Integer aliquam augue non elit feugiat, nec tempor purus sollicitudin. Etiam rhoncus sodales risus in faucibus. Nunc id enim at tellus commodo euismod sed eu tortor. Phasellus in est euismod arcu commodo convallis.",
             "status": 1,
@@ -258,7 +308,7 @@
             "categoryId": "",
             "id": 5,
             "dateCreated": "2023-11-28T10:41:57.237Z",
-            "agentId": 3,
+            "agentId": 2,
             "priority": 1
         },
         {
@@ -270,7 +320,8 @@
             "categoryId": 2,
             "id": 4,
             "dateCreated": "2023-11-27T10:38:15.516Z",
-            "priority": 2
+            "priority": 1,
+            "agentId": 2
         },
         {
             "name": "Desktop errors",
@@ -295,16 +346,79 @@
         {
             "name": "Playback issues",
             "description": "This is the descripotion",
-            "status": 1,
+            "status": 4,
             "createdBy": 3,
             "projectId": 2,
             "id": 1,
             "dateCreated": "2023-11-27T08:52:30.448Z",
             "priority": 3,
-            "agentId": 3
+            "agentId": 2
         }
     ],
     "messages": [
+        {
+            "ticketId": "7",
+            "body": "Tried the way you described and still no result. Could it be something related to your device?",
+            "date": "2023-11-29T14:14:13.076Z",
+            "userId": 2,
+            "userFullName": "Gatien-dev GNAKOU-EDJAMBO",
+            "id": 9,
+            "dateCreated": "2023-11-29T14:14:13.089Z"
+        },
+        {
+            "ticketId": "7",
+            "body": "Try it and let me know",
+            "date": "2023-11-29T11:29:26.476Z",
+            "userId": 4,
+            "userFullName": "Dosseh ABALO",
+            "id": 8,
+            "dateCreated": "2023-11-29T11:29:26.488Z"
+        },
+        {
+            "ticketId": "7",
+            "body": "Like, it's not that hard to replicate.",
+            "date": "2023-11-29T11:28:57.242Z",
+            "userId": 4,
+            "userFullName": "Dosseh ABALO",
+            "id": 7,
+            "dateCreated": "2023-11-29T11:28:57.243Z"
+        },
+        {
+            "ticketId": "7",
+            "body": "Open the app, go to a task and try to tag someone.",
+            "date": "2023-11-29T11:23:06.121Z",
+            "userId": 4,
+            "userFullName": "Dosseh ABALO",
+            "id": 6,
+            "dateCreated": "2023-11-29T11:23:06.122Z"
+        },
+        {
+            "ticketId": "7",
+            "body": "For real!!? I tried but didn't come across the same issue. Could you describe the steps to replicate the problem?",
+            "date": "2023-11-29T11:19:22.242Z",
+            "userId": 2,
+            "userFullName": "Gatien-dev GNAKOU-EDJAMBO",
+            "id": 5,
+            "dateCreated": "2023-11-29T11:19:22.243Z"
+        },
+        {
+            "ticketId": "6",
+            "body": "Please explain more the issue",
+            "date": "2023-11-29T11:17:35.385Z",
+            "userId": 2,
+            "userFullName": "Gatien-dev GNAKOU-EDJAMBO",
+            "id": 4,
+            "dateCreated": "2023-11-29T11:17:35.386Z"
+        },
+        {
+            "ticketId": "4",
+            "body": "Could you please describe further?",
+            "date": "2023-11-29T11:14:51.402Z",
+            "userId": 2,
+            "userFullName": "Gatien-dev GNAKOU-EDJAMBO",
+            "id": 3,
+            "dateCreated": "2023-11-29T11:14:51.402Z"
+        },
         {
             "ticketId": "5",
             "body": "Un nouveau message",
@@ -325,6 +439,5 @@
             "dateCreated": "2023-11-29T08:49:20.174Z",
             "createdBy": 3
         }
-        
     ]
 }
