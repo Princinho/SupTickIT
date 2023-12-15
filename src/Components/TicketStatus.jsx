@@ -21,7 +21,7 @@ export const TicketStatus = ({ status }) => {
             chip = <Chip size="small" label="Fermé" color="success" sx={{ fontWeight: 'bold' }} />
             break;
         case TICKET_STATUS.REJECTED:
-            chip = <Chip size="small" label="Rejeté" color="error" sx={{ color: 'white' }} />
+            chip = <Chip size="small" label="Non satisfait" color="error" sx={{ color: 'white' }} />
             break;
         case TICKET_STATUS.APPROVED:
             chip = <Chip size="small" label="Approuvé" color="success" sx={{ color: 'white' }} />

@@ -5,6 +5,7 @@ import { getCompanyProjects } from "../../../Api"
 import { UserContext } from "../../../Contexts"
 import { Link } from "react-router-dom"
 import { OpenInNew } from "@mui/icons-material"
+import { SYSTEM_LABELS } from "../../../utils"
 export const DetailsDialog = ({ open, handleClose, entry }) => {
     const { user } = useContext(UserContext)
     console.log(user)
@@ -15,7 +16,7 @@ export const DetailsDialog = ({ open, handleClose, entry }) => {
                 <DialogContent>
                     <Grid container direction='row' spacing={2} justifyContent='flex-start'>
 
-                    <Grid item xs={12}>
+                        <Grid item xs={12}>
                             <Stack direction='row' justifyContent='space-between'>
                                 <Typography variant="h6" fontWeight='bold'>{entry.name}</Typography>
                                 <Link to={`${entry.id}`}>
@@ -29,6 +30,14 @@ export const DetailsDialog = ({ open, handleClose, entry }) => {
                         <Grid item xs={6}>
                             <Typography variant="span">{getCompanyProjects(user?.companyId).find(p => p.id == entry.projectId)?.title}</Typography>
                         </Grid>
+                        {entry.productRef && <>
+                            <Grid item xs={6}>
+                                <Typography variant="span">{SYSTEM_LABELS.PRODUCT_REF}</Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography variant="span">{entry.productRef}</Typography>
+                            </Grid>
+                        </>}
                         <Grid item xs={6}>
                             <Typography variant="span">Description</Typography>
                         </Grid>

@@ -107,7 +107,7 @@ export const CategoriesTable = ({ categories, showEditDialog, showDeleteDialog, 
                             <TablePagination
                                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                                 labelRowsPerPage="Eléments par page"
-                                colSpan={5}
+                                colSpan={6}
                                 count={categories.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}

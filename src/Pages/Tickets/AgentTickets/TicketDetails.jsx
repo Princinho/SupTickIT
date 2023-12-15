@@ -1,8 +1,8 @@
 
-import { Box, Button, Chip, Divider, FormControl, InputLabel, MenuItem, Paper, Select, Stack, Typography } from '@mui/material'
+import { Box, Button, Chip, Divider, FormControl,  InputLabel, MenuItem, Paper, Select, Stack, Typography } from '@mui/material'
 
 import { useContext, useState } from 'react'
-import { createMessage, editTicket, getAllUsers, getCategory, getProject, getTicket, getTicketMessages, isUserInRole } from '../../../Api'
+import { createMessage, editTicket, getAllUsers, getCategory, getProject, getTicket, getTicketLogsByTicketId, getTicketMessages, isUserInRole } from '../../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { UserContext } from '../../../Contexts'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -12,15 +12,22 @@ import { Discussion } from '../../../Components/Discussion'
 import { SYSTEM_ROLES, TICKET_STATUS } from '../../../utils'
 import { TicketStatus } from '../../../Components/TicketStatus'
 import { SimpleDialog } from '../../../Components/SimpleDialog'
+import ImagePreviewInput from '../../../Components/ImagePreviewInput'
+import { History } from '@mui/icons-material'
+import { useTheme } from '@emotion/react'
+import { TicketHistoryDialog } from './TicketHistoryDialog'
 
 export const TicketDetails = () => {
     const { id } = useParams()
     const { user } = useContext(UserContext)
+    const theme = useTheme()
+    const primaryLight = theme?.palette.primary.light
     const navigate = useNavigate()
     const BASE_QUERY_KEY = 'tickets'
     const queryClient = useQueryClient()
     const { data: ticket } = useQuery({ queryKey: [BASE_QUERY_KEY, id], queryFn: () => getTicket(id) })
     const { data: messages } = useQuery({ queryKey: ['messages', `ticket${id}`], queryFn: () => getTicketMessages(id) })
+    const { data: ticketLogs } = useQuery({ queryKey: ['ticketLogs', `ticket${id}`], queryFn: () => getTicketLogsByTicketId(id) })
     const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
     const { data: project } = useQuery({ queryKey: ['projects', ticket?.projectId], queryFn: () => getProject(ticket?.projectId) })
     const { data: category } = useQuery({ queryKey: ['categories', ticket?.categoryId], queryFn: () => getCategory(id) })
@@ -28,6 +35,7 @@ export const TicketDetails = () => {
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
     const [isCloseTicketDialogOpen, setIsCloseTicketDialogOpen] = useState(false)
     const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false)
+    const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false)
     const createMutation = useMutation({
         mutationFn: createMessage,
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['messages', `ticket${id}`] })
@@ -36,6 +44,9 @@ export const TicketDetails = () => {
         mutationFn: editTicket,
         onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY, id] })
     })
+    function closeHistoryDialog() {
+        setIsHistoryDialogOpen(false)
+    }
     function rejectTicket(proceed) {
         if (proceed) {
             console.warn('Ticket has been rejected')
@@ -72,14 +83,14 @@ export const TicketDetails = () => {
     return (
         <Paper sx={{ padding: '1em', flexGrow: 1 }} elevation={2}>
             <Typography variant='h6' component='span' sx={{ fontWeight: 'bold' }}>Détails du ticket </Typography>
-            <Stack direction='row' justifyContent='space-between' >
+            <Stack direction='row' justifyContent='space-between' paddingRight={2}>
                 <Stack direction='row' mb={2}>
                     <Typography color='text.secondary' sx={{ fontWeight: 'bold' }}>Menu /</Typography>
                     <Typography color='primary.light' sx={{ fontWeight: 'bold' }}>Tickets</Typography>
                 </Stack>
                 <SimpleButton text="Retour" handleClick={() => { navigate(-1) }} />
             </Stack>
-            <Box sx={{ maxHeight: '40vh', overflowY: 'scroll' }}>
+            <Box sx={{ maxHeight: '50vh', overflowY: 'scroll' }}>
                 <Typography variant='subtitle1'>#{id}</Typography>
                 <Stack direction='row' alignItems='center' spacing={1}>
                     <Typography variant='h5' component='h2' fontWeight='bold'>{ticket?.name}</Typography>
@@ -107,46 +118,54 @@ export const TicketDetails = () => {
                 <Typography variant='body1' mb={2}>
                     {ticket?.description}
                 </Typography>
-                <Typography variant='body1' color='text.secondary' mb={2}> Pièces jointes</Typography>
                 <Divider sx={{ marginBlock: '1em' }} />
                 <Stack justifyContent='space-between' direction='row'>
                     <Typography variant='body1' fontWeight='bold' mb={2}> Etat</Typography>
-                    {isUserInRole(SYSTEM_ROLES.AGENT, user?.id) ?
-                        <FormControl sx={{ minWidth: '15%' }} size='small'>
-                            <InputLabel id="status-select-label">Etat</InputLabel>
-                            <Select
-                                labelId="status-select-label"
-                                id="status-label"
-                                label="Etat"
-                                value={ticket?.status}
-                                onChange={event => changeTicketStatus(event.target.value)}
-                            >
-                                <MenuItem value={TICKET_STATUS.PROCESSING}>
-                                    <TicketStatus status={TICKET_STATUS.PROCESSING} />
-                                </MenuItem>
-                                <MenuItem value={TICKET_STATUS.AWAITING_RESPONSE}>
-                                    <TicketStatus status={TICKET_STATUS.AWAITING_RESPONSE} />
-                                </MenuItem>
-                                <MenuItem value={TICKET_STATUS.PROCESSED}>
-                                    <TicketStatus status={TICKET_STATUS.PROCESSED} />
-                                </MenuItem>
-                            </Select>
-                        </FormControl>
-                        :
-                        <Stack gap={1}>
-                            <TicketStatus status={ticket?.status} />
-                            {ticket?.status == TICKET_STATUS.PROCESSED && <Stack direction='row' gap={1}>
-                                <Button color='success' onClick={() => setIsConfirmDialogOpen(true)} variant='contained' size='small'>Approuver</Button>
-                                <Button color='error' onClick={() => setIsRejectDialogOpen(true)} variant='contained' size='small'>Rejeter</Button>
-                            </Stack>}
+                    <Stack direction='row' alignItems='center'>
+                        {isUserInRole(SYSTEM_ROLES.AGENT, user?.id) ?
+                            <FormControl sx={{ minWidth: '15%' }} size='small'>
+                                <InputLabel id="status-select-label">Etat</InputLabel>
+                                <Select
+                                    labelId="status-select-label"
+                                    id="status-label"
+                                    label="Etat"
+                                    value={ticket?.status}
+                                    onChange={event => changeTicketStatus(event.target.value)}
+                                >
+                                    <MenuItem value={TICKET_STATUS.PROCESSING}>
+                                        <TicketStatus status={TICKET_STATUS.PROCESSING} />
+                                    </MenuItem>
+                                    <MenuItem value={TICKET_STATUS.AWAITING_RESPONSE}>
+                                        <TicketStatus status={TICKET_STATUS.AWAITING_RESPONSE} />
+                                    </MenuItem>
+                                    <MenuItem value={TICKET_STATUS.PROCESSED}>
+                                        <TicketStatus status={TICKET_STATUS.PROCESSED} />
+                                    </MenuItem>
+                                </Select>
+                            </FormControl>
+                            :
+                            <Stack gap={1}>
+                                <TicketStatus status={ticket?.status} />
+                                {ticket?.status == TICKET_STATUS.PROCESSED && <Stack direction='row' gap={1}>
+                                    <Button color='success' onClick={() => setIsConfirmDialogOpen(true)} variant='contained' size='small'>Satisfait</Button>
+                                    <Button color='error' onClick={() => setIsRejectDialogOpen(true)} variant='contained' size='small'>Non satisfait</Button>
+                                </Stack>}
 
-                            {ticket?.status == TICKET_STATUS.APPROVED && isUserInRole(SYSTEM_ROLES.MODERATOR, user?.id) && <Stack direction='row' gap={1}>
-                                <Button color='success' onClick={() => setIsCloseTicketDialogOpen(true)} variant='contained' size='small'>Cloturer</Button>
-                            </Stack>}
-                        </Stack>
-                    }
+                                {ticket?.status == TICKET_STATUS.APPROVED && isUserInRole(SYSTEM_ROLES.MODERATOR, user?.id) && <Stack direction='row' gap={1}>
+                                    <Button color='success' onClick={() => setIsCloseTicketDialogOpen(true)} variant='contained' size='small'>Cloturer</Button>
+                                </Stack>}
+                            </Stack>
+                        }
+                        <Button variant='outlined' color='primary' sx={{ marginLeft: 1 }}
+                            onClick={() => setIsHistoryDialogOpen(true)}>
+                            <History sx={{ color: primaryLight }} />
+                        </Button>
+                    </Stack>
+
 
                 </Stack>
+                <Typography variant='body1' color='text.secondary' mb={2}> Pièces jointes</Typography>
+                <ImagePreviewInput />
             </Box>
             <Box sx={{ position: 'relative' }}>
                 <Box sx={{ maxHeight: '40vh', overflowY: 'scroll' }}>
@@ -160,7 +179,7 @@ export const TicketDetails = () => {
                 approveText='Oui'
             />
             <SimpleDialog open={isRejectDialogOpen} handleClose={rejectTicket}
-                dialogContent={<Typography variant="body1">Rejeter le ticket?</Typography>}
+                dialogContent={<Typography variant="body1">Non satisfait du ticket?</Typography>}
                 dialogTitle='Confirmation' confirmationButtonColor='error'
                 approveText='Oui'
             />
@@ -169,6 +188,7 @@ export const TicketDetails = () => {
                 dialogTitle='Confirmation de cloture' confirmationButtonColor='error'
                 approveText='Oui'
             />
+            <TicketHistoryDialog open={isHistoryDialogOpen} handleClose={closeHistoryDialog} ticketLogs={ticketLogs} ticket={ticket} />
         </Paper >
     )
 }

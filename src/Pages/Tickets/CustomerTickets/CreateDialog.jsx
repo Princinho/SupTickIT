@@ -31,6 +31,17 @@ export const CreateDialog = ({ open, handleClose }) => {
                     <TextField
                         autoFocus
                         margin="dense"
+                        label="Numero de carte"
+                        error={nameError}
+                        type="text"
+                        value={formData.productRef}
+                        onChange={(event) => setFormData(prev => ({ ...prev, productRef: event.target.value }))}
+                        fullWidth
+                        variant="standard"
+                    />
+                    <TextField
+                        autoFocus
+                        margin="dense"
                         label="Titre *"
                         error={nameError}
                         type="text"

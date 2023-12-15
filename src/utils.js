@@ -21,6 +21,9 @@ const SYSTEM_ROLES = {
     CUSTOMER: 4,
     CUSTOMER_ADMIN: 5
 }
+const SYSTEM_LABELS = {
+    PRODUCT_REF: 'Référence Produit'
+}
 function stringToColor(string) {
     let hash = 0;
     let i;
@@ -84,7 +87,7 @@ function addOnemonth(date) {
 function getHighestId(array) {
     if (!array) return 0
     console.log(array)
-    return array.reduce((prev, curr) => { 
+    return array.reduce((prev, curr) => {
         curr.id > prev.id ? curr.id : prev.id
     }, 0)
 }
@@ -130,5 +133,5 @@ export {
     getSampleDataFromLocalStorage, saveDataToLocalStorage,
     getRandomNumber, addOnemonth, sortAndFilterData,
     getAvailablePriorities, formatToInput, getHighestId,
-    TICKET_STATUS, TICKET_PRIORITY, SYSTEM_ROLES
+    TICKET_STATUS, TICKET_PRIORITY, SYSTEM_ROLES,SYSTEM_LABELS
 }

@@ -7,11 +7,11 @@ import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { SYSTEM_ROLES, sortAndFilterData } from '../../utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { addRoleToUser, createCustomer, deleteUser, editUser, getActiveRolesForUser, getAllCompanies, getCompanyUsers } from '../../Api'
+import { createCustomer, deleteUser, editUser, getActiveRolesForUser, getAllCompanies, getCompanyUsers } from '../../Api'
 import { useNavigate } from 'react-router-dom'
 import { useAuthorization } from '../../Hooks/useAuthorization'
-import { RoleChip } from '../Companies/RoleChip'
 import { UserContext } from '../../Contexts'
+import { RoleChip } from '../../Components/RoleChip'
 
 export const PartnerUsers = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
@@ -48,10 +48,7 @@ export const PartnerUsers = () => {
       navigate("/accessdenied")
     }
   }, [])
-  const addRoleToUserMutation = useMutation({
-    mutationFn: addRoleToUser,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: BASE_QUERY_KEY })
-  })
+
   function changeRowsPerPage(rowsPerPage) {
     setRowsPerPage(rowsPerPage)
     setCurrentPage(0)

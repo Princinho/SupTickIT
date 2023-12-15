@@ -4,6 +4,7 @@ import { getAllProjects } from "../../../Api"
 import { TicketStatus } from "../../../Components/TicketStatus"
 import { OpenInNew } from "@mui/icons-material"
 import { Link } from "react-router-dom"
+import { SYSTEM_LABELS } from "../../../utils"
 export const TicketDetailsDialog = ({ open, handleClose, entry }) => {
 
     return (
@@ -28,7 +29,14 @@ export const TicketDetailsDialog = ({ open, handleClose, entry }) => {
                         <Grid item xs={12}>
                             <Typography variant="span">Projet {getAllProjects().find(p => p.id == entry.projectId)?.title}</Typography>
                         </Grid>
-
+                        {entry.productRef && <>
+                            <Grid item xs={6}>
+                                <Typography variant="span">{SYSTEM_LABELS.PRODUCT_REF}</Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography variant="span">{entry.productRef}</Typography>
+                            </Grid>
+                        </>}
                         <Grid item xs={12}>
                             <Typography variant="span">Description</Typography>
                         </Grid>

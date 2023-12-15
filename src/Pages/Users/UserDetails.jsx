@@ -96,7 +96,7 @@ export const UserDetails = () => {
                         </Grid>
                         <Grid item xs={12} sm={6} lg={6}>
                             <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                                Identifiant
+                                Email
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={6} lg={6}>

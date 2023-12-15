@@ -61,11 +61,13 @@ function deleteProject(project) {
     saveDataToLocalStorage({ ...storedData, projects: updatedProjectsArray })
 }
 function editEntry(updatedEntry, type) {
+    console.log('editing entry')
     let allEntries = getAllEntries(type)
     let storedData = getOrInitData()
     let updatedEntriesArray = allEntries.map(entry => entry.id == updatedEntry.id ? {
         ...entry, ...updatedEntry
     } : entry)
+    console.log(updatedEntriesArray)
     saveDataToLocalStorage({ ...storedData, [type]: updatedEntriesArray })
 }
 function deleteEntry(data, type) {
@@ -131,7 +133,8 @@ function getAllMessages() {
     return messages
 }
 function createMessage(entry) {
-    create(entry, 'messages')
+    let message = create(entry, 'messages')
+    createTicketLog(generateTicketLogForTicketMessage(message))
 }
 
 function editMessage(entry) {
@@ -140,6 +143,27 @@ function editMessage(entry) {
 
 function deleteMessage(entry) {
     deleteEntry(entry, 'messages')
+}
+function getAllTicketLogs() {
+    let ticketLogs = getAllEntries('ticketLogs')
+    console.log(ticketLogs)
+    return ticketLogs
+}
+function getTicketLogsByTicketId(id) {
+    let ticketLogs = getAllEntries('ticketLogs').filter(log => log.ticketId == id)
+    console.log(ticketLogs)
+    return ticketLogs
+}
+function createTicketLog(entry) {
+    create(entry, 'ticketLogs')
+}
+
+function editTicketLog(entry) {
+    editEntry(entry, 'ticketLogs')
+}
+
+function deleteTicketLog(entry) {
+    deleteEntry(entry, 'ticketLogs')
 }
 
 function getAgentTickets(agentId) {
@@ -160,14 +184,61 @@ function getCompanyProjects(companyId) {
     return companyProjects
 }
 function createTicket(data) {
-    create(data, 'tickets')
+    let newTicket = create(data, 'tickets')
+    createTicketLog({
+        date: new Date().toISOString(), ticketId: newTicket.id,
+        content: "Creation du ticket",
+        ...data
+    })
 }
 
 function editTicket(ticket) {
     console.log(ticket)
+    createTicketLog(generateTicketLogForTicketEdit(ticket))
     editEntry(ticket, 'tickets')
 }
+function generateTicketLogForTicketEdit(newTicket) {
+    if (!newTicket.id) {
+        throw (new Error("Cannot log changes for ticket with undefined id"))
+    }
+    let oldTicket = getTicket(newTicket.id)
+    let differences = []
+    for (const key in newTicket) {
+        if (newTicket[key] != oldTicket[key]) {
+            differences.push(key)
+        }
+    }
+    console.log(newTicket)
+    let ticketLog = null
+    if (differences.length > 0) {
+        ticketLog = {
+            date: new Date().toISOString(), ticketId: newTicket.id,
+            content: "Modification du ticket"
+        }
+        differences.forEach(difference => {
+            ticketLog[difference] = newTicket[difference]
+            ticketLog[difference + "_old"] = oldTicket[difference]
+        });
+    }
+    console.log(ticketLog)
+    return ticketLog
+}
+function generateTicketLogForTicketMessage(message) {
+    if (!message.id) {
+        throw (new Error("Cannot log changes for ticket with undefined id"))
+    }
 
+    console.log(message)
+    let ticketLog = null
+
+    ticketLog = {
+        date: new Date().toISOString(), ticketId: message.id,
+        content: "Nouveau message pour le ticket",
+        ...message
+    }
+    console.log(ticketLog)
+    return ticketLog
+}
 function deleteTicket(data) {
     deleteEntry(data, 'tickets')
 }
@@ -219,6 +290,12 @@ function getAvailableAgents(companyId) {
     let companyAgents = getCompanyUsers(companyId).filter(user => isUserInRole(SYSTEM_ROLES.AGENT, user.id))
     return companyAgents
 }
+function getAllAgents() {
+    let companyAgents = getAllUsers().filter(user => isUserInRole(SYSTEM_ROLES.AGENT, user.id))
+    console.log(companyAgents)
+    return companyAgents
+}
+
 function getCompanyUsers(companyId) {
     let allUsers = getAllUsers()
     let companyUsers = allUsers.filter(user => user.companyId == companyId)
@@ -292,6 +369,7 @@ export {
     getAllUsers, getCompanyUsers, createUser, editUser, deleteUser, createCustomer,
     getAllRoleAssignments, getAllRoles, addRoleToUser,
     getActiveRolesForUser, getActiveRoleAssignmentsForUser, isUserInRole,
-    removeRoleFromUser, getAvailableAgents, getAgentTickets
+    removeRoleFromUser, getAvailableAgents, getAgentTickets, getAllAgents,
+    getAllTicketLogs, createTicketLog, editTicketLog, deleteTicketLog, getTicketLogsByTicketId
 }
 

@@ -1,0 +1,75 @@
+.custom-image-input::-webkit-file-upload-button {
+    visibility: hidden;
+}
+
+.custom-image-input::before {
+    content: '+';
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(top, #f9f9f9, #e3e3e3);
+    border: 1px solid #999;
+    border-radius: 3px;
+    width: 3em;
+    height: 3em;
+    outline: none;
+    white-space: nowrap;
+    -webkit-user-select: none;
+    cursor: pointer;
+    text-shadow: 1px 1px #fff;
+    font-weight: 700;
+    font-size: 30pt;
+}
+
+.file-upload-trigger {
+
+    display: flex;
+    width: 9rem;
+    height: 7rem;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid var(--clr-green);
+    font-size: 3rem;
+    cursor: pointer;
+
+    /*transform: scale(200%); */
+}
+
+.selected-images-wrapper {
+    width: 100%;
+    height: 7rem;
+    display: flex;
+    gap: .5em;
+    padding-left: .5em;
+}
+
+.selected-image {
+    height: 100%;
+    position: relative;
+}
+
+.selected-image-preview {
+    height: 100%;
+    object-fit: cover;
+    width: 9rem;
+}
+
+.selected-image-remove-btn {
+    position: absolute;
+    right: 0;
+    color: white;
+    background-color: red;
+    border:none;
+}
+
+.file-upload-trigger .btn-icon {
+    font-size: 1em;
+}
+
+.custom-image-input:hover::before {
+    border-color: black;
+}
+
+.custom-image-input:active::before {
+    background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+}

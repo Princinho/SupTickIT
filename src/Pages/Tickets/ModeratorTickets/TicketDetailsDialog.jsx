@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from "react"
 import { getAvailableAgents, getCompanyProjects } from "../../../Api"
 import { UserContext } from "../../../Contexts"
 import { DropdownSelector } from "../../../Components/DropdownSelector"
-import { getAvailablePriorities } from "../../../utils"
+import { SYSTEM_LABELS, getAvailablePriorities } from "../../../utils"
 import { TicketStatus } from "../../../Components/TicketStatus"
 import { Link } from "react-router-dom"
 import { OpenInNew } from "@mui/icons-material"
@@ -18,8 +18,7 @@ export const TicketDetailsDialog = ({ open, handleClose, entry }) => {
             agent => ({ id: agent.id, name: agent.firstName + " " + agent.lastName })
         ))
     }, [user])
-    console.log(availableAgents)
-    console.log(formData)
+    
     return (
         <Box>
             <Dialog open={open} onClose={() => handleClose()}>
@@ -34,7 +33,7 @@ export const TicketDetailsDialog = ({ open, handleClose, entry }) => {
                                 </Link>
                             </Stack>
                         </Grid>
-                        
+
                         <Grid item xs={12}>
                             <TicketStatus status={entry.status} />
                         </Grid>
@@ -42,7 +41,14 @@ export const TicketDetailsDialog = ({ open, handleClose, entry }) => {
                         <Grid item xs={12}>
                             <Typography variant="span">Projet {getCompanyProjects(user?.companyId).find(p => p.id == entry.projectId)?.title}</Typography>
                         </Grid>
-
+                        {entry.productRef && <>
+                            <Grid item xs={6}>
+                                <Typography variant="span">{SYSTEM_LABELS.PRODUCT_REF}</Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography variant="span">{entry.productRef}</Typography>
+                            </Grid>
+                        </>}
                         <Grid item xs={12}>
                             <Typography variant="span">Description</Typography>
                         </Grid>

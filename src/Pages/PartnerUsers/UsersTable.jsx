@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { Delete, Edit, MoreVert } from '@mui/icons-material'
 import { useContext, useState } from 'react'
 import { DataContext } from '../../Contexts'
-import { RoleChip } from '../Companies/RoleChip'
+import { RoleChip } from '../../Components/RoleChip'
 
 
 export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options }) => {

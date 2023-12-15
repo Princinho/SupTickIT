@@ -7,10 +7,11 @@ import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { SYSTEM_ROLES, sortAndFilterData } from '../../utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createUser, deleteUser, editUser, getActiveRolesForUser, getAllCompanies, getAllUsers } from '../../Api'
+import { createUser, deleteUser, editUser, getActiveRolesForUser, getAllCompanies, getAllUsers, isUserInRole } from '../../Api'
 import { useNavigate } from 'react-router-dom'
 import { useAuthorization } from '../../Hooks/useAuthorization'
-import { RoleChip } from '../Companies/RoleChip'
+import { RoleChip } from '../../Components/RoleChip'
+
 
 export const Users = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
@@ -25,7 +26,7 @@ export const Users = () => {
   const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompanies })
   const navigate = useNavigate()
   const { isUserAuthorized } = useAuthorization()
-
+  const [roleFilter, setRoleFilter] = useState(null)
 
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
@@ -40,7 +41,14 @@ export const Users = () => {
       let userRoles = getActiveRolesForUser(user.id)
       return { ...user, roles: userRoles }
     })
+    if (roleFilter) {
+      result = result.filter(user => isUserInRole(user.id, roleFilter))
+    }
     return result
+  }
+  function toggleRole(roleId) {
+    if (roleFilter == roleId) setRoleFilter(null)
+    else setRoleFilter(roleId)
   }
   useEffect(() => {
     if (!isUserAuthorized()) {
@@ -136,11 +144,21 @@ export const Users = () => {
       {focusedEntry && <EditDialog open={isEditDialogOpen} entry={focusedEntry} companies={companies} handleClose={closeEditDialog} />}
       {focusedEntry && <DeleteDialog open={isDeleteDialogOpen} entry={focusedEntry} handleClose={closeDeleteDialog} />}
       <Stack direction={{ md: 'row' }} gap={2} justifyContent='flex-end' padding={2}>
-        <Stack direction='row' alignItems='center' gap={1}><RoleChip roleId={SYSTEM_ROLES.ADMIN} /><Typography variant='body2'>Administrateur</Typography></Stack>
-        <Stack direction='row' alignItems='center' gap={1}><RoleChip roleId={SYSTEM_ROLES.MODERATOR} /><Typography variant='body2'>Moderateur</Typography></Stack>
-        <Stack direction='row' alignItems='center' gap={1}><RoleChip roleId={SYSTEM_ROLES.AGENT} /><Typography variant='body2'>Agent</Typography></Stack>
-        <Stack direction='row' alignItems='center' gap={1}><RoleChip roleId={SYSTEM_ROLES.CUSTOMER} /><Typography variant='body2'>Client</Typography></Stack>
-        <Stack direction='row' alignItems='center' gap={1}><RoleChip roleId={SYSTEM_ROLES.CUSTOMER_ADMIN} /><Typography variant='body2'>Administrateur client</Typography></Stack>
+        <Stack direction='row' alignItems='center' gap={1}>
+          <RoleChip roleId={SYSTEM_ROLES.ADMIN} handleClick={() => toggleRole(SYSTEM_ROLES.ADMIN)} />
+          <Typography variant='body2'>Administrateur</Typography></Stack>
+        <Stack direction='row' alignItems='center' gap={1}>
+          <RoleChip roleId={SYSTEM_ROLES.MODERATOR} handleClick={() => toggleRole(SYSTEM_ROLES.MODERATOR)} />
+          <Typography variant='body2'>Moderateur</Typography></Stack>
+        <Stack direction='row' alignItems='center' gap={1}>
+          <RoleChip roleId={SYSTEM_ROLES.AGENT} handleClick={() => toggleRole(SYSTEM_ROLES.AGENT)} />
+          <Typography variant='body2'>Agent</Typography></Stack>
+        <Stack direction='row' alignItems='center' gap={1}>
+          <RoleChip roleId={SYSTEM_ROLES.CUSTOMER} handleClick={() => toggleRole(SYSTEM_ROLES.CUSTOMER)} />
+          <Typography variant='body2'>Client</Typography></Stack>
+        <Stack direction='row' alignItems='center' gap={1}>
+          <RoleChip roleId={SYSTEM_ROLES.CUSTOMER_ADMIN} handleClick={() => toggleRole(SYSTEM_ROLES.CUSTOMER_ADMIN)} />
+          <Typography variant='body2'>Administrateur client</Typography></Stack>
       </Stack>
     </Paper >
   )

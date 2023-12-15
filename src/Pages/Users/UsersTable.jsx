@@ -1,11 +1,11 @@
-import { Divider, IconButton, ListItemIcon, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
+import { Divider, IconButton, ListItemIcon, Menu, MenuItem, Stack, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
 
 import PropTypes from 'prop-types'
 import { Delete, Edit, MoreVert, Tune } from '@mui/icons-material'
 import { useContext, useState } from 'react'
 import { DataContext } from '../../Contexts'
 import { Link, useNavigate } from 'react-router-dom'
-import { RoleChip } from '../Companies/RoleChip'
+import { RoleChip } from '../../Components/RoleChip'
 
 
 export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options }) => {
@@ -18,8 +18,7 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
     const appMoreMenuOpen = Boolean(anchorEl)
     const navigate = useNavigate()
     const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } = options
-    console.log(users)
-    // TODO: Permettre de reset les champs au clic du bouton reset a droite.
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length) : 0;
     return (
         <>
             <Divider sx={{ marginTop: '1em' }} />
@@ -30,7 +29,7 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                         <TableRow>
                             <TableCell>Id</TableCell>
                             <TableCell align="left">Nom Complet</TableCell>
-                            <TableCell align="left">Identifiant</TableCell>
+                            <TableCell align="left">Email</TableCell>
                             <TableCell align="left">Roles</TableCell>
                             <TableCell align="left">Derniere Connexion</TableCell>
                             <TableCell align="left">Entreprise</TableCell>
@@ -75,7 +74,10 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                                         </Link>
                                     </TableCell>
                                     <TableCell>
-                                        {user.roles.map(role => <RoleChip key={`role-${role.id}`} roleId={role.id} />)}
+                                        <Stack direction='row' flexWrap='wrap' sx={{ minWidth: '5rem' }}>
+
+                                            {user.roles.map(role => <RoleChip key={`role-${role.id}`} roleId={role.id} />)}
+                                        </Stack>
                                     </TableCell>
                                     <TableCell>
                                         {user.lastLoginDate}
@@ -100,6 +102,12 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                                     <Typography variant='subtitle1' color='primary' textAlign='center'> Aucune donnée disponible</Typography>
                                 </TableCell>
                             </TableRow>}
+
+                        {emptyRows > 0 && (
+                            <TableRow style={{ height: 53 * emptyRows }}>
+                                <TableCell colSpan={6} />
+                            </TableRow>
+                        )}
                     </TableBody>
                     <TableFooter>
                         <TableRow>

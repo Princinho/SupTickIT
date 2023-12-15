@@ -14,7 +14,7 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
     const [isAddCustomersDialogOpen, setIsAddCustomersDialogOpen] = useState(false)
     const MAX_DISPLAYED_ENTRIES = 3
     let resetBtnColor = theme.palette.primary.light
-    console.log(filters)
+    
     function resetAllFilters() {
         setFilters(initialFilters)
     }
@@ -34,7 +34,7 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
         setFilters(prev => ({ ...prev, statuses: [] }))
     }
     useEffect(() => {
-        console.log('Apply FIlters is ', applyFilters)
+        
         if (applyFilters) applyFilters(filters)
     }, [filters])
     function closeAddAgentsDialog() {
