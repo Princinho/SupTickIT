@@ -88,14 +88,14 @@ export const Layout = (props) => {
                             <ListItemText primary={"Comptes Utilisateur"} sx={listItemStyles} />
                         </ListItemButton>
                     </ListItem>}
-                    <ListItem disablePadding  >
-                        <ListItemButton >
+                    {isPathAuthorizedForUser('/systemsettings') && <ListItem disablePadding  >
+                        <ListItemButton onClick={() => navigate('systemsettings')}>
                             <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
                                 <ListAltIcon sx={{ color: menuItemColor }} />
                             </ListItemIcon>
                             <ListItemText primary={"Paramètres"} sx={listItemStyles} />
                         </ListItemButton>
-                    </ListItem>
+                    </ListItem>}
                     <Divider />
                     <ListItem disablePadding  >
                         <ListItemButton >

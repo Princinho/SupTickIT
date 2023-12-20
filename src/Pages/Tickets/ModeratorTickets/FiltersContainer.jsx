@@ -14,7 +14,6 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
     const [isAddCustomersDialogOpen, setIsAddCustomersDialogOpen] = useState(false)
     const MAX_DISPLAYED_ENTRIES = 3
     let resetBtnColor = theme.palette.primary.light
-    
     function resetAllFilters() {
         setFilters(initialFilters)
     }
@@ -34,7 +33,7 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
         setFilters(prev => ({ ...prev, statuses: [] }))
     }
     useEffect(() => {
-        
+
         if (applyFilters) applyFilters(filters)
     }, [filters])
     function closeAddAgentsDialog() {
@@ -223,18 +222,6 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                     />
                     <FormControlLabel sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                         control={
-                            <Checkbox checked={filters?.statuses?.includes(TICKET_STATUS.REJECTED)}
-                                onChange={() => toggleStatus(TICKET_STATUS.REJECTED)}
-                            />
-                        }
-                        label={
-                            <Stack direction='row' alignItems='center' spacing={1}>
-                                <StatusDot type={TICKET_STATUS.REJECTED} />
-                                <Typography variant="body1" >Rejeté</Typography>
-                            </Stack>}
-                    />
-                    <FormControlLabel sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
-                        control={
                             <Checkbox checked={filters?.statuses?.includes(TICKET_STATUS.APPROVED)}
                                 onChange={() => toggleStatus(TICKET_STATUS.APPROVED)}
                             />
@@ -242,7 +229,19 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                         label={
                             <Stack direction='row' alignItems='center' spacing={1}>
                                 <StatusDot type={TICKET_STATUS.APPROVED} />
-                                <Typography variant="body1" >Approuvé</Typography>
+                                <Typography variant="body1" >Satisfait</Typography>
+                            </Stack>}
+                    />
+                    <FormControlLabel sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
+                        control={
+                            <Checkbox checked={filters?.statuses?.includes(TICKET_STATUS.REJECTED)}
+                                onChange={() => toggleStatus(TICKET_STATUS.REJECTED)}
+                            />
+                        }
+                        label={
+                            <Stack direction='row' alignItems='center' spacing={1}>
+                                <StatusDot type={TICKET_STATUS.REJECTED} />
+                                <Typography variant="body1" >Insatisfait</Typography>
                             </Stack>}
                     />
                 </Box>

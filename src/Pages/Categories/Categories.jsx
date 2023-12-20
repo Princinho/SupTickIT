@@ -23,7 +23,6 @@ export const Categories = () => {
     const [categoryToDetail, setCategoryToDetail] = useState(null)
     const [categoryToDelete, setCategoryToDelete] = useState(null)
     const [sortOption, setSortOption] = useState({ option: 'name' })
-    const { isUserAuthorized } = useAuthorization()
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const { data: categories } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCategories })
@@ -32,8 +31,8 @@ export const Categories = () => {
         rowsPerPage: 5, page: 0, count: categories?.length, handlePageChange: setCurrentPage,
         handleRowsPerPageChange: changeRowsPerPage
     })
-
-
+    
+    const { isUserAuthorized } = useAuthorization()
     useEffect(() => {
         if (!isUserAuthorized()) {
             navigate("/accessdenied")

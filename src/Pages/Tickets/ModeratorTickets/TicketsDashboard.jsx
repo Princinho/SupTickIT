@@ -1,7 +1,7 @@
 import { ArrowBack, ArrowForward, HighlightOff, Search, Tune } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { editTicket, getAllProjects, getAllTickets, getAllUsers, isUserInRole } from '../../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { UserContext } from '../../../Contexts'
@@ -15,6 +15,7 @@ import { useTheme } from '@emotion/react'
 export const TicketsDashboard = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"));
+  const ref = useRef({})
   const { user } = useContext(UserContext)
   const initialFilters = {
     startDate: null,
@@ -27,6 +28,7 @@ export const TicketsDashboard = () => {
     agentSearchTerm: '',
     customerSearchTerm: ''
   }
+  console.log(ref)
   const [filters, setFilters] = useState(initialFilters)
   const [filteredTickets, setFilteredTickets] = useState([])
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
@@ -47,6 +49,9 @@ export const TicketsDashboard = () => {
     handleRowsPerPageChange: changeRowsPerPage
   })
   useEffect(() => setFilteredTickets(tickets), [tickets])
+  function resetFilters() {
+    setFilters(initialFilters)
+  }
   function changeRowsPerPage(rowsPerPage) {
     setRowsPerPage(rowsPerPage)
     setCurrentPage(0)
@@ -206,6 +211,9 @@ export const TicketsDashboard = () => {
                   minWidth: '42px', paddingInline: '10px',
                   borderRight: 'none',
                   '&:hover': { borderRight: 'none' }
+                }} onClick={() => {
+                  console.log('clieks')
+                  resetFilters()
                 }}
                   variant='outlined'>
                   <HighlightOff />
@@ -245,6 +253,7 @@ export const TicketsDashboard = () => {
             filters={filters}
             initialFilters={initialFilters}
             setFilters={setFilters}
+            ref={ref}
             customers={getTicketCustomers()}
             applyFilters={(filters) => applyFilters(filters)} />
         </Paper>}
@@ -254,6 +263,8 @@ export const TicketsDashboard = () => {
       open={isFiltersDialogOpen}
       customers={getTicketCustomers()}
       filters={filters}
+
+      ref={ref}
       initialFilters={initialFilters}
       setFilters={setFilters}
       handleClose={(newFilters) => {

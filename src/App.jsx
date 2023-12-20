@@ -20,6 +20,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { TicketDetails } from './Pages/Tickets/AgentTickets/TicketDetails.jsx'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { AccessDenied } from './Pages/Login/AccessDenied.jsx'
+import { SystemSettings } from './Pages/SystemSettings/SystemSettings.jsx'
 
 function App() {
   const [user, setUser] = useState(null)
@@ -64,6 +65,7 @@ function App() {
           <Route path='categories' element={<Categories />} />
           <Route path='tickets' element={<Tickets />} />
           <Route path='tickets/:id' element={<TicketDetails />} />
+          <Route path='systemsettings' element={<SystemSettings />} />
 
         </Route>
       </Route>

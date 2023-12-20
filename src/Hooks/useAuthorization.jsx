@@ -11,6 +11,9 @@ export const useAuthorization = () => {
     return isPathAuthorizedForUser(pathname)
   }
   function isPathAuthorizedForUser(path) {
+    if (matchPath('/systemsettings/*', path)) {
+      return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
+    }
     if (matchPath('/categories/*', path)) {
       return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
     }

@@ -6,6 +6,12 @@ function getAllEntries(type) {
 
     return data[type] || []
 }
+function getSingleton(type) {
+    let data = getDataFromLocalStorage()
+    console.log(data[type])
+    console.log(type)
+    return data[type] || null
+}
 function getAllProjects() {
     return getAllEntries('projects')
 }
@@ -23,6 +29,21 @@ function getOrInitData() {
 
     }
     return storedData
+}
+function getSystemSettings() {
+    console.log('getting settings')
+    return getSingleton('settings')
+}
+function saveSystemSettings(settings) {
+    saveSingleton('settings', settings)
+}
+function saveSingleton(type, settings) {
+    console.log(type, settings)
+    let storedData = getOrInitData()
+    let createdEntry = { ...settings, dateCreated: new Date().toISOString() }
+    const result = { ...storedData, [type]: createdEntry }
+    saveDataToLocalStorage(result)
+    return createdEntry
 }
 function assignProject(project, companyId) {
     console.log(project, companyId)
@@ -370,6 +391,7 @@ export {
     getAllRoleAssignments, getAllRoles, addRoleToUser,
     getActiveRolesForUser, getActiveRoleAssignmentsForUser, isUserInRole,
     removeRoleFromUser, getAvailableAgents, getAgentTickets, getAllAgents,
-    getAllTicketLogs, createTicketLog, editTicketLog, deleteTicketLog, getTicketLogsByTicketId
+    getAllTicketLogs, createTicketLog, editTicketLog, deleteTicketLog, getTicketLogsByTicketId,
+    getSystemSettings, saveSystemSettings
 }
 

@@ -2,10 +2,12 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextFie
 import PropTypes from 'prop-types'
 import { useContext, useState } from "react"
 import { DropdownSelector } from "../../../Components/DropdownSelector"
-import { getCompanyProjects, getProjectCategories } from "../../../Api"
+import { getCompanyProjects, getProjectCategories, getSystemSettings } from "../../../Api"
 import { UserContext } from "../../../Contexts"
 import { TICKET_STATUS } from "../../../utils"
+import { useQuery } from "@tanstack/react-query"
 export const CreateDialog = ({ open, handleClose }) => {
+    const { data: settings } = useQuery({ queryKey: ['settings'], queryFn: getSystemSettings })
     const { user } = useContext(UserContext)
     const initData = { name: "", description: "", status: TICKET_STATUS.PENDING, createdBy: user?.id }
     const [formData, setFormData] = useState(initData)
@@ -13,6 +15,7 @@ export const CreateDialog = ({ open, handleClose }) => {
     function reset() {
         setFormData(initData)
     }
+    console.log(settings)
     console.log(user)
     return (
         <Box>
@@ -31,7 +34,7 @@ export const CreateDialog = ({ open, handleClose }) => {
                     <TextField
                         autoFocus
                         margin="dense"
-                        label="Numero de carte"
+                        label={settings?.productRefLabel || "Référence produit"}
                         error={nameError}
                         type="text"
                         value={formData.productRef}
