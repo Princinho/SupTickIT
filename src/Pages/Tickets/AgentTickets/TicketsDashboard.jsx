@@ -8,7 +8,6 @@ import { sortAndFilterData } from '../../Companies/utils'
 import { UserContext } from '../../../Contexts'
 import { TicketsTable } from './TicketsTable'
 import { TicketDetailsDialog } from './TicketDetailsDialog'
-import { TICKET_STATUS } from '../../../utils'
 
 export const TicketsDashboard = () => {
 
@@ -148,7 +147,7 @@ export const TicketsDashboard = () => {
                     options={tableOptions}
                     projects={projects}
                     users={users}
-                    tickets={sortAndFilterData(tickets?.filter(t => t.status != TICKET_STATUS.CLOSED), searchTerm, sortOption)}
+                    tickets={sortAndFilterData(tickets, searchTerm, sortOption)}
                     showDetailsDialog={showDetailsDialog}
                 />
             </Box>

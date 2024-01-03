@@ -1,4 +1,4 @@
-import { SYSTEM_ROLES, getSampleDataFromLocalStorage, saveDataToLocalStorage } from "./utils"
+import { SYSTEM_ROLES, TICKET_STATUS, getSampleDataFromLocalStorage, saveDataToLocalStorage } from "./utils"
 import { sampleData as initialData } from './SampleData.js'
 
 function getAllEntries(type) {
@@ -192,9 +192,22 @@ function getAgentTickets(agentId) {
     if (!agentId) return []
     let allTickets = getAllTickets()
     // console.log(allTickets)
-    let agentTickets = allTickets.filter(ticket => ticket.agentId == agentId)
-    // console.log(customerTickets)
+    let agentTickets = allTickets.filter(ticket => ticket.agentId == agentId || isInFreePick(ticket))
+        .filter(t => t.status != TICKET_STATUS.CLOSED)
+    console.log(agentTickets)
     return agentTickets
+}
+function isInFreePick(ticket) {
+    if (ticket.agentId) {
+        console.log(ticket.id + "is already assigned")
+        return false;
+    }
+    let ticketCreationDate = new Date(ticket.dateCreated)
+    const oneDayInMs = (24 * 60 * 60 * 1000)
+    let today = new Date()
+    let gapInDays = Math.floor((today - ticketCreationDate) / oneDayInMs)
+    console.log(gapInDays) //5 days
+    return gapInDays > 7
 }
 function getCompanyProjects(companyId) {
     if (!companyId) return [

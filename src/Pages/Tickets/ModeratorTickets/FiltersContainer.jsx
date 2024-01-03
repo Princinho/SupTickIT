@@ -122,9 +122,11 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
             </Stack>
             <TextField id="search-by-agent"
                 size="small" aria-label="Filtrer par agent"
+                value={filters.agentSearchTerm}
+                onChange={(event) => { setFilters(prev => ({ ...prev, agentSearchTerm: event.target.value })) }}
                 label="Recherche agent" variant="outlined" sx={{ marginBottom: '1em' }} />
             <Stack mb={2} >
-                {agents?.filter(agent => filters.agentSearchTerm ? (agent.firstName + " " + agent.lastName).includes(filters.agentSearchTerm) : true)
+                {agents?.filter(agent => filters.agentSearchTerm ? (agent.firstName + " " + agent.lastName).toLowerCase().includes(filters.agentSearchTerm.toLowerCase()) : true)
                     .slice(0, MAX_DISPLAYED_ENTRIES)
                     .map(agent => <FormControlLabel key={`agent-${agent.id}`} sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                         control={
@@ -160,9 +162,14 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                 </Stack>
                 <TextField id="search-by-client"
                     size="small" aria-label="Filtrer par client"
+                    value={filters.customerSearchTerm}
+                    onChange={(event) => { setFilters(prev => ({ ...prev, customerSearchTerm: event.target.value })) }}
                     label="Recherche client" variant="outlined" sx={{ marginBottom: '1em' }} />
                 <Stack mb={2} >
-                    {customers?.slice(0, MAX_DISPLAYED_ENTRIES)
+                    {customers?.filter(customer =>
+                        filters.customerSearchTerm ? (customer.firstName + " " + customer.lastName).toLowerCase().includes(filters.customerSearchTerm.toLowerCase())
+                            : true)
+                        .slice(0, MAX_DISPLAYED_ENTRIES)
                         .map(customer => <FormControlLabel key={`customer-${customer.id}`} sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                             control={
                                 <Checkbox checked={filters.customerIds.includes(customer.id)} onChange={() => toggleCustomer(customer.id)} />
