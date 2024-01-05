@@ -130,7 +130,7 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                     .slice(0, MAX_DISPLAYED_ENTRIES)
                     .map(agent => <FormControlLabel key={`agent-${agent.id}`} sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                         control={
-                            <Checkbox checked={filters.agentIds.includes(agent.id)} onChange={() => toggleAgent(agent.id)} />
+                            <Checkbox checked={filters?.agentIds?.includes(agent.id)} onChange={() => toggleAgent(agent.id)} />
                         }
                         label={agent.firstName + " " + agent.lastName}
                     />
@@ -172,7 +172,7 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                         .slice(0, MAX_DISPLAYED_ENTRIES)
                         .map(customer => <FormControlLabel key={`customer-${customer.id}`} sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                             control={
-                                <Checkbox checked={filters.customerIds.includes(customer.id)} onChange={() => toggleCustomer(customer.id)} />
+                                <Checkbox checked={filters?.customerIds?.includes(customer.id)} onChange={() => toggleCustomer(customer.id)} />
                             }
                             label={customer.firstName + " " + customer.lastName}
                         />

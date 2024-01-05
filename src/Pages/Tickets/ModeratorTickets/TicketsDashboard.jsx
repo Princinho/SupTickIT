@@ -35,7 +35,7 @@ export const TicketsDashboard = () => {
   const [focusedEntry, setFocusedEntry] = useState(null)
   const [sortOption, setSortOption] = useState({ option: 'name' })
   const BASE_QUERY_KEY = 'moderator-tickets'
-  const [isFiltersDialogOpen, setIsFiltersDialogOpen] = useState(false)
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false)
   // const [companies, setCompanies] = useState([])
   const queryClient = useQueryClient()
   const { data: tickets } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: () => getAllTickets(user?.id) })
@@ -122,10 +122,15 @@ export const TicketsDashboard = () => {
     mutationFn: editTicket,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
-
+  function openFilters() {
+    setIsFiltersOpen(true)
+  }
+  function closeFilters() {
+    setIsFiltersOpen(false)
+  }
   return (<>
     <Grid container spacing={2}>
-      <Grid item xs={12} lg={9}>
+      <Grid item xs={12} lg={isFiltersOpen ? 9 : 12}>
         <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
           <Typography variant='h5' component='span' sx={{ fontWeight: 'bold' }}>Tous les tickets</Typography>
           <Stack direction='row' mb={2}>
@@ -200,7 +205,7 @@ export const TicketsDashboard = () => {
                     onClick={() => setCurrentPage(tableOptions.page + 1)}
                     sx={{ backgroundColor: 'white', color: (theme) => theme.palette.text.secondary }}><ArrowForward /></Button>
                 </ButtonGroup>
-                <IconButton onClick={() => setIsFiltersDialogOpen(true)} sx={{ display: { lg: 'none' } }}><Tune /></IconButton>
+                {/* <IconButton onClick={openFilters} sx={{ display: { lg: 'none' } }}><Tune /></IconButton> */}
                 <Button sx={{
                   backgroundColor: 'white', color: (theme) => theme.palette.primary.light,
                   borderTopRightRadius: 0,
@@ -212,11 +217,10 @@ export const TicketsDashboard = () => {
                   borderRight: 'none',
                   '&:hover': { borderRight: 'none' }
                 }} onClick={() => {
-                  console.log('clieks')
-                  resetFilters()
+                  isFiltersOpen ? closeFilters() : openFilters()
                 }}
                   variant='outlined'>
-                  <HighlightOff />
+                  {isFiltersOpen ? <HighlightOff /> : <Tune />}
                 </Button>
               </Stack>
             </Grid>
@@ -246,8 +250,8 @@ export const TicketsDashboard = () => {
           }
         </Paper >
       </Grid>
-      <Grid item xs={0} lg={3} >
-        {!isSmallScreen && <Paper sx={{ width: '100%', minHeight: '40vh', padding: '1em', display: { xs: 'none', lg: 'block' } }}>
+      <Grid item xs={0} lg={isFiltersOpen ? 3 : 0} >
+        {isFiltersOpen && <Paper sx={{ width: '100%', minHeight: '40vh', padding: '1em', display: { xs: 'none', lg: 'block' } }}>
           <FiltersContainer
             agents={getAvailableAgents()}
             filters={filters}
@@ -259,8 +263,8 @@ export const TicketsDashboard = () => {
         </Paper>}
       </Grid>
     </Grid>
-    <FiltersDialog agents={getAvailableAgents()}
-      open={isFiltersDialogOpen}
+    {isSmallScreen && <FiltersDialog agents={getAvailableAgents()}
+      open={isFiltersOpen}
       customers={getTicketCustomers()}
       filters={filters}
 
@@ -269,12 +273,12 @@ export const TicketsDashboard = () => {
       setFilters={setFilters}
       handleClose={(newFilters) => {
         console.log(newFilters)
-        setIsFiltersDialogOpen(false)
+        closeFilters()
         if (newFilters) {
           setFilters(newFilters)
           applyFilters(filters)
         }
-      }} />
+      }} />}
 
   </>
   )
