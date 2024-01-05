@@ -17,6 +17,7 @@ export const CategoriesTable = ({ categories, showEditDialog, showDeleteDialog, 
     const [focusedEntry, setFocusedEntry] = useState(null)
     const appMoreMenuOpen = Boolean(anchorEl)
     const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } = options
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - categories.length) : 0;
     // TODO: Cacher les options de suppression et modification dans un dropdown (... ou more)
     // TODO: Permettre de reset les champs au clic du bouton reset a droite.
     return (
@@ -101,6 +102,15 @@ export const CategoriesTable = ({ categories, showEditDialog, showDeleteDialog, 
                                     <Typography variant='subtitle1' color='primary' textAlign='center'> Aucune donnée disponible</Typography>
                                 </TableCell>
                             </TableRow>}
+                        {emptyRows > 0 && (
+                            <TableRow
+                                style={{
+                                    height: (53) * emptyRows,
+                                }}
+                            >
+                                <TableCell colSpan={7} />
+                            </TableRow>
+                        )}
                     </TableBody>
                     <TableFooter>
                         <TableRow>

@@ -1,5 +1,5 @@
 import { ArrowBack, ArrowForward, HighlightOff, Search, Tune } from '@mui/icons-material'
-import { Box, Button, ButtonGroup, FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
+import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 
 import { useContext, useEffect, useRef, useState } from 'react'
 import { editTicket, getAllProjects, getAllTickets, getAllUsers, isUserInRole } from '../../../Api'
@@ -49,9 +49,7 @@ export const TicketsDashboard = () => {
     handleRowsPerPageChange: changeRowsPerPage
   })
   useEffect(() => setFilteredTickets(tickets), [tickets])
-  function resetFilters() {
-    setFilters(initialFilters)
-  }
+
   function changeRowsPerPage(rowsPerPage) {
     setRowsPerPage(rowsPerPage)
     setCurrentPage(0)

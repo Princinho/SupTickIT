@@ -16,6 +16,7 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
     const [focusedEntry, setFocusedEntry] = useState(null)
     const appMoreMenuOpen = Boolean(anchorEl)
     const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } = options
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length) : 0;
     // TODO: Permettre de reset les champs au clic du bouton reset a droite.
     return (
         <>
@@ -53,23 +54,23 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                                             {`${user.firstName} ${user.lastName}`}
                                         </Typography>
                                     </TableCell>
-                                    <TableCell align="left" 
+                                    <TableCell align="left"
                                     // onClick={() => navigate(`${user.id}`)}
                                     >
-                                        
-                                            <Typography color='text.secondary' sx={{
-                                                overflow: "hidden",
-                                                textOverflow: "ellipsis",
-                                                display: "-webkit-box",
-                                                "WebkitLineClamp": '1',
-                                                "WebkitBoxOrient": "vertical"
-                                            }}
-                                                variant='span'
-                                            >
 
-                                                {user.username}
-                                            </Typography>
-                                        
+                                        <Typography color='text.secondary' sx={{
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            display: "-webkit-box",
+                                            "WebkitLineClamp": '1',
+                                            "WebkitBoxOrient": "vertical"
+                                        }}
+                                            variant='span'
+                                        >
+
+                                            {user.username}
+                                        </Typography>
+
                                     </TableCell>
                                     <TableCell>
                                         {user.roles.map(role => <RoleChip key={`role-${role.id}`} roleId={role.id} />)}
@@ -97,6 +98,15 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                                     <Typography variant='subtitle1' color='primary' textAlign='center'> Aucune donnée disponible</Typography>
                                 </TableCell>
                             </TableRow>}
+                        {emptyRows > 0 && (
+                            <TableRow
+                                style={{
+                                    height: (53) * emptyRows,
+                                }}
+                            >
+                                <TableCell colSpan={7} />
+                            </TableRow>
+                        )}
                     </TableBody>
                     <TableFooter>
                         <TableRow>
@@ -166,7 +176,7 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                     </ListItemIcon>
                     Modifier
                 </MenuItem>
-                
+
                 <MenuItem onClick={() => {
                     handleClose()
                     showDeleteDialog(focusedEntry)

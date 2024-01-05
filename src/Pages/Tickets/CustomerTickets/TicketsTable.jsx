@@ -18,6 +18,7 @@ export const TicketsTable = ({ tickets, projects, categories, showEditDialog, sh
     const [focusedEntry, setFocusedEntry] = useState(null)
     const appMoreMenuOpen = Boolean(anchorEl)
     const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } = options
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tickets.length) : 0;
     // TODO: Permettre de reset les champs au clic du bouton reset a droite.
     return (
         <>
@@ -104,6 +105,15 @@ export const TicketsTable = ({ tickets, projects, categories, showEditDialog, sh
                                     <Typography variant='subtitle1' color='primary' textAlign='center'> Aucune donnée disponible</Typography>
                                 </TableCell>
                             </TableRow>}
+                        {emptyRows > 0 && (
+                            <TableRow
+                                style={{
+                                    height: (53) * emptyRows,
+                                }}
+                            >
+                                <TableCell colSpan={7} />
+                            </TableRow>
+                        )}
                     </TableBody>
                     <TableFooter>
                         <TableRow>
