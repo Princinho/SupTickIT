@@ -16,23 +16,25 @@ export const SystemSettings = () => {
         }
     }, [])
     const BASE_QUERY_KEY = "system_settings"
-    const { data: systemSettings } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getSystemSettings })
+    const { data: systemSettings, isLoading, isError } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getSystemSettings })
+    // console.log(systemSettings)
     const [settings, setSettings] = useState({ ...systemSettings })
+    console.log(settings)
     const updateMutation = useMutation({
         mutationFn: saveSystemSettings,
         onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
     })
-
+    useEffect(() => setSettings({ ...systemSettings }), [systemSettings])
     const saveSettings = () => {
         updateMutation.mutate(settings)
     }
     return (<>
         <Typography variant="h3" mb={2}>Configurations système</Typography>
-        <Grid container>
+        {!isLoading && !isError && <Grid container>
             <Grid item component='paper'>
                 <Paper sx={{ minHeight: '5em', minWidth: '15em', padding: '.5em 1em' }}>
                     <Typography variant="h6">Désignation de la référence produit</Typography>
-                    <TextField
+                    {systemSettings && <TextField
                         autoFocus
                         margin="dense"
                         label="Désignation"
@@ -41,10 +43,10 @@ export const SystemSettings = () => {
                         onChange={event => setSettings(prev => ({ ...prev, productRefLabel: event.target.value }))}
                         fullWidth
                         variant="standard"
-                    />
+                    />}
                 </Paper>
             </Grid>
-        </Grid>
+        </Grid>}
         <Stack direction='row' justifyContent='flex-end'>
 
             <SimpleButton handleClick={saveSettings} text={'Enregistrer'} />
