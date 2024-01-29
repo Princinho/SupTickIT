@@ -20,6 +20,7 @@ export const Layout = (props) => {
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
+    console.log(user)
     function handleClose() {
         setAnchorEl(null)
     }
@@ -143,7 +144,7 @@ export const Layout = (props) => {
                     </IconButton>
                     <Stack direction='row' sx={{ width: '100%' }} justifyContent='flex-end'>
                         <IconButton onClick={event => setAnchorEl(event.target)}>
-                            {user && <Avatar {...stringAvatar(user?.firstName + " " + user?.lastName)} />}
+                            {user && <Avatar {...stringAvatar(user?.firstname + " " + user?.lastname)} />}
                         </IconButton>
                     </Stack>
                 </Toolbar>

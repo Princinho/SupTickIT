@@ -1,6 +1,7 @@
 import { SYSTEM_ROLES, TICKET_STATUS, getSampleDataFromLocalStorage, saveDataToLocalStorage } from "./utils"
 import { sampleData as initialData } from './SampleData.js'
-
+import axios from "axios"
+const API_BASE = 'https://localhost:7223/api/'
 function getAllEntries(type) {
     let data = getDataFromLocalStorage()
 
@@ -12,8 +13,22 @@ function getSingleton(type) {
     console.log(type)
     return data[type] || null
 }
-function getAllProjects() {
-    return getAllEntries('projects')
+
+async function loginToApi({ username, password }) {
+    console.log(username, password)
+    let response = await axios.post(API_BASE + "Authentication/Login", {
+        Username: username,
+        Password: password
+    })
+    // console.log(response.data)
+    return response.data
+}
+
+async function getAllProjects() {
+    let response = await (await axios.get(`${API_BASE}projects`)).data
+    console.log("Projects", response)
+    // fetch(API_BASE + "projects").then(res => res.json()).then(data => console.log(data)).catch(error=>console.log(error))
+    return response
 }
 function getProject(id) {
     if (!id) return null
@@ -362,6 +377,21 @@ function isUserInRole(roleId, userId) {
     let userActiveRoles = getActiveRolesForUser(userId)
     return userActiveRoles.some(role => role.id == roleId)
 }
+function isApiUserInRole(roleId, user) {
+    if(!user)return false
+    if(!user.RoleAssignments)return false
+    let roleAssignments = JSON.parse(user.RoleAssignments);
+    // console.log(roleId)
+    let today = new Date()
+    for(let roleAssignment of roleAssignments){
+        if (roleAssignment.RoleId == roleId) {
+            let startDate = new Date(roleAssignment.StartDate)
+            let endDate = new Date(roleAssignment.ExpiryDate)
+            if (startDate.getTime() < today.getTime() && endDate.getTime() > today.getTime()) return true
+        }
+    }
+    return false
+}
 function getAllRoleAssignments() {
     return getAllEntries('roleAssignments')
 }
@@ -392,7 +422,7 @@ function create(newEntry, type) {
 }
 
 export {
-    getOrInitData,
+    getOrInitData, loginToApi,
     getDataFromLocalStorage,
     createMessage, editMessage, deleteMessage,
     getAllProjects, getProject, createProject, editProject, deleteProject, assignProject, getCompanyProjects,
@@ -402,7 +432,7 @@ export {
     getAllCategories, createCategory, editCategory, deleteCategory, getProjectCategories, getCategory,
     getAllUsers, getCompanyUsers, createUser, editUser, deleteUser, createCustomer,
     getAllRoleAssignments, getAllRoles, addRoleToUser,
-    getActiveRolesForUser, getActiveRoleAssignmentsForUser, isUserInRole,
+    getActiveRolesForUser, getActiveRoleAssignmentsForUser, isUserInRole,isApiUserInRole,
     removeRoleFromUser, getAvailableAgents, getAgentTickets, getAllAgents,
     getAllTicketLogs, createTicketLog, editTicketLog, deleteTicketLog, getTicketLogsByTicketId,
     getSystemSettings, saveSystemSettings

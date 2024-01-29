@@ -1,6 +1,6 @@
 import { UserContext } from '../Contexts'
 import { matchPath, useLocation } from 'react-router-dom'
-import { isUserInRole } from '../Api'
+import { isApiUserInRole } from '../Api'
 import { SYSTEM_ROLES } from '../utils'
 import { useContext } from 'react'
 
@@ -12,28 +12,28 @@ export const useAuthorization = () => {
   }
   function isPathAuthorizedForUser(path) {
     if (matchPath('/systemsettings/*', path)) {
-      return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
+      return isApiUserInRole(SYSTEM_ROLES.ADMIN, user)
     }
     if (matchPath('/categories/*', path)) {
-      return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
+      return isApiUserInRole(SYSTEM_ROLES.ADMIN, user)
     }
     if (matchPath('/companies/*', path)) {
-      return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
+      return isApiUserInRole(SYSTEM_ROLES.ADMIN, user)
     }
     if (matchPath('/projects/*', path)) {
-      return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
+      return isApiUserInRole(SYSTEM_ROLES.ADMIN, user)
     }
     if (matchPath('/users/*', path)) {
-      return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
+      return isApiUserInRole(SYSTEM_ROLES.ADMIN, user)
     }
     if (matchPath('/partnerusers/*', path)) {
-      return isUserInRole(SYSTEM_ROLES.CUSTOMER_ADMIN, user?.id)
+      return isApiUserInRole(SYSTEM_ROLES.CUSTOMER_ADMIN, user)
     }
     if (matchPath('/tickets/*', path)) {
-      return isUserInRole(SYSTEM_ROLES.ADMIN, user?.id)
-        || isUserInRole(SYSTEM_ROLES.CUSTOMER, user?.id)
-        || isUserInRole(SYSTEM_ROLES.AGENT, user?.id)
-        || isUserInRole(SYSTEM_ROLES.MODERATOR, user?.id)
+      return isApiUserInRole(SYSTEM_ROLES.ADMIN, user)
+        || isApiUserInRole(SYSTEM_ROLES.CUSTOMER, user)
+        || isApiUserInRole(SYSTEM_ROLES.AGENT, user)
+        || isApiUserInRole(SYSTEM_ROLES.MODERATOR, user)
     }
     return false
   }

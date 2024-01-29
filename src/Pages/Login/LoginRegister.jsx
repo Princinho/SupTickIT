@@ -5,7 +5,9 @@ import { Logo } from "../../Components/Logo"
 import { useContext, useState } from "react"
 import { UserContext } from "../../Contexts"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { createUser, getAllCompanies, getAllUsers } from "../../Api"
+import { createUser, getAllCompanies, loginToApi } from "../../Api"
+import axios from "axios"
+import { jwtDecode } from "jwt-decode"
 export const LoginRegister = () => {
   const { user, setUser } = useContext(UserContext)
   const navigate = useNavigate()
@@ -16,25 +18,40 @@ export const LoginRegister = () => {
   const [errors, setErrors] = useState(null)
 
   const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompanies })
-  const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
+  // const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
   const queryClient = useQueryClient()
 
   const createMutation = useMutation({
     mutationFn: createUser,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] })
   })
-  function login() {
 
+  // function isAlreadyLoggedIn() {
+  //   let expiry = sessionStorage.getItem("tokenExpiryDate")
+  //   let accessToken = sessionStorage.getItem("accesstoken")
+
+  //   return (expiry && accessToken && new Date() < JSON.parse(expiry))
+
+  // }
+  async function login() {
     console.log(credentials)
     setError(false)
-    let matchingUser = users.find(u => u.username == credentials.username && u.password == credentials.password)
-    if (matchingUser) {
-      setUser(matchingUser)
+    let accessToken = await loginToApi(credentials);
+    if (accessToken) {
+      let decodedUser=jwtDecode(accessToken)
+      console.log(decodedUser)
+      sessionStorage.setItem("userRoleAssignments",decodedUser.RoleAssignments)
+      sessionStorage.setItem("accessToken", accessToken)
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('accessToken')}`;
+      let expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + 1)
+      sessionStorage.setItem("tokenExpiryDate", JSON.stringify(expiryDate))
+      setUser(decodedUser)
       navigate('/')
-    }
-    else {
+    }else{
       setError(true)
     }
+
   }
   function register() {
     setErrors(null)
@@ -59,7 +76,7 @@ export const LoginRegister = () => {
     }
   }
 
-  if (user) { navigate('/projects') }
+  if (user) { navigate('/') }
   else {
     return (
       <form>
