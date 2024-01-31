@@ -25,13 +25,13 @@ export const Categories = () => {
     const [sortOption, setSortOption] = useState({ option: 'name' })
     const navigate = useNavigate()
     const queryClient = useQueryClient()
-    const { data: categories } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCategories })
+    const { data: categories, refetch: refetchCategories } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCategories })
     const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
     const [tableOptions, setTableOptions] = useState({
         rowsPerPage: 5, page: 0, count: categories?.length, handlePageChange: setCurrentPage,
         handleRowsPerPageChange: changeRowsPerPage
     })
-    
+
     const { isUserAuthorized } = useAuthorization()
     useEffect(() => {
         if (!isUserAuthorized()) {
@@ -55,26 +55,12 @@ export const Categories = () => {
         setIsDetailsDialogOpen(true)
         setCategoryToDetail(category)
     }
-    // function createCategory(data) {
-    //     setCategories(prev => {
-    //         let result = [{ ...data, id: categories.length + 1, dateCreated: new Date().toISOString(), createdBy: user?.id }, ...prev]
-    //         return result
-    //     })
-    // }
     function setRowsPerPage(rowsPerPage) {
         setTableOptions(prev => ({ ...prev, rowsPerPage }))
     }
     function setCurrentPage(page) {
         setTableOptions(prev => ({ ...prev, page }))
     }
-    // function editCategory(cat) {
-    //     setCategories(prevEntries => prevEntries.map(
-    //         prevEntry => prevEntry.id == cat.id ? { ...prevEntry, ...cat } : prevEntry
-    //     ))
-    // }
-    // function deleteCategory(category) {
-    //     setCategories(prev => prev.filter(cat => cat.id != category.id))
-    // }
 
     const createMutation = useMutation({
         mutationFn: createCategory,
@@ -82,7 +68,10 @@ export const Categories = () => {
     })
     const editMutation = useMutation({
         mutationFn: editCategory,
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+            console.warn("Invalidated")
+        }
     })
     const deleteMutation = useMutation({
         mutationFn: deleteCategory,
@@ -222,8 +211,8 @@ export const Categories = () => {
             {
                 categoryToDelete && <DeleteDialog open={isDeleteDialogOpen} projects={projects}
                     category={categoryToDelete}
-                    handleClose={(cat) => {
-                        if (cat) { deleteMutation.mutate(cat) }
+                    handleClose={(confirm) => {
+                        if (confirm) { deleteMutation.mutate(categoryToDelete.id) }
                         setIsDeleteDialogOpen(false)
                     }}
 

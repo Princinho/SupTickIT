@@ -42,7 +42,7 @@ export const LoginRegister = () => {
       console.log(decodedUser)
       sessionStorage.setItem("userRoleAssignments",decodedUser.RoleAssignments)
       sessionStorage.setItem("accessToken", accessToken)
-      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('accessToken')}`;
+      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
       let expiryDate = new Date();
       expiryDate.setDate(expiryDate.getDate() + 1)
       sessionStorage.setItem("tokenExpiryDate", JSON.stringify(expiryDate))

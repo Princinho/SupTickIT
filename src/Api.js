@@ -30,6 +30,11 @@ async function getAllProjects() {
     // fetch(API_BASE + "projects").then(res => res.json()).then(data => console.log(data)).catch(error=>console.log(error))
     return response
 }
+async function getAll(endpoint){
+    let response =  (await axios.get(`${API_BASE}${endpoint}`)).data
+    console.log(endpoint, response)
+    return response
+}
 function getProject(id) {
     if (!id) return null
     return getAllEntries('projects').find(p => p.id == id)
@@ -105,6 +110,16 @@ function editEntry(updatedEntry, type) {
     } : entry)
     console.log(updatedEntriesArray)
     saveDataToLocalStorage({ ...storedData, [type]: updatedEntriesArray })
+}
+async function  edit(updatedEntry,endpoint){
+    let updateUrl=`${API_BASE}${endpoint}/${updatedEntry.id}`
+    let response =  (await axios.put(updateUrl,updatedEntry)).data
+    return response
+}
+async function  remove(id,endpoint){
+    let updateUrl=`${API_BASE}${endpoint}/${id}`
+    let response =  (await axios.delete(updateUrl))
+    return response
 }
 function deleteEntry(data, type) {
     let allEntries = getAllEntries(type)
@@ -291,8 +306,8 @@ function generateTicketLogForTicketMessage(message) {
 function deleteTicket(data) {
     deleteEntry(data, 'tickets')
 }
-function getAllCategories() {
-    return getAllEntries('categories')
+async function getAllCategories() {
+    return await getAll('ticketcategories')
 }
 function getCategory(id) {
     if (!id) return null
@@ -301,23 +316,23 @@ function getCategory(id) {
     console.log(category)
     return category
 }
-function createCategory(data) {
-    create(data, 'categories')
+async function createCategory(data) {
+    await axios.post(API_BASE+'ticketCategories',data)
 }
 
 function editCategory(data) {
-    editEntry(data, 'categories')
+    edit(data, 'ticketCategories')
 }
 
-function deleteCategory(data) {
-    deleteEntry(data, 'categories')
+async function deleteCategory(id) {
+    await remove(id, 'ticketCategories')
 }
 function getProjectCategories(projectId) {
     let allCategories = getAllCategories()
     return allCategories.filter(cat => cat.projectId == projectId)
 }
 function getAllUsers() {
-    return getAllEntries('users')
+    return getAll('users')
 }
 
 function createUser(data) {

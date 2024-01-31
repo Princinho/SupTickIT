@@ -36,9 +36,9 @@ export const CategoriesTable = ({ categories, showEditDialog, showDeleteDialog, 
                     <TableBody>
                         {categories?.length > 0 ?
                             categories.map((cat) => {
-                                console.log(users)
+                                // console.log(users)
                                 const creator = users?.find(u => u.id == cat.createdBy)
-                                const creatorName = creator ? creator?.firstName + " " + creator?.lastName : "??"
+                                const creatorName = creator ? creator?.firstname + " " + creator?.lastname : "??"
                                 return (
                                     <TableRow
                                         key={'appli' + cat.id}

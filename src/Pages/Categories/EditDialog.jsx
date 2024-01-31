@@ -2,15 +2,12 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormCon
 import PropTypes from 'prop-types'
 import { useEffect, useState } from "react"
 export const EditDialog = ({ open, handleClose, category, projects }) => {
-    //TODO: Faire bosser la pagination
     const [formData, setFormData] = useState({ ...category })
     const [titleError, setTitleError] = useState(false)
     function handleProjectChange(event) {
         setFormData(prev => ({ ...prev, projectId: event.target.value }))
     }
     useEffect(() => setFormData({ ...category }), [category])
-    console.log(formData)
-    // console.log(projects)
     return (
         <Box>
             <Dialog open={open} onClose={() => handleClose()}>
@@ -37,8 +34,8 @@ export const EditDialog = ({ open, handleClose, category, projects }) => {
                         label="Nom *"
                         error={titleError}
                         type="text"
-                        value={formData.name}
-                        onChange={(event) => setFormData(prev => ({ ...prev, name: event.target.value }))}
+                        value={formData.title}
+                        onChange={(event) => setFormData(prev => ({ ...prev, title: event.target.value }))}
                         fullWidth
                         variant="standard"
                     />
@@ -59,7 +56,9 @@ export const EditDialog = ({ open, handleClose, category, projects }) => {
                         handleClose()
                     }}>Annuler</Button>
                     <Button onClick={() => {
-                        if (!formData.name) {
+                        // console.log(formData)
+                        // return
+                        if (!formData.title) {
                             setTitleError(true)
                             return
                         } else {
