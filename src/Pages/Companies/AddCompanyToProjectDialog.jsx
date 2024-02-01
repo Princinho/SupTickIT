@@ -32,7 +32,7 @@ export const AddCompanyToProjectDialog = ({ open, handleClose, entry, projects }
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Fermer</Button>
-          <Button onClick={() => { handleClose(entry, projectId) }}>Ajouter</Button>
+          <Button onClick={() => { handleClose( projectId) }}>Ajouter</Button>
         </DialogActions>
       </Dialog>
     </Box>

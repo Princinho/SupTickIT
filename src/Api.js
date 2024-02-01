@@ -2,6 +2,7 @@ import { SYSTEM_ROLES, TICKET_STATUS, getSampleDataFromLocalStorage, saveDataToL
 import { sampleData as initialData } from './SampleData.js'
 import axios from "axios"
 const API_BASE = 'https://localhost:7223/api/'
+const PROJECTS_ENDPOINT = 'projects'
 function getAllEntries(type) {
     let data = getDataFromLocalStorage()
 
@@ -12,6 +13,10 @@ function getSingleton(type) {
     console.log(data[type])
     console.log(type)
     return data[type] || null
+}
+async function getSingle(endpoint, id) {
+    let url = `${endpoint}/${id}`
+    return (await axios.get(url)).data
 }
 
 async function loginToApi({ username, password }) {
@@ -25,19 +30,24 @@ async function loginToApi({ username, password }) {
 }
 
 async function getAllProjects() {
-    let response = await (await axios.get(`${API_BASE}projects`)).data
-    console.log("Projects", response)
-    // fetch(API_BASE + "projects").then(res => res.json()).then(data => console.log(data)).catch(error=>console.log(error))
+    let response = await (await axios.get(`${API_BASE}${PROJECTS_ENDPOINT}`)).data
     return response
 }
-async function getAll(endpoint){
-    let response =  (await axios.get(`${API_BASE}${endpoint}`)).data
-    console.log(endpoint, response)
+async function create(data, endpoint) {
+    await axios.post(API_BASE + endpoint, data)
+}
+async function remove(id, endpoint) {
+    console.log('deleting....')
+    return await axios.delete(`${API_BASE}${endpoint}/${id}`)
+}
+async function getAll(endpoint) {
+    let response = (await axios.get(`${API_BASE}${endpoint}`)).data
+    // console.log(endpoint, response)
     return response
 }
 function getProject(id) {
     if (!id) return null
-    return getAllEntries('projects').find(p => p.id == id)
+    return getAllEntries(PROJECTS_ENDPOINT).find(p => p.id == id)
 }
 
 function getOrInitData() {
@@ -65,41 +75,23 @@ function saveSingleton(type, settings) {
     saveDataToLocalStorage(result)
     return createdEntry
 }
-function assignProject(project, companyId) {
-    console.log(project, companyId)
-    let company = getAllCompanies().find(c => c.id == companyId)
-    editCompany({ ...company, projects: [...company.projects, project.id] })
+async function assignProject({ projectId, companyId }) {
+    await axios.post(`${API_BASE}${PROJECTS_ENDPOINT}/${projectId}/assign/${companyId}`)
+}
+async function unAssignProject({ projectId, companyId }) {
+    await axios.delete(`${API_BASE}${PROJECTS_ENDPOINT}/${projectId}/remove/${companyId}`)
 }
 function getDataFromLocalStorage() {
     return getOrInitData()
 }
-function createProject(newProject) {
-    let allProjects = getAllProjects()
-    let storedData = getOrInitData()
-    let newProjectWithDbData = { ...newProject, id: allProjects.length + 1, dateCreated: new Date().toISOString(), createdBy: 3 }
-    let updatedProjectsArray = [newProjectWithDbData, ...allProjects]
-    saveDataToLocalStorage({ ...storedData, projects: updatedProjectsArray })
-    assignProjectToCompanies(newProjectWithDbData)
+async function createProject(newProject) {
+    await create(newProject, PROJECTS_ENDPOINT)
 }
-function assignProjectToCompanies(project) {
-    project.companies.forEach(companyId => {
-        let company = getAllCompanies().find(c => c.id == companyId)
-        editCompany({ ...company, projects: [...company.projects, project.id] })
-    });
+async function editProject(updatedProject) {
+    await edit(updatedProject, updatedProject.id)
 }
-function editProject(updatedProject) {
-    let allProjects = getAllProjects()
-    let storedData = getOrInitData()
-    let updatedProjectsArray = allProjects.map(project => project.id == updatedProject.id ? {
-        ...project, ...updatedProject
-    } : project)
-    saveDataToLocalStorage({ ...storedData, projects: updatedProjectsArray })
-}
-function deleteProject(project) {
-    let allProjects = getAllProjects()
-    let storedData = getOrInitData()
-    let updatedProjectsArray = allProjects.filter(p => p.id != project.id)
-    saveDataToLocalStorage({ ...storedData, projects: updatedProjectsArray })
+async function deleteProject(id) {
+    await remove(id, PROJECTS_ENDPOINT)
 }
 function editEntry(updatedEntry, type) {
     console.log('editing entry')
@@ -111,35 +103,31 @@ function editEntry(updatedEntry, type) {
     console.log(updatedEntriesArray)
     saveDataToLocalStorage({ ...storedData, [type]: updatedEntriesArray })
 }
-async function  edit(updatedEntry,endpoint){
-    let updateUrl=`${API_BASE}${endpoint}/${updatedEntry.id}`
-    let response =  (await axios.put(updateUrl,updatedEntry)).data
+async function edit(updatedEntry, endpoint) {
+    let updateUrl = `${API_BASE}${endpoint}/${updatedEntry.id}`
+    let response = (await axios.put(updateUrl, updatedEntry)).data
     return response
 }
-async function  remove(id,endpoint){
-    let updateUrl=`${API_BASE}${endpoint}/${id}`
-    let response =  (await axios.delete(updateUrl))
-    return response
-}
+
 function deleteEntry(data, type) {
     let allEntries = getAllEntries(type)
     let storedData = getOrInitData()
     let updatedEntriesArray = allEntries.filter(p => p.id != data.id)
     saveDataToLocalStorage({ ...storedData, [type]: updatedEntriesArray })
 }
-function getAllCompanies() {
-    return getAllEntries('companies') || []
+async function getAllCompanies() {
+    return await getAll('companies') || []
 }
-function createCompany(data) {
-    create(data, 'companies')
-}
-
-function editCompany(company) {
-    editEntry(company, 'companies')
+async function createCompany(data) {
+    await create(data, 'companies')
 }
 
-function deleteCompany(data) {
-    deleteEntry(data, 'companies')
+async function editCompany(company) {
+    await edit(company, 'companies')
+}
+
+async function deleteCompany(data) {
+    await remove(data.id, 'companies')
 }
 function getAllTickets() {
     return getAllEntries('tickets') || []
@@ -309,15 +297,11 @@ function deleteTicket(data) {
 async function getAllCategories() {
     return await getAll('ticketcategories')
 }
-function getCategory(id) {
-    if (!id) return null
-    let allCategories = getAllEntries('categories')
-    let category = allCategories.find(p => p.id == id)
-    console.log(category)
-    return category
+async function getCategory(id) {
+    return await getSingle('ticketcategories', id)
 }
 async function createCategory(data) {
-    await axios.post(API_BASE+'ticketCategories',data)
+    await create('ticketCategories', data)
 }
 
 function editCategory(data) {
@@ -393,12 +377,12 @@ function isUserInRole(roleId, userId) {
     return userActiveRoles.some(role => role.id == roleId)
 }
 function isApiUserInRole(roleId, user) {
-    if(!user)return false
-    if(!user.RoleAssignments)return false
+    if (!user) return false
+    if (!user.RoleAssignments) return false
     let roleAssignments = JSON.parse(user.RoleAssignments);
     // console.log(roleId)
     let today = new Date()
-    for(let roleAssignment of roleAssignments){
+    for (let roleAssignment of roleAssignments) {
         if (roleAssignment.RoleId == roleId) {
             let startDate = new Date(roleAssignment.StartDate)
             let endDate = new Date(roleAssignment.ExpiryDate)
@@ -424,30 +408,30 @@ function removeRoleFromUser(roleAssignment) {
     )
     saveDataToLocalStorage({ ...storedData, roleAssignments: updatedEntriesArray })
 }
-function create(newEntry, type) {
-    console.log(type, newEntry)
-    let allEntries = getAllEntries(type)
-    let storedData = getOrInitData()
-    let createdEntry = { ...newEntry, id: allEntries.length + 1, dateCreated: new Date().toISOString() }
-    let updatedEntriesArray = [createdEntry, ...allEntries]
-    const result = { ...storedData, [type]: updatedEntriesArray }
-    // console.log(result)
-    saveDataToLocalStorage(result)
-    return createdEntry
-}
+// function create(newEntry, type) {
+//     console.log(type, newEntry)
+//     let allEntries = getAllEntries(type)
+//     let storedData = getOrInitData()
+//     let createdEntry = { ...newEntry, id: allEntries.length + 1, dateCreated: new Date().toISOString() }
+//     let updatedEntriesArray = [createdEntry, ...allEntries]
+//     const result = { ...storedData, [type]: updatedEntriesArray }
+//     // console.log(result)
+//     saveDataToLocalStorage(result)
+//     return createdEntry
+// }
 
 export {
     getOrInitData, loginToApi,
     getDataFromLocalStorage,
     createMessage, editMessage, deleteMessage,
-    getAllProjects, getProject, createProject, editProject, deleteProject, assignProject, getCompanyProjects,
+    getAllProjects, getProject, createProject, editProject, deleteProject, assignProject, unAssignProject, getCompanyProjects,
     getAllCompanies, createCompany, editCompany, deleteCompany,
     getAllTickets, createTicket, editTicket, deleteTicket,
     getCustomerTickets, getTicket, getTicketMessages, getModeratorTickets,
     getAllCategories, createCategory, editCategory, deleteCategory, getProjectCategories, getCategory,
     getAllUsers, getCompanyUsers, createUser, editUser, deleteUser, createCustomer,
     getAllRoleAssignments, getAllRoles, addRoleToUser,
-    getActiveRolesForUser, getActiveRoleAssignmentsForUser, isUserInRole,isApiUserInRole,
+    getActiveRolesForUser, getActiveRoleAssignmentsForUser, isUserInRole, isApiUserInRole,
     removeRoleFromUser, getAvailableAgents, getAgentTickets, getAllAgents,
     getAllTicketLogs, createTicketLog, editTicketLog, deleteTicketLog, getTicketLogsByTicketId,
     getSystemSettings, saveSystemSettings

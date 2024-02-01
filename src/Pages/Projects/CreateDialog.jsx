@@ -7,7 +7,6 @@ export const CreateDialog = ({ open, handleClose, companies }) => {
     //TODO: Faire bosser la pagination
     const [formData, setFormData] = useState({ title: '', description: '' })
     const theme = useTheme()
-    console.log(companies,'########################################################')
     const [titleError, setTitleError] = useState(false)
     const [selectedCompanies, setSelectedCompanies] = useState([])
     const ITEM_HEIGHT = 48;
@@ -20,7 +19,6 @@ export const CreateDialog = ({ open, handleClose, companies }) => {
             },
         },
     };
-    console.log(selectedCompanies)
     function handleChange(event) {
         console.log(event.target.value)
         setSelectedCompanies(event.target.value)
@@ -102,7 +100,7 @@ export const CreateDialog = ({ open, handleClose, companies }) => {
                             return
                         } else {
                             setTitleError(false)
-                            handleClose({ ...formData, companies: selectedCompanies })
+                            handleClose({ ...formData, companyIds: selectedCompanies })
                         }
                     }}>Enregistrer</Button>
                 </DialogActions>

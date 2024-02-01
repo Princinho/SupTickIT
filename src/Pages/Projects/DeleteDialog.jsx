@@ -9,12 +9,14 @@ export const DeleteDialog = ({ open, handleClose, project }) => {
             <Dialog open={open} onClose={() => handleClose()}>
                 <DialogTitle>Supprimer le project</DialogTitle>
                 <DialogContent>
-                    <Typography variant="span" sx={{fontWeight:'bold'}}>{project.title}</Typography>
+                    <Typography variant="span" sx={{ fontWeight: 'bold' }}>{project.title}</Typography>
                     <Typography>{project.description}</Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Annuler</Button>
-                    <Button color="error" variant="outlined" onClick={() => handleClose(project)}>Supprimer</Button>
+                    <Button color="error" variant="outlined" onClick={() => {
+                        handleClose(project)
+                    }}>Supprimer</Button>
                 </DialogActions>
             </Dialog>
         </Box>
