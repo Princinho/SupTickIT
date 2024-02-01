@@ -134,7 +134,7 @@ export const sampleData = {
         //     companyId: ''
         // }
         {
-            id: 1, firstName: 'GATIEN', lastName: 'GNAKOU-EDJAMBO',
+            id: 1, firstname: 'GATIEN', lastname: 'GNAKOU-EDJAMBO',
             username: 'spadmin@gmail.com', password: 'Admin123#', roles: ['admin'],
             lastLoginDate: '2023/10/32',
             companyId: ''

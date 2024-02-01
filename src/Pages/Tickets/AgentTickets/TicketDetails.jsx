@@ -73,7 +73,7 @@ export const TicketDetails = () => {
             ticketId: id,
             body: body, date: new Date().toISOString(),
             userId: user?.id,
-            userFullName: user?.firstName + ' ' + user?.lastName
+            userFullName: user?.firstname + ' ' + user?.lastname
         }
         createMutation.mutate(message)
     }
@@ -112,7 +112,7 @@ export const TicketDetails = () => {
                     </Stack>
                     <Stack direction="row" gap='.2em'>
                         <Typography variant='subtitle2'>Auteur: </Typography>
-                        <Typography variant='subtitle2' fontWeight='bold'>{author?.firstName + " " + author?.lastName}</Typography>
+                        <Typography variant='subtitle2' fontWeight='bold'>{author?.firstname + " " + author?.lastname}</Typography>
                     </Stack>
                 </Stack>
                 <Typography variant='body1' mb={2}>

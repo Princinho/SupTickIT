@@ -120,7 +120,7 @@ export const PartnerUsers = () => {
   return (
     <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
       <PageHeader pageTitle={"Utilisateurs"} pagePath={["Menu"]}
-        sortingOptions={[{ name: "id", label: 'Id' }, { name: "firstName", label: "Nom" }]}
+        sortingOptions={[{ name: "id", label: 'Id' }, { name: "firstname", label: "Nom" }]}
         sortOption={tableOptions.sortOption}
         onSortingOptionChanged={(value) => updateTableOptions('sortOption', value)}
         onSearchTermChanged={useCallback((value) => setSearchTerm(value), [])}

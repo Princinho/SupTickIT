@@ -88,7 +88,8 @@ async function createProject(newProject) {
     await create(newProject, PROJECTS_ENDPOINT)
 }
 async function editProject(updatedProject) {
-    await edit(updatedProject, updatedProject.id)
+    console.log(updatedProject)
+    await edit(updatedProject, PROJECTS_ENDPOINT)
 }
 async function deleteProject(id) {
     await remove(id, PROJECTS_ENDPOINT)
@@ -105,6 +106,7 @@ function editEntry(updatedEntry, type) {
 }
 async function edit(updatedEntry, endpoint) {
     let updateUrl = `${API_BASE}${endpoint}/${updatedEntry.id}`
+    console.log(updateUrl,endpoint)
     let response = (await axios.put(updateUrl, updatedEntry)).data
     return response
 }

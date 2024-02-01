@@ -51,7 +51,7 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                                     </TableCell>
                                     <TableCell component="th" scope="row">
                                         <Typography variant='body2'>
-                                            {`${user.firstName} ${user.lastName}`}
+                                            {`${user.firstname} ${user.lastname}`}
                                         </Typography>
                                     </TableCell>
                                     <TableCell align="left"

@@ -34,7 +34,7 @@ export const TicketsTable = ({ tickets, users, showDetailsDialog, options }) => 
                             : tickets
                         ).map((ticket) => {
                             const creator = users?.find(u => u.id == ticket.createdBy)
-                            const creatorName = creator ? creator?.firstName + " " + creator?.lastName : "??"
+                            const creatorName = creator ? creator?.firstname + " " + creator?.lastname : "??"
                             return (
                                 <TableRow onClick={() => showDetailsDialog(ticket)}
                                     key={'appli' + ticket.id}

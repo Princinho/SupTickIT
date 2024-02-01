@@ -5,7 +5,7 @@ import { useState } from "react"
 export const EditDialog = ({ open, handleClose, companies, entry }) => {
     //TODO: Faire bosser la pagination
 
-    const [formData, setFormData] = useState({ id: entry.id, firstName: entry.firstName, lastName: entry.lastName, companyId: entry.companyId, username: entry.username })
+    const [formData, setFormData] = useState({ id: entry.id, firstname: entry.firstname, lastname: entry.lastname, companyId: entry.companyId, username: entry.username })
     const [nameError, setNameError] = useState(false)
     return (
         <Box>
@@ -18,8 +18,8 @@ export const EditDialog = ({ open, handleClose, companies, entry }) => {
                         label="Nom *"
                         error={nameError}
                         type="text"
-                        value={formData.lastName}
-                        onChange={(event) => setFormData(prev => ({ ...prev, lastName: event.target.value }))}
+                        value={formData.lastname}
+                        onChange={(event) => setFormData(prev => ({ ...prev, lastname: event.target.value }))}
                         fullWidth
                         variant="standard"
                     />
@@ -29,8 +29,8 @@ export const EditDialog = ({ open, handleClose, companies, entry }) => {
                         label="Prenoms *"
                         error={nameError}
                         type="text"
-                        value={formData.firstName}
-                        onChange={(event) => setFormData(prev => ({ ...prev, firstName: event.target.value }))}
+                        value={formData.firstname}
+                        onChange={(event) => setFormData(prev => ({ ...prev, firstname: event.target.value }))}
                         fullWidth
                         variant="standard"
                     />
@@ -74,13 +74,13 @@ export const EditDialog = ({ open, handleClose, companies, entry }) => {
                         handleClose()
                     }}>Annuler</Button>
                     <Button onClick={() => {
-                        if (!(formData.firstName && formData.lastName && formData.username && formData.companyId)) {
+                        if (!(formData.firstname && formData.lastname && formData.username && formData.companyId)) {
                             setNameError(true)
                             return
                         } else {
                             setNameError(false)
                             handleClose(formData)
-                            setFormData({ firstName: '', lastName: '', username: '', companyId: '' })
+                            setFormData({ firstname: '', lastname: '', username: '', companyId: '' })
                         }
                     }}>Enregistrer</Button>
                 </DialogActions>
@@ -94,8 +94,8 @@ EditDialog.propTypes = {
     handleClose: PropTypes.func.isRequired,
     entry: PropTypes.shape({
         id: PropTypes.string,
-        firstName: PropTypes.string,
-        lastName: PropTypes.string,
+        firstname: PropTypes.string,
+        lastname: PropTypes.string,
         companyId: PropTypes.string,
         username: PropTypes.string
     })

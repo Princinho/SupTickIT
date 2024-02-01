@@ -19,7 +19,7 @@ export const TicketHistoryDialog = ({ open, handleClose, ticket, ticketLogs }) =
                             {log.description && <Stack direction='row' spacing={1}><Typography fontWeight='bold'>Description: </Typography><Typography>{log.description}</Typography></Stack>}
                             {log.name && <Stack direction='row' spacing={1}><Typography fontWeight='bold'>Titre: </Typography><Typography>{log.name}</Typography></Stack>}
                             {log.categoryId && <Stack direction='row' spacing={1}><Typography fontWeight='bold'>Catégorie: </Typography>{categories?.find(c => c.id == log.categoryId).name}</Stack>}
-                            {log.agentId && <Stack direction='row' spacing={1}><Typography fontWeight='bold'>Agent: </Typography><Typography>{agents?.find(c => c.id == log.agentId).firstName}</Typography></Stack>}
+                            {log.agentId && <Stack direction='row' spacing={1}><Typography fontWeight='bold'>Agent: </Typography><Typography>{agents?.find(c => c.id == log.agentId).firstname}</Typography></Stack>}
                             {log.status && <Stack direction='row' spacing={1}><Typography fontWeight='bold'>Statut: </Typography><TicketStatus status={log.status} /></Stack>}
                             {log.body && <Stack direction='row' spacing={1}><Typography fontWeight='bold'>Nouveau message: de {log.userFullName} </Typography><Typography>{log.body}</Typography></Stack>}
                             <Divider sx={{ marginBottom: 1, marginTop: 1 }} />

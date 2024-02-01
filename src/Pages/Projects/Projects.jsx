@@ -66,7 +66,10 @@ export const Projects = () => {
   const queryClient = useQueryClient()
   const createMutation = useMutation({
     mutationFn: createProject,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+      queryClient.invalidateQueries({ queryKey: ["companies"] })
+    }
   })
 
   const editMutation = useMutation({
@@ -84,6 +87,7 @@ export const Projects = () => {
   function setCurrentPage(page) {
     setTableOptions(prev => ({ ...prev, page }))
   }
+  console.log(companies);
   const appMoreMenuOpen = Boolean(anchorEl)
   return (
     <>
@@ -236,7 +240,7 @@ export const Projects = () => {
           sortAndFilterData(projects, searchTerm, sortOption).map(
             project => {
               const creator = users?.find(u => u.id == project.createdBy)
-              const creatorName = creator ? creator.firstName + " " + creator.lastName : "??"
+              const creatorName = creator ? creator.firstname + " " + creator.lastname : "??"
               return <Grid item component='paper' key={`proj-${project.id}`} >
                 <Paper sx={{ width: { xs: '300px', md: '30vw' }, minHeight: '200px', padding: '1em' }}>
                   <Stack direction='row' justifyContent='space-between' alignItems='center'>
@@ -267,20 +271,20 @@ export const Projects = () => {
                     </Stack>
                   </Stack>
                   <Divider />
-                  {companies?.some(c => {
+                  {/* {companies?.some(c => {
                     return c.projects.some(p => p.id == project.id)
-                  }) ?
+                  }) ? */}
                     <>
                       <Typography variant='subtitle1' fontWeight='bold'>Participants</Typography>
                       <Typography variant="subtitle2">
                         {companies?.filter(company => {
                           // console.log(company, project)
                           return company.projects.some(p => p.id == project.id)
-                        }).map(company => company.name).join(', ')}
+                        }).map(company => company.name).join(', ')||<Typography variant='subtitle2'>Non deployé</Typography>}
                       </Typography>
-                    </> :
-                    <Typography variant='subtitle2'>Non deployé</Typography>
-                  }
+                    </>
+                    
+                  {/* : } */}
                 </Paper>
               </Grid>
             }

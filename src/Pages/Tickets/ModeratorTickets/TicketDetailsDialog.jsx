@@ -15,7 +15,7 @@ export const TicketDetailsDialog = ({ open, handleClose, entry }) => {
     const [availableAgents, setAvailableAgents] = useState([])
     useEffect(() => {
         setAvailableAgents(getAvailableAgents(user?.companyId).map(
-            agent => ({ id: agent.id, name: agent.firstName + " " + agent.lastName })
+            agent => ({ id: agent.id, name: agent.firstname + " " + agent.lastname })
         ))
     }, [user])
     

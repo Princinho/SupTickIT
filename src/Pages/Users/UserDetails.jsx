@@ -81,7 +81,7 @@ export const UserDetails = () => {
                         </Grid>
                         <Grid item xs={12} sm={6} lg={6}>
                             <Typography variant="body1">
-                                {user?.lastName}
+                                {user?.lastname}
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={6} lg={6}>
@@ -91,7 +91,7 @@ export const UserDetails = () => {
                         </Grid>
                         <Grid item xs={12} sm={6} lg={6}>
                             <Typography variant="body1">
-                                {user?.firstName}
+                                {user?.firstname}
                             </Typography>
                         </Grid>
                         <Grid item xs={12} sm={6} lg={6}>

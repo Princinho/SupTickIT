@@ -49,7 +49,7 @@ export const Discussion = ({ messages, addMessage, users }) => {
 function getUserFullName(userId, users) {
     if (!users) return ""
     let targetUser = users.find(u => u.id == userId)
-    if (targetUser) return targetUser.firstName + " " + targetUser.lastName
+    if (targetUser) return targetUser.firstname + " " + targetUser.lastname
     return "N/A"
 }
 Discussion.propTypes = {

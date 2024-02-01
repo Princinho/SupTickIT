@@ -47,15 +47,15 @@ function stringToColor(string) {
 function stringAvatar(name) {
     if (!name) return
     const subNames = name.split(' ')
-    const firstName = subNames[0]
-    let lastName = null
+    const firstname = subNames[0]
+    let lastname = null
     if (subNames.length > 1)
-        lastName = subNames[1]
+        lastname = subNames[1]
     return {
         sx: {
             bgcolor: stringToColor(name),
         },
-        children: `${firstName[0]}${lastName ? lastName[0] : firstName[1]}`,
+        children: `${firstname[0]}${lastname ? lastname[0] : firstname[1]}`,
     };
 }
 function getRandomNumber(min, max) {
@@ -96,8 +96,8 @@ function sortAndFilterData(array, searchTerm, sortOption) {
     let result = array
     if (searchTerm)
         result = result.filter(a => a.title?.toLowerCase().includes(searchTerm.toLowerCase()) || a.name?.toLowerCase().includes(searchTerm.toLowerCase())
-            || a.firstName?.toLowerCase().includes(searchTerm.toLowerCase())
-            || a.lastName?.toLowerCase().includes(searchTerm.toLowerCase()))
+            || a.firstname?.toLowerCase().includes(searchTerm.toLowerCase())
+            || a.lastname?.toLowerCase().includes(searchTerm.toLowerCase()))
     if (sortOption == 'dateCreated') {
         result = result.sort((a, b) => {
             return new Date(b.dateCreated) - new Date(a.dateCreated)

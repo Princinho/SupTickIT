@@ -14,7 +14,7 @@ export const RemoveRoleDialog = ({ open, handleClose, roleAssignMent }) => {
                 <DialogContent>
                     <Stack direction='row' spacing={1}>
                         <Typography variant="body1">Utilisateur: </Typography>
-                        <Typography variant="body1" fontWeight='bold'>{sampleData.users.find(u => u.id == roleAssignMent.userId)?.firstName}</Typography>
+                        <Typography variant="body1" fontWeight='bold'>{sampleData.users.find(u => u.id == roleAssignMent.userId)?.firstname}</Typography>
                     </Stack>
                     <Stack direction='row' spacing={1}>
                         <Typography variant="body1">Role:</Typography>

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { useState } from "react"
 export const CreateDialog = ({ open, handleClose, companies }) => {
     //TODO: Faire bosser la pagination
-    const [formData, setFormData] = useState({ firstName: "", lastName: "", isCompanyAccount: false, companyId: '', username: '' })
+    const [formData, setFormData] = useState({ firstname: "", lastname: "", isCompanyAccount: false, companyId: '', username: '' })
     const [nameError, setNameError] = useState(false)
     return (
         <Box>
@@ -16,8 +16,8 @@ export const CreateDialog = ({ open, handleClose, companies }) => {
                         label="Nom *"
                         error={nameError}
                         type="text"
-                        value={formData.lastName}
-                        onChange={(event) => setFormData(prev => ({ ...prev, lastName: event.target.value }))}
+                        value={formData.lastname}
+                        onChange={(event) => setFormData(prev => ({ ...prev, lastname: event.target.value }))}
                         fullWidth
                         variant="standard"
                     />
@@ -27,8 +27,8 @@ export const CreateDialog = ({ open, handleClose, companies }) => {
                         label="Prenoms *"
                         error={nameError}
                         type="text"
-                        value={formData.firstName}
-                        onChange={(event) => setFormData(prev => ({ ...prev, firstName: event.target.value }))}
+                        value={formData.firstname}
+                        onChange={(event) => setFormData(prev => ({ ...prev, firstname: event.target.value }))}
                         fullWidth
                         variant="standard"
                     />
@@ -70,7 +70,7 @@ export const CreateDialog = ({ open, handleClose, companies }) => {
                         handleClose()
                     }}>Annuler</Button>
                     <Button onClick={() => {
-                        if (!(formData.firstName && formData.lastName && formData.username) || (formData.isCompanyAccount && !formData.companyId)) {
+                        if (!(formData.firstname && formData.lastname && formData.username) || (formData.isCompanyAccount && !formData.companyId)) {
                             setNameError(true)
                             return
                         } else {
@@ -79,7 +79,7 @@ export const CreateDialog = ({ open, handleClose, companies }) => {
                             delete createObject.isCompanyAccount
                             if (!formData.isCompanyAccount) delete createObject.companyId
                             handleClose({ ...createObject, password: 'Admin#12345' })
-                            setFormData({ firstName: '', lastName: '', username: '', companyId: '' })
+                            setFormData({ firstname: '', lastname: '', username: '', companyId: '' })
                         }
                     }}>Enregistrer</Button>
                 </DialogActions>

@@ -138,8 +138,8 @@
         {
             "username": "abdosseh@gmail.com",
             "password": "Admin#123",
-            "lastName": "ABALO",
-            "firstName": "Dosseh",
+            "lastname": "ABALO",
+            "firstname": "Dosseh",
             "companyId": "1",
             "passwordConfirmation": "Admin#123",
             "id": 4,
@@ -149,8 +149,8 @@
         {
             "username": "kdn@gmail.com",
             "password": "Admin#123",
-            "lastName": "KOFFI",
-            "firstName": "Lometoh",
+            "lastname": "KOFFI",
+            "firstname": "Lometoh",
             "companyId": "1",
             "passwordConfirmation": "Admin#123",
             "id": 3,
@@ -158,8 +158,8 @@
             "createdBy": 3
         },
         {
-            "firstName": "Gatien-dev",
-            "lastName": "GNAKOU-EDJAMBO",
+            "firstname": "Gatien-dev",
+            "lastname": "GNAKOU-EDJAMBO",
             "username": "gatiengnakou@gmail.com",
             "companyId": "1",
             "password": "Admin#12345",
@@ -169,8 +169,8 @@
         },
         {
             "id": 1,
-            "firstName": "GATIEN",
-            "lastName": "GNAKOU-EDJAMBO",
+            "firstname": "GATIEN",
+            "lastname": "GNAKOU-EDJAMBO",
             "username": "spadmin@gmail.com",
             "password": "Admin123#",
             "roles": [

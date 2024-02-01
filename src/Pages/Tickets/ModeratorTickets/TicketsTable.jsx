@@ -38,7 +38,7 @@ export const TicketsTable = ({ tickets, users, showDetailsDialog, options }) => 
                         ).map((ticket) => {
 
                             const creator = users?.find(u => u.id == ticket.createdBy)
-                            const creatorName = creator ? creator?.firstName + " " + creator?.lastName : "??"
+                            const creatorName = creator ? creator?.firstname + " " + creator?.lastname : "??"
                             return (
                                 <TableRow onClick={() => showDetailsDialog(ticket)}
                                     key={'appli' + ticket.id}
@@ -81,7 +81,7 @@ export const TicketsTable = ({ tickets, users, showDetailsDialog, options }) => 
                                         </Stack>
                                     </TableCell>
                                     <TableCell>
-                                        {ticket.agentId ? users?.find(user => user.id == ticket.agentId)?.firstName
+                                        {ticket.agentId ? users?.find(user => user.id == ticket.agentId)?.firstname
                                             : <Chip size='small' label="Non assigné" color="default" />
                                         }
                                     </TableCell>

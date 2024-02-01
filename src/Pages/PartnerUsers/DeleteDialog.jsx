@@ -12,7 +12,7 @@ export const DeleteDialog = ({ open, handleClose, entry }) => {
                 <DialogTitle>Suppression de l&apos;utilisateur</DialogTitle>
                 <DialogContent>
                     <Stack>
-                        <Typography variant="body1">{entry.firstName} {entry.lastName}</Typography>
+                        <Typography variant="body1">{entry.firstname} {entry.lastname}</Typography>
                         <Typography variant="body1">{entry.username}</Typography>
                         <Typography variant="body1">{sampleData.companies.find(c => c.id == entry.companyId)?.name}</Typography>
                     </Stack>
@@ -36,8 +36,8 @@ DeleteDialog.propTypes = {
     handleClose: PropTypes.func.isRequired,
     entry: PropTypes.shape({
         id: PropTypes.string,
-        firstName: PropTypes.string,
-        lastName: PropTypes.string,
+        firstname: PropTypes.string,
+        lastname: PropTypes.string,
         companyId: PropTypes.string,
         username: PropTypes.string
     })

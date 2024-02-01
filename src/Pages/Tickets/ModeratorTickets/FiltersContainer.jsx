@@ -126,13 +126,13 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                 onChange={(event) => { setFilters(prev => ({ ...prev, agentSearchTerm: event.target.value })) }}
                 label="Recherche agent" variant="outlined" sx={{ marginBottom: '1em' }} />
             <Stack mb={2} >
-                {agents?.filter(agent => filters.agentSearchTerm ? (agent.firstName + " " + agent.lastName).toLowerCase().includes(filters.agentSearchTerm.toLowerCase()) : true)
+                {agents?.filter(agent => filters.agentSearchTerm ? (agent.firstname + " " + agent.lastname).toLowerCase().includes(filters.agentSearchTerm.toLowerCase()) : true)
                     .slice(0, MAX_DISPLAYED_ENTRIES)
                     .map(agent => <FormControlLabel key={`agent-${agent.id}`} sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                         control={
                             <Checkbox checked={filters?.agentIds?.includes(agent.id)} onChange={() => toggleAgent(agent.id)} />
                         }
-                        label={agent.firstName + " " + agent.lastName}
+                        label={agent.firstname + " " + agent.lastname}
                     />
                     )}
 
@@ -142,7 +142,7 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                             onClick={() => setIsAddAgentsDialogOpen(true)}
                         >{agents?.length - MAX_DISPLAYED_ENTRIES} de plus</Link>
                         <SelectListDialog
-                            entries={agents.map(agent => ({ ...agent, fullName: `${agent.firstName} ${agent.lastName}` }))
+                            entries={agents.map(agent => ({ ...agent, fullName: `${agent.firstname} ${agent.lastname}` }))
                             }
                             keyField='id' labelField='fullName'
                             placeholder={"Nom Complet"}
@@ -167,14 +167,14 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                     label="Recherche client" variant="outlined" sx={{ marginBottom: '1em' }} />
                 <Stack mb={2} >
                     {customers?.filter(customer =>
-                        filters.customerSearchTerm ? (customer.firstName + " " + customer.lastName).toLowerCase().includes(filters.customerSearchTerm.toLowerCase())
+                        filters.customerSearchTerm ? (customer.firstname + " " + customer.lastname).toLowerCase().includes(filters.customerSearchTerm.toLowerCase())
                             : true)
                         .slice(0, MAX_DISPLAYED_ENTRIES)
                         .map(customer => <FormControlLabel key={`customer-${customer.id}`} sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                             control={
                                 <Checkbox checked={filters?.customerIds?.includes(customer.id)} onChange={() => toggleCustomer(customer.id)} />
                             }
-                            label={customer.firstName + " " + customer.lastName}
+                            label={customer.firstname + " " + customer.lastname}
                         />
                         )}
 
@@ -184,7 +184,7 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                                 onClick={() => setIsAddCustomersDialogOpen(true)}
                             >{customers?.length - MAX_DISPLAYED_ENTRIES} de plus</Link>
                             <SelectListDialog
-                                entries={customers.map(agent => ({ ...agent, fullName: `${agent.firstName} ${agent.lastName}` }))}
+                                entries={customers.map(agent => ({ ...agent, fullName: `${agent.firstname} ${agent.lastname}` }))}
                                 keyField='id' labelField='fullName'
                                 placeholder={"Nom Complet"}
                                 open={isAddCustomersDialogOpen}

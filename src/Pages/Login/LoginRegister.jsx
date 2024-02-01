@@ -56,8 +56,8 @@ export const LoginRegister = () => {
   function register() {
     setErrors(null)
     console.log(registrationFormData)
-    if (!registrationFormData.firstName) { setErrors(prev => ({ ...prev, 'firstName': true })) }
-    if (!registrationFormData.lastName) { setErrors(prev => ({ ...prev, 'lastName': true })) }
+    if (!registrationFormData.firstname) { setErrors(prev => ({ ...prev, 'firstname': true })) }
+    if (!registrationFormData.lastname) { setErrors(prev => ({ ...prev, 'lastname': true })) }
     if (!registrationFormData.companyId) { setErrors(prev => ({ ...prev, 'companyId': true })) }
     if (!registrationFormData.username) { setErrors(prev => ({ ...prev, 'username': true })) }
     if (!registrationFormData.password) { setErrors(prev => ({ ...prev, 'password': true })) }
@@ -139,13 +139,13 @@ export const LoginRegister = () => {
                 </Box>
 
                 <Stack direction='column' width='100%' spacing={2} alignItems='center'>
-                  <TextField variant="outlined" size="small" error={errors?.lastName} label="Nom"
+                  <TextField variant="outlined" size="small" error={errors?.lastname} label="Nom"
                     sx={{ minWidth: '60%' }}
-                    onChange={event => setRegistrationFormData(prev => ({ ...prev, lastName: event.target.value }))}
+                    onChange={event => setRegistrationFormData(prev => ({ ...prev, lastname: event.target.value }))}
                   ></TextField>
-                  <TextField variant="outlined" size="small" error={errors?.firstName} label="Prénoms"
+                  <TextField variant="outlined" size="small" error={errors?.firstname} label="Prénoms"
                     sx={{ minWidth: '60%' }}
-                    onChange={event => setRegistrationFormData(prev => ({ ...prev, firstName: event.target.value }))}
+                    onChange={event => setRegistrationFormData(prev => ({ ...prev, firstname: event.target.value }))}
                   ></TextField>
                   <FormControl sx={{ minWidth: '60%' }} size="small">
                     <InputLabel id="company-select-label">Entreprise</InputLabel>
