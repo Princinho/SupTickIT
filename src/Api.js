@@ -317,12 +317,14 @@ function getProjectCategories(projectId) {
     let allCategories = getAllCategories()
     return allCategories.filter(cat => cat.projectId == projectId)
 }
-function getAllUsers() {
-    return getAll('users')
+async function getAllUsers() {
+    return  await getAll('users')
+    
 }
 
-function createUser(data) {
-    create(data, 'users')
+async function createUser(data) {
+    console.log(data)
+    await create(data, 'authentication/register')
 }
 function createCustomer(data) {
     let result = create(data, 'users')
@@ -346,11 +348,10 @@ function getAllAgents() {
     return companyAgents
 }
 
-function getCompanyUsers(companyId) {
-    let allUsers = getAllUsers()
-    let companyUsers = allUsers.filter(user => user.companyId == companyId)
-
-    return companyUsers
+async function getCompanyUsers(companyId) {
+    let users= await getAllUsers()
+    
+    return users.filter(u=>u.companyId==companyId && !u.roles.some(r=>r==SYSTEM_ROLES.ADMIN||r==SYSTEM_ROLES.AGENT||r==SYSTEM_ROLES.MODERATOR))
 }
 function isRoleAssignmentActive(roleAssignment) {
     let startDate = new Date(roleAssignment.startDate)
@@ -362,12 +363,13 @@ function isRoleAssignmentActive(roleAssignment) {
     }
     return roleIsActive
 }
-function getActiveRolesForUser(userId) {
-    let allRoles = getAllRoles()
-    let activeRoles = getActiveRoleAssignmentsForUser(userId).map(roleAssignment => allRoles.find(role => role.id == roleAssignment.roleId))
+async function getActiveRolesForUser(userId) {
+    let activeRoleAssignments=await getAllActiveRoleAssignments()
+    let userRoleAssignments=activeRoleAssignments.filter(r=>r.userId==userId)
+    let activeRoles = userRoleAssignments//.map(roleAssignment => allRoles.find(role => role.id == roleAssignment.roleId))
     return activeRoles
 }
-function getActiveRoleAssignmentsForUser(userId) {
+async function getActiveRoleAssignmentsForUser(userId) {
     if (!userId) return []
     let allRoleAssignments = getAllRoleAssignments()
     let roleAssignments = allRoleAssignments.filter(roleAssignment => roleAssignment.userId == userId && isRoleAssignmentActive(roleAssignment))
@@ -393,34 +395,28 @@ function isApiUserInRole(roleId, user) {
     }
     return false
 }
-function getAllRoleAssignments() {
-    return getAllEntries('roleAssignments')
+async function getAllRoleAssignments() {
+    return await getAll('authentication/roles')
 }
 function getAllRoles() {
     return getAllEntries('roles')
 }
-function addRoleToUser(roleAssignment) {
-    create(roleAssignment, 'roleAssignments')
+async function getAllActiveRoleAssignments() {
+    return await getAll('authentication/activeroles')
 }
-function removeRoleFromUser(roleAssignment) {
-    let allEntries = getAllEntries('roleAssignments')
-    let storedData = getOrInitData()
-    let updatedEntriesArray = allEntries.filter(p =>
-        !(p.roleId == roleAssignment.roleId && p.userId == roleAssignment.userId)
-    )
-    saveDataToLocalStorage({ ...storedData, roleAssignments: updatedEntriesArray })
+async function addRoleToUser(roleAssignment) {
+    await create(roleAssignment, 'users/assignrole')
 }
-// function create(newEntry, type) {
-//     console.log(type, newEntry)
-//     let allEntries = getAllEntries(type)
-//     let storedData = getOrInitData()
-//     let createdEntry = { ...newEntry, id: allEntries.length + 1, dateCreated: new Date().toISOString() }
-//     let updatedEntriesArray = [createdEntry, ...allEntries]
-//     const result = { ...storedData, [type]: updatedEntriesArray }
-//     // console.log(result)
-//     saveDataToLocalStorage(result)
-//     return createdEntry
-// }
+async function removeRoleFromUser(id) {
+    // let allEntries = getAllEntries('roleAssignments')
+    // let storedData = getOrInitData()
+    // let updatedEntriesArray = allEntries.filter(p =>
+    //     !(p.roleId == roleAssignment.roleId && p.userId == roleAssignment.userId)
+    // )
+    // saveDataToLocalStorage({ ...storedData, roleAssignments: updatedEntriesArray })
+    await axios.delete(`${API_BASE}users/unassignrole/${id}`)
+}
+
 
 export {
     getOrInitData, loginToApi,

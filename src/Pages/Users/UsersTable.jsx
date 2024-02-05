@@ -76,11 +76,11 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                                     <TableCell>
                                         <Stack direction='row' flexWrap='wrap' sx={{ minWidth: '5rem' }}>
 
-                                            {user.roles.map(role => <RoleChip key={`role-${role.id}`} roleId={role.id} />)}
+                                            {user.roles?.map(role => <RoleChip key={`role-${role}`} roleId={role} />)}
                                         </Stack>
                                     </TableCell>
                                     <TableCell>
-                                        {user.lastLoginDate}
+                                        {new Date(user.lastLoginDate).toLocaleString()}
                                     </TableCell>
                                     <TableCell>
                                         <Typography variant='body2'>

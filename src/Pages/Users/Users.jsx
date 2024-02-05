@@ -1,5 +1,5 @@
 import { Paper, Stack, Typography } from '@mui/material'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { PageHeader } from '../../Components/PageHeader'
 import { UsersTable } from './UsersTable'
 import { CreateDialog } from './CreateDialog'
@@ -7,13 +7,15 @@ import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { SYSTEM_ROLES, sortAndFilterData } from '../../utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createUser, deleteUser, editUser, getActiveRolesForUser, getAllCompanies, getAllUsers, isUserInRole } from '../../Api'
+import { createUser, deleteUser, editUser, getAllCompanies, getAllUsers } from '../../Api'
 import { useNavigate } from 'react-router-dom'
 import { useAuthorization } from '../../Hooks/useAuthorization'
 import { RoleChip } from '../../Components/RoleChip'
+import { UserContext } from '../../Contexts'
 
 
 export const Users = () => {
+
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -27,7 +29,6 @@ export const Users = () => {
   const navigate = useNavigate()
   const { isUserAuthorized } = useAuthorization()
   const [roleFilter, setRoleFilter] = useState(null)
-
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
@@ -36,16 +37,7 @@ export const Users = () => {
     handleRowsPerPageChange: changeRowsPerPage
   })
 
-  function getUsersWithRoles() {
-    let result = users?.map(user => {
-      let userRoles = getActiveRolesForUser(user.id)
-      return { ...user, roles: userRoles }
-    })
-    if (roleFilter) {
-      result = result.filter(user => isUserInRole(user.id, roleFilter))
-    }
-    return result
-  }
+
   function toggleRole(roleId) {
     if (roleFilter == roleId) setRoleFilter(null)
     else setRoleFilter(roleId)
@@ -111,7 +103,7 @@ export const Users = () => {
   function handleRowsPerPageChange(value) {
     updateTableOptions('rowsPerPage', value)
   }
-  console.log(isEditDialogOpen, isDeleteDialogOpen)
+  // if(!user)return 
   return (
     <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
       <PageHeader pageTitle={"Utilisateurs"} pagePath={["Menu"]}
@@ -128,7 +120,7 @@ export const Users = () => {
       />
 
       <UsersTable
-        users={sortAndFilterData(getUsersWithRoles(), searchTerm, tableOptions.sortOption || "")}
+        users={sortAndFilterData(users?.filter(u => roleFilter ? u.roles.some(r => r == roleFilter) : true), searchTerm, tableOptions.sortOption || "")}
         options={({ ...tableOptions, handlePageChange, handleRowsPerPageChange })}
         showEditDialog={showEditDialog}
         showDeleteDialog={showDeleteDialog}
@@ -156,9 +148,6 @@ export const Users = () => {
         <Stack direction='row' alignItems='center' gap={1}>
           <RoleChip roleId={SYSTEM_ROLES.CUSTOMER} handleClick={() => toggleRole(SYSTEM_ROLES.CUSTOMER)} />
           <Typography variant='body2'>Client</Typography></Stack>
-        <Stack direction='row' alignItems='center' gap={1}>
-          <RoleChip roleId={SYSTEM_ROLES.CUSTOMER_ADMIN} handleClick={() => toggleRole(SYSTEM_ROLES.CUSTOMER_ADMIN)} />
-          <Typography variant='body2'>Administrateur client</Typography></Stack>
       </Stack>
     </Paper >
   )

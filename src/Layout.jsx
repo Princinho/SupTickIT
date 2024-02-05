@@ -20,7 +20,6 @@ export const Layout = (props) => {
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
-    console.log(user)
     function handleClose() {
         setAnchorEl(null)
     }

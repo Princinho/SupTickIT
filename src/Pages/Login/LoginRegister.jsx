@@ -34,12 +34,10 @@ export const LoginRegister = () => {
 
   // }
   async function login() {
-    console.log(credentials)
     setError(false)
     let accessToken = await loginToApi(credentials);
     if (accessToken) {
       let decodedUser=jwtDecode(accessToken)
-      console.log(decodedUser)
       sessionStorage.setItem("userRoleAssignments",decodedUser.RoleAssignments)
       sessionStorage.setItem("accessToken", accessToken)
       axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
@@ -55,7 +53,6 @@ export const LoginRegister = () => {
   }
   function register() {
     setErrors(null)
-    console.log(registrationFormData)
     if (!registrationFormData.firstname) { setErrors(prev => ({ ...prev, 'firstname': true })) }
     if (!registrationFormData.lastname) { setErrors(prev => ({ ...prev, 'lastname': true })) }
     if (!registrationFormData.companyId) { setErrors(prev => ({ ...prev, 'companyId': true })) }
@@ -65,11 +62,7 @@ export const LoginRegister = () => {
     if (registrationFormData.password != registrationFormData.passwordConfirmation) {
       setErrors(prev => ({ ...prev, 'passwordConfirmation': true, password: true }))
     }
-    console.log(errors)
     if (!errors) {
-      // setSampleData(
-      //   prev => ({ ...prev, users: [...prev.users, { ...registrationFormData, id: users?.length + 1 }] })
-      // )
       createMutation.mutate(registrationFormData)
       setUser(registrationFormData)
       navigate('/')

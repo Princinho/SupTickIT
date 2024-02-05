@@ -1,10 +1,14 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Switch, TextField } from "@mui/material"
 import PropTypes from 'prop-types'
-import { useState } from "react"
+import { useContext, useState } from "react"
+import { NEW_ACCOUNT_DEFAULT_PASSWORD, SYSTEM_ROLES, isInRole } from "../../utils"
+import { UserContext } from "../../Contexts"
 export const CreateDialog = ({ open, handleClose, companies }) => {
     //TODO: Faire bosser la pagination
     const [formData, setFormData] = useState({ firstname: "", lastname: "", isCompanyAccount: false, companyId: '', username: '' })
     const [nameError, setNameError] = useState(false)
+    const { user } = useContext(UserContext)
+    console.log(user)
     return (
         <Box>
             <Dialog open={open} onClose={() => handleClose()}>
@@ -43,7 +47,11 @@ export const CreateDialog = ({ open, handleClose, companies }) => {
                         fullWidth
                         variant="standard"
                     />
-                    <FormControlLabel control={<Switch checked={formData.isCompanyAccount} onChange={() => setFormData(prev => ({ ...prev, isCompanyAccount: !prev.isCompanyAccount }))} />} label="Compte Partenaire" />
+                    {isInRole(user,SYSTEM_ROLES.ADMIN) && <FormControlLabel control={
+                        <Switch checked={formData.isCompanyAccount}
+                            onChange={() => setFormData(prev => ({ ...prev, isCompanyAccount: !prev.isCompanyAccount }))} />}
+                        label="Compte Partenaire" />}
+
                     {formData.isCompanyAccount &&
                         <>
                             <FormControl fullWidth sx={{ marginTop: '1em' }}>
@@ -78,7 +86,7 @@ export const CreateDialog = ({ open, handleClose, companies }) => {
                             let createObject = { ...formData }
                             delete createObject.isCompanyAccount
                             if (!formData.isCompanyAccount) delete createObject.companyId
-                            handleClose({ ...createObject, password: 'Admin#12345' })
+                            handleClose({ ...createObject, password: NEW_ACCOUNT_DEFAULT_PASSWORD, passwordConfirmation: NEW_ACCOUNT_DEFAULT_PASSWORD })
                             setFormData({ firstname: '', lastname: '', username: '', companyId: '' })
                         }
                     }}>Enregistrer</Button>

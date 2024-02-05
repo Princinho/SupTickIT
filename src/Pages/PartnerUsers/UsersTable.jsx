@@ -40,7 +40,9 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                             (rowsPerPage > 0
                                 ? users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 : users
-                            ).map((user) => (
+                            ).map((user) => {
+                                console.log(user)
+                                return (
                                 <TableRow
                                     key={'appli' + user.id}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -73,7 +75,7 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
 
                                     </TableCell>
                                     <TableCell>
-                                        {user.roles.map(role => <RoleChip key={`role-${role.id}`} roleId={role.id} />)}
+                                        {user.roles?.map(role => <RoleChip key={`role-${user.id}-${role}`} roleId={role} />)}
                                     </TableCell>
                                     <TableCell>
                                         {user.lastLoginDate}
@@ -92,7 +94,7 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                                         </IconButton>
                                     </TableCell>
                                 </TableRow>
-                            )) :
+                            )}) :
                             <TableRow>
                                 <TableCell colSpan={5}>
                                     <Typography variant='subtitle1' color='primary' textAlign='center'> Aucune donnée disponible</Typography>

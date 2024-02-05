@@ -23,7 +23,7 @@ export const PartnerUsers = () => {
   const BASE_QUERY_KEY = 'users'
   const queryClient = useQueryClient()
   const { user } = useContext(UserContext)
-  const { data: companyUsers } = useQuery({ queryKey: [BASE_QUERY_KEY, user?.companyId], queryFn: () => getCompanyUsers(user?.companyId) })
+  const { data: companyUsers } = useQuery({ queryKey: [BASE_QUERY_KEY, user?.companyId], queryFn: async() => {return await getCompanyUsers(user?.companyId)} })
   const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompanies })
   const navigate = useNavigate()
   const { isUserAuthorized } = useAuthorization()
@@ -133,7 +133,7 @@ export const PartnerUsers = () => {
       />
 
       <UsersTable
-        users={sortAndFilterData(getUsersWithRoles(), searchTerm, tableOptions.sortOption || "")}
+        users={sortAndFilterData(companyUsers, searchTerm, tableOptions.sortOption || "")}
         options={({ ...tableOptions, handlePageChange, handleRowsPerPageChange })}
         showEditDialog={showEditDialog}
         showDeleteDialog={showDeleteDialog}

@@ -14,13 +14,20 @@ const TICKET_PRIORITY = {
     CRITICAL: 3,
 
 }
+const NEW_ACCOUNT_DEFAULT_PASSWORD = 'Account#12345'
 const SYSTEM_ROLES = {
     ADMIN: 1,
     MODERATOR: 2,
     AGENT: 3,
     CUSTOMER: 4,
-    CUSTOMER_ADMIN: 5
 }
+const SYTEM_ROLES_WITH_LABELS= [
+    { id: 1, code: 'admin', nom: 'Administrateur', description: 'Administrateur' },
+    { id: 2, code: 'mod', nom: 'Moderateur', description: 'Moderateur' },
+    { id: 3, code: 'agent', nom: 'Agent', description: 'Agent' },
+    { id: 4, code: 'client', nom: 'Client', description: 'Client' },
+    { id: 5, code: 'customer_admin', nom: 'Administrateur Client', description: 'Administrateur Client' },
+]
 const SYSTEM_LABELS = {
     PRODUCT_REF: 'Référence Produit'
 }
@@ -107,13 +114,19 @@ function sortAndFilterData(array, searchTerm, sortOption) {
             return a.id - b.id
         })
     } else {
-
         result = result.sort((a, b) => {
             return (('' + a[sortOption]).toLowerCase()).localeCompare(('' + b[sortOption]).toLowerCase());
         })
     }
     // console.log(result)
     return result
+}
+function isInRole(user, roleId) {
+    if(!user)return false
+    console.log(user.RoleAssignments)
+    let roleAssignments=JSON.parse(user.RoleAssignments)
+    console.log(roleAssignments)
+    return roleAssignments?.some(r => r.RoleId == roleId && new Date(r.StartDate) < new Date() && new Date(r.ExpiryDate) > new Date())
 }
 function getAvailablePriorities() {
     return [
@@ -132,6 +145,6 @@ export {
     stringAvatar, stringToColor,
     getSampleDataFromLocalStorage, saveDataToLocalStorage,
     getRandomNumber, addOnemonth, sortAndFilterData,
-    getAvailablePriorities, formatToInput, getHighestId,
-    TICKET_STATUS, TICKET_PRIORITY, SYSTEM_ROLES,SYSTEM_LABELS
+    getAvailablePriorities, formatToInput, getHighestId,isInRole,
+    TICKET_STATUS, TICKET_PRIORITY, SYSTEM_ROLES, SYSTEM_LABELS,SYTEM_ROLES_WITH_LABELS, NEW_ACCOUNT_DEFAULT_PASSWORD
 }
