@@ -7,7 +7,7 @@ import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { SYSTEM_ROLES, sortAndFilterData } from '../../utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createUser, deleteUser, editUser, getAllCompanies, getAllUsers } from '../../Api'
+import { createUser, deleteUser, editUser,  getAllCompaniesAsync, getAllUsersAsync } from '../../Api'
 import { useNavigate } from 'react-router-dom'
 import { useAuthorization } from '../../Hooks/useAuthorization'
 import { RoleChip } from '../../Components/RoleChip'
@@ -24,8 +24,8 @@ export const Users = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const BASE_QUERY_KEY = 'users'
   const queryClient = useQueryClient()
-  const { data: users } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllUsers })
-  const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompanies })
+  const { data: users } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllUsersAsync })
+  const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompaniesAsync })
   const navigate = useNavigate()
   const { isUserAuthorized } = useAuthorization()
   const [roleFilter, setRoleFilter] = useState(null)

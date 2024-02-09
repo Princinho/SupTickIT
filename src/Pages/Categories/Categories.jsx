@@ -7,7 +7,7 @@ import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from '../../utils'
 import { DetailsDialog } from './DetailsDialog'
-import { createCategory, deleteCategory, editCategory, getAllCategories, getAllProjects } from '../../Api'
+import { getSingleAsync , deleteCategory, editCategory, getAllCategories, getAllProjectsAsync } from '../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuthorization } from '../../Hooks/useAuthorization'
 import { useNavigate } from 'react-router-dom'
@@ -26,7 +26,7 @@ export const Categories = () => {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const { data: categories, refetch: refetchCategories } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCategories })
-    const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
+    const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjectsAsync })
     const [tableOptions, setTableOptions] = useState({
         rowsPerPage: 5, page: 0, count: categories?.length, handlePageChange: setCurrentPage,
         handleRowsPerPageChange: changeRowsPerPage
@@ -63,7 +63,7 @@ export const Categories = () => {
     }
 
     const createMutation = useMutation({
-        mutationFn: createCategory,
+        mutationFn: getSingleAsync,
         onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
     })
     const editMutation = useMutation({

@@ -8,7 +8,7 @@ import { RemoveProject } from "./RemoveProject";
 import { SimpleButton } from "../../Components/SimpleButton";
 import { AddCompanyToProjectDialog } from "./AddCompanyToProjectDialog";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { assignProject, editCompany, getAllCompanies, getAllProjects, unAssignProject } from "../../Api";
+import { assignProject, getAllCompaniesAsync, getAllProjectsAsync, unAssignProject } from "../../Api";
 export const CompanyDetails = () => {
     const [focusedProject, setFocusedProject] = useState(null)
 
@@ -19,8 +19,8 @@ export const CompanyDetails = () => {
     const { id } = useParams()
     const BASE_QUERY_KEY = 'companies'
     const queryClient = useQueryClient()
-    const { isLoading, data: companies } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCompanies })
-    const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
+    const { isLoading, data: companies } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCompaniesAsync })
+    const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjectsAsync })
     const company = companies?.find(comp => comp?.id == id);
     // const companyProjects = 
     const navigate = useNavigate()

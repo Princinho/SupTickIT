@@ -2,7 +2,7 @@ import { AddCircleOutline, ArrowBack, ArrowForward, HighlightOff, Search } from 
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
 import { TicketsTable } from './TicketsTable'
 import { useContext, useState } from 'react'
-import { createTicket, deleteTicket, editTicket, getAllCategories, getAllProjects, getCustomerTickets } from '../../../Api'
+import { createTicket, deleteTicket, editTicket, getAllCategories, getAllProjectsAsync, getCustomerTicketsAsync } from '../../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { sortAndFilterData } from '../../Companies/utils'
 import { CreateDialog } from './CreateDialog'
@@ -24,10 +24,10 @@ export const CustomerTickets = () => {
   const BASE_QUERY_KEY = 'tickets'
   // const [companies, setCompanies] = useState([])
   const queryClient = useQueryClient()
-  const { data: tickets } = useQuery({ queryKey: [BASE_QUERY_KEY, user?.id], queryFn: () => getCustomerTickets(user?.id) })
-  const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
+  const { data: tickets, refetch: refetchTickets } = useQuery({ queryKey: [BASE_QUERY_KEY, user?.id], queryFn: () => getCustomerTicketsAsync(user?.id) })
+  const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjectsAsync })
   const { data: categories } = useQuery({ queryKey: ['categories'], queryFn: getAllCategories })
-  console.log(tickets)
+  // console.log(categories)
   // console.log(user)
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
@@ -36,6 +36,7 @@ export const CustomerTickets = () => {
     handlePageChange: setCurrentPage,
     handleRowsPerPageChange: changeRowsPerPage
   })
+  console.log("FOCUSED ENTRY", focusedEntry)
   function changeRowsPerPage(rowsPerPage) {
     setRowsPerPage(rowsPerPage)
     setCurrentPage(0)
@@ -60,15 +61,18 @@ export const CustomerTickets = () => {
   }
   const createMutation = useMutation({
     mutationFn: createTicket,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+    onSuccess: () => {
+      refetchTickets()
+      queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY, user?.id] })
+    }
   })
   const editMutation = useMutation({
     mutationFn: editTicket,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY, user?.id] })
   })
   const deleteMutation = useMutation({
     mutationFn: deleteTicket,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY, user?.id] })
   })
 
   return (
@@ -174,23 +178,28 @@ export const CustomerTickets = () => {
       <Box sx={{ marginRight: '1em', mt: 2 }}>
         <TicketsTable
           options={tableOptions}
-          projects={projects}
-          categories={categories}
+          projects={projects || []}
+          categories={categories || []}
           tickets={sortAndFilterData(tickets, searchTerm, sortOption)}
           showDetailsDialog={showDetailsDialog}
           showEditDialog={showEditDialog}
           showDeleteDialog={showDeleteDialog} />
+        <Typography variant='h4' color={'red'}>Customers panel</Typography>
       </Box>
-      <CreateDialog open={isCreateDialogOpen} handleClose={(entry) => {
-        if (entry) {
-          console.log(entry)
-          createMutation.mutate(entry)
-        }
-        setIsCreateDialogOpen(false)
-      }} />
+      <CreateDialog
+        projects={projects}
+        open={isCreateDialogOpen} handleClose={(entry) => {
+          if (entry) {
+            console.log(entry)
+            createMutation.mutate(entry)
+          }
+          setIsCreateDialogOpen(false)
+        }} />
 
       {
         focusedEntry && <EditDialog open={isEditDialogOpen} entry={focusedEntry}
+          projects={projects}
+          categories={categories}
           handleClose={(company) => {
             if (company) { editMutation.mutate(company) }
             setIsEditDialogOpen(false)
@@ -200,6 +209,8 @@ export const CustomerTickets = () => {
       }
       {
         focusedEntry && <DetailsDialog open={isDetailsDialogOpen} entry={focusedEntry}
+          categories={categories}
+          projects={projects}
           handleClose={() => {
             setIsDetailsDialogOpen(false)
           }}
@@ -208,6 +219,8 @@ export const CustomerTickets = () => {
       }
       {
         focusedEntry && <DeleteDialog open={isDeleteDialogOpen} entry={focusedEntry}
+          categories={categories}
+          projects={projects}
           handleClose={(entry) => {
             if (entry) { deleteMutation.mutate(entry) }
             setIsDeleteDialogOpen(false)

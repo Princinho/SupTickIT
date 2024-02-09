@@ -1,14 +1,10 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Stack, Typography } from "@mui/material"
 import PropTypes from 'prop-types'
-import { useContext } from "react"
-import { getCompanyProjects } from "../../../Api"
-import { UserContext } from "../../../Contexts"
 import { Link } from "react-router-dom"
 import { OpenInNew } from "@mui/icons-material"
 import { SYSTEM_LABELS } from "../../../utils"
-export const DetailsDialog = ({ open, handleClose, entry }) => {
-    const { user } = useContext(UserContext)
-    console.log(user)
+export const DetailsDialog = ({ open, handleClose,projects,categories, entry }) => {
+    let projId=categories?.find(cat => cat.id == entry.categoryId)?.projectId
     return (
         <Box>
             <Dialog open={open} onClose={() => handleClose()}>
@@ -28,7 +24,7 @@ export const DetailsDialog = ({ open, handleClose, entry }) => {
                             <Typography variant="span">Projet</Typography>
                         </Grid>
                         <Grid item xs={6}>
-                            <Typography variant="span">{getCompanyProjects(user?.companyId).find(p => p.id == entry.projectId)?.title}</Typography>
+                            <Typography variant="span">{projects.find(p => p.id == projId)?.title}</Typography>
                         </Grid>
                         {entry.productRef && <>
                             <Grid item xs={6}>
@@ -60,5 +56,7 @@ export const DetailsDialog = ({ open, handleClose, entry }) => {
 DetailsDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
-    entry: PropTypes.object.isRequired
+    entry: PropTypes.object.isRequired,
+    categories:PropTypes.array.isRequired,
+    projects:PropTypes.array.isRequired,
 }

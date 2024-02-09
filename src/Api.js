@@ -1,4 +1,4 @@
-import { SYSTEM_ROLES, TICKET_STATUS, getSampleDataFromLocalStorage, saveDataToLocalStorage } from "./utils"
+import { SYSTEM_ROLES, getSampleDataFromLocalStorage, saveDataToLocalStorage } from "./utils"
 import { sampleData as initialData } from './SampleData.js'
 import axios from "axios"
 const API_BASE = 'https://localhost:7223/api/'
@@ -10,26 +10,21 @@ function getAllEntries(type) {
 }
 function getSingleton(type) {
     let data = getDataFromLocalStorage()
-    console.log(data[type])
-    console.log(type)
     return data[type] || null
 }
-async function getSingle(endpoint, id) {
-    let url = `${endpoint}/${id}`
-    return (await axios.get(url)).data
-}
+async function getSingleAsync(endpoint, id) {
 
+    return (await getAsync(endpoint + "/" + id))
+}
 async function loginToApi({ username, password }) {
-    console.log(username, password)
     let response = await axios.post(API_BASE + "Authentication/Login", {
         Username: username,
         Password: password
     })
-    // console.log(response.data)
     return response.data
 }
 
-async function getAllProjects() {
+async function getAllProjectsAsync() {
     let response = await (await axios.get(`${API_BASE}${PROJECTS_ENDPOINT}`)).data
     return response
 }
@@ -37,12 +32,10 @@ async function create(data, endpoint) {
     await axios.post(API_BASE + endpoint, data)
 }
 async function remove(id, endpoint) {
-    console.log('deleting....')
     return await axios.delete(`${API_BASE}${endpoint}/${id}`)
 }
-async function getAll(endpoint) {
+async function getAsync(endpoint) {
     let response = (await axios.get(`${API_BASE}${endpoint}`)).data
-    // console.log(endpoint, response)
     return response
 }
 function getProject(id) {
@@ -53,7 +46,6 @@ function getProject(id) {
 function getOrInitData() {
     let storedData = getSampleDataFromLocalStorage()
     if (!storedData) {
-        console.log('no stored data, using initialData', initialData)
         storedData = initialData
         saveDataToLocalStorage(initialData)
 
@@ -61,14 +53,12 @@ function getOrInitData() {
     return storedData
 }
 function getSystemSettings() {
-    console.log('getting settings')
     return getSingleton('settings')
 }
 function saveSystemSettings(settings) {
     saveSingleton('settings', settings)
 }
 function saveSingleton(type, settings) {
-    console.log(type, settings)
     let storedData = getOrInitData()
     let createdEntry = { ...settings, dateCreated: new Date().toISOString() }
     const result = { ...storedData, [type]: createdEntry }
@@ -88,25 +78,27 @@ async function createProject(newProject) {
     await create(newProject, PROJECTS_ENDPOINT)
 }
 async function editProject(updatedProject) {
-    console.log(updatedProject)
-    await edit(updatedProject, PROJECTS_ENDPOINT)
+    await edit(updatedProject, PROJECTS_ENDPOINT)    
+}
+
+async function assignAgent(agentId, ticketId) {
+    let url = `${API_BASE}Tickets/${ticketId}/assignTo/${agentId}`
+    await axios.put(url)
 }
 async function deleteProject(id) {
     await remove(id, PROJECTS_ENDPOINT)
 }
 function editEntry(updatedEntry, type) {
-    console.log('editing entry')
     let allEntries = getAllEntries(type)
     let storedData = getOrInitData()
     let updatedEntriesArray = allEntries.map(entry => entry.id == updatedEntry.id ? {
         ...entry, ...updatedEntry
     } : entry)
-    console.log(updatedEntriesArray)
     saveDataToLocalStorage({ ...storedData, [type]: updatedEntriesArray })
 }
 async function edit(updatedEntry, endpoint) {
     let updateUrl = `${API_BASE}${endpoint}/${updatedEntry.id}`
-    console.log(updateUrl,endpoint)
+    console.log(updateUrl, endpoint)
     let response = (await axios.put(updateUrl, updatedEntry)).data
     return response
 }
@@ -117,8 +109,8 @@ function deleteEntry(data, type) {
     let updatedEntriesArray = allEntries.filter(p => p.id != data.id)
     saveDataToLocalStorage({ ...storedData, [type]: updatedEntriesArray })
 }
-async function getAllCompanies() {
-    return await getAll('companies') || []
+async function getAllCompaniesAsync() {
+    return await getAsync('companies') || []
 }
 async function createCompany(data) {
     await create(data, 'companies')
@@ -131,50 +123,33 @@ async function editCompany(company) {
 async function deleteCompany(data) {
     await remove(data.id, 'companies')
 }
-function getAllTickets() {
-    return getAllEntries('tickets') || []
+async function getAllTicketsAsync() {
+    return await getAsync('tickets') || []
 
 }
-function getCustomerTickets(customerId) {
-    // console.log(customerId)
+async function getCustomerTicketsAsync(customerId) {
     if (!customerId) return []
-    let allTickets = getAllTickets()
-    // console.log(allTickets)
-    let customerTickets = allTickets.filter(ticket => ticket.createdBy == customerId)
-    // console.log(customerTickets)
+    let customerTickets = await getAsync(`Tickets/customer/${customerId}`)
     return customerTickets
 }
-function getModeratorTickets(moderatorId) {
-    // console.log(customerId)
+async function getTicketsAssignedByMod(moderatorId) {
     if (!moderatorId) return []
-    let moderator = getAllUsers().find(u => u.id == moderatorId)
-    if (moderator) {
-
-        let allTickets = getAllTickets()
-        console.log('all tickets', allTickets)
-        let companyUsers = getAllUsers().filter(u => u.companyId == moderator.companyId)
-        console.log('company users', companyUsers)
-        let moderatorTickets = allTickets.filter(ticket => companyUsers.some(u => u.id == ticket.createdBy))
-        return moderatorTickets
-    }
-
-}
-function getTicket(id) {
-    return getAllTickets().find(ticket => ticket.id == id) || null
+    let customerTickets = await getAsync(`Tickets/moderator/${moderatorId}`)
+    return customerTickets
 }
 
-function getTicketMessages(ticketId) {
-    let ticketMessages = getAllMessages().filter(m => m.ticketId == ticketId)
-    console.log(ticketMessages)
-    return ticketMessages
+async function getTicket(id) {
+    return await getAsync(`tickets/${id}`)
 }
-function getAllMessages() {
-    let messages = getAllEntries('messages')
+
+async function getTicketMessagesAsync(ticketId) {
+    let messages = await getAsync(`tickets/${ticketId}/messages`)
     console.log(messages)
     return messages
 }
-function createMessage(entry) {
-    let message = create(entry, 'messages')
+
+async function createMessageAsync(entry) {
+    let message = await create(entry, 'messages')
     createTicketLog(generateTicketLogForTicketMessage(message))
 }
 
@@ -187,16 +162,14 @@ function deleteMessage(entry) {
 }
 function getAllTicketLogs() {
     let ticketLogs = getAllEntries('ticketLogs')
-    console.log(ticketLogs)
     return ticketLogs
 }
 function getTicketLogsByTicketId(id) {
     let ticketLogs = getAllEntries('ticketLogs').filter(log => log.ticketId == id)
-    console.log(ticketLogs)
     return ticketLogs
 }
 function createTicketLog(entry) {
-    create(entry, 'ticketLogs')
+    // create(entry, 'ticketLogs')
 }
 
 function editTicketLog(entry) {
@@ -207,15 +180,8 @@ function deleteTicketLog(entry) {
     deleteEntry(entry, 'ticketLogs')
 }
 
-function getAgentTickets(agentId) {
-    // console.log(customerId)
-    if (!agentId) return []
-    let allTickets = getAllTickets()
-    // console.log(allTickets)
-    let agentTickets = allTickets.filter(ticket => ticket.agentId == agentId || isInFreePick(ticket))
-        .filter(t => t.status != TICKET_STATUS.CLOSED)
-    console.log(agentTickets)
-    return agentTickets
+async function getAgentTickets(id) {
+    return await getAsync(`tickets/agent/${id}`)
 }
 function isInFreePick(ticket) {
     if (ticket.agentId) {
@@ -229,11 +195,11 @@ function isInFreePick(ticket) {
     console.log(gapInDays) //5 days
     return gapInDays > 7
 }
-function getCompanyProjects(companyId) {
+async function getCompanyProjects(companyId) {
     if (!companyId) return [
     ]
-    let projects = getAllProjects()
-    let company = getAllCompanies().find(c => c.id == companyId)
+    let projects = await getAllProjectsAsync()
+    let company = (await getAllCompaniesAsync()).find(c => c.id == companyId)
     let companyProjects = projects.filter(project => company.projects.includes(project.id))
     return companyProjects
 }
@@ -246,43 +212,20 @@ function createTicket(data) {
     })
 }
 
-function editTicket(ticket) {
+async function editTicket(ticket) {
     console.log(ticket)
-    createTicketLog(generateTicketLogForTicketEdit(ticket))
-    editEntry(ticket, 'tickets')
+    // createTicketLog(generateTicketLogForTicketEdit(ticket))
+    await edit(ticket, 'tickets')
+    if (ticket.agentId) {
+        await assignAgent(ticket.agentId, ticket.id)
+    }
 }
-function generateTicketLogForTicketEdit(newTicket) {
-    if (!newTicket.id) {
-        throw (new Error("Cannot log changes for ticket with undefined id"))
-    }
-    let oldTicket = getTicket(newTicket.id)
-    let differences = []
-    for (const key in newTicket) {
-        if (newTicket[key] != oldTicket[key]) {
-            differences.push(key)
-        }
-    }
-    console.log(newTicket)
-    let ticketLog = null
-    if (differences.length > 0) {
-        ticketLog = {
-            date: new Date().toISOString(), ticketId: newTicket.id,
-            content: "Modification du ticket"
-        }
-        differences.forEach(difference => {
-            ticketLog[difference] = newTicket[difference]
-            ticketLog[difference + "_old"] = oldTicket[difference]
-        });
-    }
-    console.log(ticketLog)
-    return ticketLog
-}
+
 function generateTicketLogForTicketMessage(message) {
     if (!message.id) {
         throw (new Error("Cannot log changes for ticket with undefined id"))
     }
 
-    console.log(message)
     let ticketLog = null
 
     ticketLog = {
@@ -290,20 +233,21 @@ function generateTicketLogForTicketMessage(message) {
         content: "Nouveau message pour le ticket",
         ...message
     }
-    console.log(ticketLog)
     return ticketLog
 }
 function deleteTicket(data) {
     deleteEntry(data, 'tickets')
 }
 async function getAllCategories() {
-    return await getAll('ticketcategories')
+    return await getAsync('ticketcategories')
 }
-async function getCategory(id) {
-    return await getSingle('ticketcategories', id)
+async function getCategoryAsync(id) {
+    let response = (await axios.get(`${API_BASE}ticketcategories/${id}`)).data
+    return response
+
 }
-async function createCategory(data) {
-    await create('ticketCategories', data)
+async function createCategoryAsync(data) {
+    await create(data, 'ticketCategories')
 }
 
 function editCategory(data) {
@@ -313,17 +257,16 @@ function editCategory(data) {
 async function deleteCategory(id) {
     await remove(id, 'ticketCategories')
 }
-function getProjectCategories(projectId) {
-    let allCategories = getAllCategories()
+async function getProjectCategoriesAsync(projectId) {
+    let allCategories = await getAllCategories()
     return allCategories.filter(cat => cat.projectId == projectId)
 }
-async function getAllUsers() {
-    return  await getAll('users')
-    
+async function getAllUsersAsync() {
+    return await getAsync('users')
+
 }
 
 async function createUser(data) {
-    console.log(data)
     await create(data, 'authentication/register')
 }
 function createCustomer(data) {
@@ -338,20 +281,20 @@ function editUser(data) {
 function deleteUser(data) {
     deleteEntry(data, 'users')
 }
-function getAvailableAgents(companyId) {
-    let companyAgents = getCompanyUsers(companyId).filter(user => isUserInRole(SYSTEM_ROLES.AGENT, user.id))
+async function getAvailableAgents(companyId) {
+    let companyAgents = (await getCompanyUsers(companyId)).filter(user => isUserInRole(SYSTEM_ROLES.AGENT, user.id))
     return companyAgents
 }
-function getAllAgents() {
-    let companyAgents = getAllUsers().filter(user => isUserInRole(SYSTEM_ROLES.AGENT, user.id))
-    console.log(companyAgents)
+async function getAllAgents() {
+    let allAgents = await getAllUsersAsync()
+    let companyAgents = allAgents.filter(user => isUserInRole(SYSTEM_ROLES.AGENT, user.id))
     return companyAgents
 }
 
 async function getCompanyUsers(companyId) {
-    let users= await getAllUsers()
-    
-    return users.filter(u=>u.companyId==companyId && !u.roles.some(r=>r==SYSTEM_ROLES.ADMIN||r==SYSTEM_ROLES.AGENT||r==SYSTEM_ROLES.MODERATOR))
+    let users = await getAllUsersAsync()
+
+    return users.filter(u => u.companyId == companyId && !u.roles.some(r => r == SYSTEM_ROLES.ADMIN || r == SYSTEM_ROLES.AGENT || r == SYSTEM_ROLES.MODERATOR))
 }
 function isRoleAssignmentActive(roleAssignment) {
     let startDate = new Date(roleAssignment.startDate)
@@ -364,8 +307,8 @@ function isRoleAssignmentActive(roleAssignment) {
     return roleIsActive
 }
 async function getActiveRolesForUser(userId) {
-    let activeRoleAssignments=await getAllActiveRoleAssignments()
-    let userRoleAssignments=activeRoleAssignments.filter(r=>r.userId==userId)
+    let activeRoleAssignments = await getAllActiveRoleAssignments()
+    let userRoleAssignments = activeRoleAssignments.filter(r => r.userId == userId)
     let activeRoles = userRoleAssignments//.map(roleAssignment => allRoles.find(role => role.id == roleAssignment.roleId))
     return activeRoles
 }
@@ -375,16 +318,15 @@ async function getActiveRoleAssignmentsForUser(userId) {
     let roleAssignments = allRoleAssignments.filter(roleAssignment => roleAssignment.userId == userId && isRoleAssignmentActive(roleAssignment))
     return roleAssignments
 }
-function isUserInRole(roleId, userId) {
+async function isUserInRole(roleId, userId) {
     if (!userId || !roleId) return false
-    let userActiveRoles = getActiveRolesForUser(userId)
+    let userActiveRoles = await getActiveRolesForUser(userId)
     return userActiveRoles.some(role => role.id == roleId)
 }
 function isApiUserInRole(roleId, user) {
     if (!user) return false
     if (!user.RoleAssignments) return false
-    let roleAssignments = JSON.parse(user.RoleAssignments);
-    // console.log(roleId)
+    let roleAssignments = user.RoleAssignments
     let today = new Date()
     for (let roleAssignment of roleAssignments) {
         if (roleAssignment.RoleId == roleId) {
@@ -396,13 +338,13 @@ function isApiUserInRole(roleId, user) {
     return false
 }
 async function getAllRoleAssignments() {
-    return await getAll('authentication/roles')
+    return await getAsync('authentication/roles')
 }
 function getAllRoles() {
     return getAllEntries('roles')
 }
 async function getAllActiveRoleAssignments() {
-    return await getAll('authentication/activeroles')
+    return await getAsync('authentication/activeroles')
 }
 async function addRoleToUser(roleAssignment) {
     await create(roleAssignment, 'users/assignrole')
@@ -420,14 +362,14 @@ async function removeRoleFromUser(id) {
 
 export {
     getOrInitData, loginToApi,
-    getDataFromLocalStorage,
-    createMessage, editMessage, deleteMessage,
-    getAllProjects, getProject, createProject, editProject, deleteProject, assignProject, unAssignProject, getCompanyProjects,
-    getAllCompanies, createCompany, editCompany, deleteCompany,
-    getAllTickets, createTicket, editTicket, deleteTicket,
-    getCustomerTickets, getTicket, getTicketMessages, getModeratorTickets,
-    getAllCategories, createCategory, editCategory, deleteCategory, getProjectCategories, getCategory,
-    getAllUsers, getCompanyUsers, createUser, editUser, deleteUser, createCustomer,
+    getDataFromLocalStorage, getSingleAsync,
+    createMessageAsync, editMessage, deleteMessage,
+    getAllProjectsAsync, getProject, createProject, editProject, deleteProject, assignProject, unAssignProject, getCompanyProjects,
+    getAllCompaniesAsync, createCompany, editCompany, deleteCompany,
+    getAllTicketsAsync, createTicket, editTicket, deleteTicket,
+    getCustomerTicketsAsync, getTicket, getTicketMessagesAsync, getTicketsAssignedByMod,
+    getAllCategories, createCategoryAsync, editCategory, deleteCategory, getProjectCategoriesAsync, getCategoryAsync,
+    getAllUsersAsync, getCompanyUsers, createUser, editUser, deleteUser, createCustomer,
     getAllRoleAssignments, getAllRoles, addRoleToUser,
     getActiveRolesForUser, getActiveRoleAssignmentsForUser, isUserInRole, isApiUserInRole,
     removeRoleFromUser, getAvailableAgents, getAgentTickets, getAllAgents,

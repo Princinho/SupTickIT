@@ -5,7 +5,7 @@ import { Logo } from "../../Components/Logo"
 import { useContext, useState } from "react"
 import { UserContext } from "../../Contexts"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { createUser, getAllCompanies, loginToApi } from "../../Api"
+import { createUser, getAllCompaniesAsync, loginToApi } from "../../Api"
 import axios from "axios"
 import { jwtDecode } from "jwt-decode"
 export const LoginRegister = () => {
@@ -17,8 +17,8 @@ export const LoginRegister = () => {
   const [currentForm, setCurrentForm] = useState('login')
   const [errors, setErrors] = useState(null)
 
-  const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompanies })
-  // const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
+  const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompaniesAsync })
+  // const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsersAsync })
   const queryClient = useQueryClient()
 
   const createMutation = useMutation({
@@ -26,13 +26,7 @@ export const LoginRegister = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] })
   })
 
-  // function isAlreadyLoggedIn() {
-  //   let expiry = sessionStorage.getItem("tokenExpiryDate")
-  //   let accessToken = sessionStorage.getItem("accesstoken")
-
-  //   return (expiry && accessToken && new Date() < JSON.parse(expiry))
-
-  // }
+ 
   async function login() {
     setError(false)
     let accessToken = await loginToApi(credentials);
@@ -44,7 +38,7 @@ export const LoginRegister = () => {
       let expiryDate = new Date();
       expiryDate.setDate(expiryDate.getDate() + 1)
       sessionStorage.setItem("tokenExpiryDate", JSON.stringify(expiryDate))
-      setUser(decodedUser)
+      setUser({...decodedUser,RoleAssignments:JSON.parse(decodedUser.RoleAssignments)})
       navigate('/')
     }else{
       setError(true)

@@ -21,12 +21,11 @@ const SYSTEM_ROLES = {
     AGENT: 3,
     CUSTOMER: 4,
 }
-const SYTEM_ROLES_WITH_LABELS= [
+const SYTEM_ROLES_WITH_LABELS = [
     { id: 1, code: 'admin', nom: 'Administrateur', description: 'Administrateur' },
     { id: 2, code: 'mod', nom: 'Moderateur', description: 'Moderateur' },
     { id: 3, code: 'agent', nom: 'Agent', description: 'Agent' },
     { id: 4, code: 'client', nom: 'Client', description: 'Client' },
-    { id: 5, code: 'customer_admin', nom: 'Administrateur Client', description: 'Administrateur Client' },
 ]
 const SYSTEM_LABELS = {
     PRODUCT_REF: 'Référence Produit'
@@ -122,9 +121,9 @@ function sortAndFilterData(array, searchTerm, sortOption) {
     return result
 }
 function isInRole(user, roleId) {
-    if(!user)return false
+    if (!user) return false
     console.log(user.RoleAssignments)
-    let roleAssignments=JSON.parse(user.RoleAssignments)
+    let roleAssignments = user.RoleAssignments
     console.log(roleAssignments)
     return roleAssignments?.some(r => r.RoleId == roleId && new Date(r.StartDate) < new Date() && new Date(r.ExpiryDate) > new Date())
 }
@@ -141,10 +140,19 @@ function formatToInput(dateObject) {
     // console.log(result)
     return result
 }
+function extractActiveRolesFromUser(user) {
+    let allUserRoles = user.RoleAssignments
+    if (!allUserRoles) return []
+    // console.log(allUserRoles)
+
+    let startedRoles = allUserRoles.filter(r => new Date(r.StartDate) < new Date())
+    let runningRoles = startedRoles.filter(r => !r.ExpiryDate || new Date(r.ExpiryDate) > new Date())
+    return runningRoles
+}
 export {
-    stringAvatar, stringToColor,
+    stringAvatar, stringToColor, extractActiveRolesFromUser,
     getSampleDataFromLocalStorage, saveDataToLocalStorage,
     getRandomNumber, addOnemonth, sortAndFilterData,
-    getAvailablePriorities, formatToInput, getHighestId,isInRole,
-    TICKET_STATUS, TICKET_PRIORITY, SYSTEM_ROLES, SYSTEM_LABELS,SYTEM_ROLES_WITH_LABELS, NEW_ACCOUNT_DEFAULT_PASSWORD
+    getAvailablePriorities, formatToInput, getHighestId, isInRole,
+    TICKET_STATUS, TICKET_PRIORITY, SYSTEM_ROLES, SYSTEM_LABELS, SYTEM_ROLES_WITH_LABELS, NEW_ACCOUNT_DEFAULT_PASSWORD
 }

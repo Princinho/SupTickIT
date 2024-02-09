@@ -7,7 +7,7 @@ import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from './utils'
 import { DetailsDialog } from './DetailsDialog'
-import { createCompany, deleteCompany, editCompany, getAllCompanies } from '../../Api'
+import { createCompany, deleteCompany, editCompany, getAllCompaniesAsync } from '../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export const Companies = () => {
@@ -25,7 +25,7 @@ export const Companies = () => {
   const BASE_QUERY_KEY = 'companies'
   // const [companies, setCompanies] = useState([])
   const queryClient = useQueryClient()
-  const { data: companies } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCompanies })
+  const { data: companies } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCompaniesAsync })
 
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,

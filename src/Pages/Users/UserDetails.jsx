@@ -7,7 +7,7 @@ import { Delete, MoreVert } from "@mui/icons-material"
 import { SimpleButton } from "../../Components/SimpleButton"
 import { RemoveRoleDialog } from "./RemoveRoleDialog"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { addRoleToUser,   getAllUsers, removeRoleFromUser } from "../../Api"
+import { addRoleToUser,   getAllUsersAsync, removeRoleFromUser } from "../../Api"
 import { useState } from "react"
 import { SYTEM_ROLES_WITH_LABELS } from "../../utils"
 export const UserDetails = () => {
@@ -21,7 +21,7 @@ export const UserDetails = () => {
     const USERS_QUERY_KEY = ['users']
     const ROLES_QUERY_KEY = ['roles']
 
-    const { data: users } = useQuery({ queryKey: USERS_QUERY_KEY, queryFn: getAllUsers })
+    const { data: users,refetch } = useQuery({ queryKey: USERS_QUERY_KEY, queryFn: getAllUsersAsync })
     // const { data: roleAssignments } = useQuery({ queryKey: BASE_QUERY_KEY, queryFn: () => getActiveRoleAssignmentsForUser(id) })
     const roles=SYTEM_ROLES_WITH_LABELS
     const queryClient = useQueryClient()
@@ -54,6 +54,7 @@ export const UserDetails = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEY })
             queryClient.invalidateQueries({ queryKey: ROLES_QUERY_KEY })
+            refetch()
         }
     })
     const removeFromUserMutation = useMutation({

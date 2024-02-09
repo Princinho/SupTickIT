@@ -9,7 +9,7 @@ export const Message = ({ message }) => {
                 <Avatar {...stringAvatar(message?.userFullName)} />
                 <Stack>
                     <Typography variant='body2'>{message.userFullName}</Typography>
-                    <Typography variant='caption' color='text.secondary'>{new Date(message.date).toLocaleString('Fr-fr')}</Typography>
+                    <Typography variant='caption' color='text.secondary'>{new Date(message.dateCreated).toLocaleString('Fr-fr')}</Typography>
                 </Stack>
             </Stack>
             <Typography ml={7} variant='body1'>{message.body}</Typography>

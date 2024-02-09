@@ -7,7 +7,7 @@ import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { SYSTEM_ROLES, sortAndFilterData } from '../../utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createCustomer, deleteUser, editUser, getActiveRolesForUser, getAllCompanies, getCompanyUsers } from '../../Api'
+import { createCustomer, deleteUser, editUser, getActiveRolesForUser, getAllCompaniesAsync, getCompanyUsers } from '../../Api'
 import { useNavigate } from 'react-router-dom'
 import { useAuthorization } from '../../Hooks/useAuthorization'
 import { UserContext } from '../../Contexts'
@@ -24,7 +24,7 @@ export const PartnerUsers = () => {
   const queryClient = useQueryClient()
   const { user } = useContext(UserContext)
   const { data: companyUsers } = useQuery({ queryKey: [BASE_QUERY_KEY, user?.companyId], queryFn: async() => {return await getCompanyUsers(user?.companyId)} })
-  const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompanies })
+  const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompaniesAsync })
   const navigate = useNavigate()
   const { isUserAuthorized } = useAuthorization()
 

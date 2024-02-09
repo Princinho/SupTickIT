@@ -1,22 +1,20 @@
 import { ArrowBack, ArrowForward, HighlightOff, Search, Tune } from '@mui/icons-material'
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 
-import { useContext, useEffect, useRef, useState } from 'react'
-import { editTicket, getAllProjects, getAllTickets, getAllUsers, isUserInRole } from '../../../Api'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { editTicket, getAllCategories, getAllProjectsAsync, getAllTicketsAsync, getAllUsersAsync, isUserInRole } from '../../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { UserContext } from '../../../Contexts'
 import { TicketsTable } from './TicketsTable'
 import { TicketDetailsDialog } from './TicketDetailsDialog'
 import { FiltersContainer } from './FiltersContainer'
 import { SYSTEM_ROLES, TICKET_STATUS } from '../../../utils'
 import { FiltersDialog } from './FiltersDialog'
 import { useTheme } from '@emotion/react'
-
 export const TicketsDashboard = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"));
   const ref = useRef({})
-  const { user } = useContext(UserContext)
+
   const initialFilters = {
     startDate: null,
     endDate: null,
@@ -28,7 +26,6 @@ export const TicketsDashboard = () => {
     agentSearchTerm: '',
     customerSearchTerm: ''
   }
-  console.log(ref)
   const [filters, setFilters] = useState(initialFilters)
   const [filteredTickets, setFilteredTickets] = useState([])
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false)
@@ -38,9 +35,10 @@ export const TicketsDashboard = () => {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
   // const [companies, setCompanies] = useState([])
   const queryClient = useQueryClient()
-  const { data: tickets } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: () => getAllTickets(user?.id) })
-  const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
-  const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
+  const { data: tickets } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllTicketsAsync })
+  const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjectsAsync })
+  const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsersAsync })
+  const { data: categories } = useQuery({ queryKey: ['categories'], queryFn: getAllCategories })
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
@@ -49,7 +47,6 @@ export const TicketsDashboard = () => {
     handleRowsPerPageChange: changeRowsPerPage
   })
   useEffect(() => setFilteredTickets(tickets), [tickets])
-
   function changeRowsPerPage(rowsPerPage) {
     setRowsPerPage(rowsPerPage)
     setCurrentPage(0)
@@ -68,10 +65,7 @@ export const TicketsDashboard = () => {
     return users?.filter(user => isUserInRole(SYSTEM_ROLES.AGENT, user.id))
   }
   function getTicketCustomers() {
-    let ticketsCustomerIds = tickets?.reduce((prev, current) => {
-      return prev.includes(current.createdBy) ? prev : [...prev, current.createdBy]
-    }, [])
-    return ticketsCustomerIds?.map(id => users?.find(user => user.id == id))
+    return users?.filter(u => tickets?.some(t => t.createdBy == u.id))
   }
   function filterBySearchTerm(event) {
     const newFilters = { ...filters, searchTerm: event.target.value }
@@ -126,6 +120,12 @@ export const TicketsDashboard = () => {
   function closeFilters() {
     setIsFiltersOpen(false)
   }
+  const availableAgents = useMemo(() => {
+    return users?.filter(u => {
+      return u.roles.includes(SYSTEM_ROLES.AGENT)
+    })
+  }, [users])
+  console.log(availableAgents)
   return (<>
     <Grid container spacing={2}>
       <Grid item xs={12} lg={isFiltersOpen ? 9 : 12}>
@@ -232,15 +232,20 @@ export const TicketsDashboard = () => {
               tickets={filteredTickets}
               showDetailsDialog={showDetailsDialog}
             />
+            <Typography variant='h4' color={'aquablue'}>Moderators panel</Typography>
           </Box>
 
           {
             focusedEntry && <TicketDetailsDialog open={isDetailsDialogOpen} entry={focusedEntry}
+              projects={projects}
+              categories={categories}
+              agents={availableAgents}
               handleClose={(ticket) => {
                 if (ticket) {
                   console.log(ticket)
-                  editMutation.mutate(ticket)
+                  editMutation.mutate({ ...focusedEntry, ...ticket })
                 }
+
                 setIsDetailsDialogOpen(false)
               }}
 

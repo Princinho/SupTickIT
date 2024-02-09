@@ -7,7 +7,7 @@ import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from './utils'
 import { DetailsDialog } from './DetailsDialog'
 import { stringAvatar } from '../../utils'
-import { createProject, deleteProject, editProject, getAllCompanies, getAllProjects, getAllUsers } from '../../Api'
+import { createProject, deleteProject, editProject, getAllCompaniesAsync, getAllProjectsAsync, getAllUsersAsync } from '../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuthorization } from '../../Hooks/useAuthorization'
 import { useNavigate } from 'react-router-dom'
@@ -34,9 +34,9 @@ export const Projects = () => {
   }, [])
   // const [projects, setProjects] = useState([])
   const BASE_QUERY_KEY = 'projects'
-  const { data: projects } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllProjects })
-  const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
-  const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompanies })
+  const { data: projects } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllProjectsAsync })
+  const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsersAsync })
+  const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompaniesAsync })
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
@@ -73,7 +73,7 @@ export const Projects = () => {
   })
 
   const editMutation = useMutation({
-    mutationFn: editProject,
+    mutationFn: ()=>editProject,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
   const deleteMutation = useMutation({
@@ -88,6 +88,7 @@ export const Projects = () => {
     setTableOptions(prev => ({ ...prev, page }))
   }
   console.log(companies);
+  console.log(projects);
   const appMoreMenuOpen = Boolean(anchorEl)
   return (
     <>
@@ -271,9 +272,7 @@ export const Projects = () => {
                     </Stack>
                   </Stack>
                   <Divider />
-                  {/* {companies?.some(c => {
-                    return c.projects.some(p => p.id == project.id)
-                  }) ? */}
+                 
                     <>
                       <Typography variant='subtitle1' fontWeight='bold'>Participants</Typography>
                       <Typography variant="subtitle2">
@@ -284,7 +283,6 @@ export const Projects = () => {
                       </Typography>
                     </>
                     
-                  {/* : } */}
                 </Paper>
               </Grid>
             }

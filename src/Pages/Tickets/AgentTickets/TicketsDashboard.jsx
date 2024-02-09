@@ -2,7 +2,7 @@ import { ArrowBack, ArrowForward, HighlightOff, Search } from '@mui/icons-materi
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from '@mui/material'
 
 import { useContext, useEffect, useState } from 'react'
-import { editTicket, getAgentTickets, getAllProjects, getAllUsers } from '../../../Api'
+import { editTicket, getAgentTickets, getAllProjectsAsync, getAllUsersAsync } from '../../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { sortAndFilterData } from '../../Companies/utils'
 import { UserContext } from '../../../Contexts'
@@ -22,8 +22,8 @@ export const TicketsDashboard = () => {
     // const [companies, setCompanies] = useState([])
     const queryClient = useQueryClient()
     const { data: tickets } = useQuery({ queryKey: [BASE_QUERY_KEY, user?.id], queryFn: () => getAgentTickets(user?.id) })
-    const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
-    const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
+    const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjectsAsync })
+    const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsersAsync })
     const [tableOptions, setTableOptions] = useState({
         rowsPerPage: 5,
         page: 0,
@@ -150,6 +150,8 @@ export const TicketsDashboard = () => {
                     tickets={sortAndFilterData(tickets, searchTerm, sortOption)}
                     showDetailsDialog={showDetailsDialog}
                 />
+                
+            <Typography variant='h4' color={'blue'}>Agents panel</Typography>
             </Box>
 
             {

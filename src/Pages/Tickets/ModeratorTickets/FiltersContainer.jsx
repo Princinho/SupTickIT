@@ -170,12 +170,13 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                         filters.customerSearchTerm ? (customer.firstname + " " + customer.lastname).toLowerCase().includes(filters.customerSearchTerm.toLowerCase())
                             : true)
                         .slice(0, MAX_DISPLAYED_ENTRIES)
-                        .map(customer => <FormControlLabel key={`customer-${customer.id}`} sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
+                        .map(customer =>{console.log(customers)
+                            return  <FormControlLabel key={`customer-${customer.id}`} sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                             control={
                                 <Checkbox checked={filters?.customerIds?.includes(customer.id)} onChange={() => toggleCustomer(customer.id)} />
                             }
                             label={customer.firstname + " " + customer.lastname}
-                        />
+                        />}
                         )}
 
                     {customers?.length > MAX_DISPLAYED_ENTRIES &&

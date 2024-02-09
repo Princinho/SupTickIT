@@ -8,11 +8,11 @@ import { timeSince } from '../../Companies/utils'
 import { stringAvatar } from '../../../utils'
 
 export const TicketsTable = ({ tickets, users, showDetailsDialog, options }) => {
+    const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } = options
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tickets.length) : 0;
 
 
     dayjs.locale('fr')
-    const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } = options
     return (
         <TableContainer>
 

@@ -1,21 +1,22 @@
 
-import { Box, Button, Chip, Divider, FormControl,  InputLabel, MenuItem, Paper, Select, Stack, Typography } from '@mui/material'
+import { Box, Button, Chip, Divider, FormControl, InputLabel, MenuItem, Paper, Select, Stack, Typography } from '@mui/material'
 
 import { useContext, useState } from 'react'
-import { createMessage, editTicket, getAllUsers, getCategory, getProject, getTicket, getTicketLogsByTicketId, getTicketMessages, isUserInRole } from '../../../Api'
+import { createMessageAsync, editTicket, getAllCategories, getAllProjectsAsync, getAllUsersAsync, getTicket, getTicketLogsByTicketId, getTicketMessagesAsync, isUserInRole } from '../../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { UserContext } from '../../../Contexts'
 import { useNavigate, useParams } from 'react-router-dom'
 import { timeSince } from '../../Companies/utils'
 import { SimpleButton } from '../../../Components/SimpleButton'
 import { Discussion } from '../../../Components/Discussion'
-import { SYSTEM_ROLES, TICKET_STATUS } from '../../../utils'
+import { SYSTEM_ROLES, TICKET_STATUS, extractActiveRolesFromUser } from '../../../utils'
 import { TicketStatus } from '../../../Components/TicketStatus'
 import { SimpleDialog } from '../../../Components/SimpleDialog'
 import ImagePreviewInput from '../../../Components/ImagePreviewInput'
 import { History } from '@mui/icons-material'
 import { useTheme } from '@emotion/react'
 import { TicketHistoryDialog } from './TicketHistoryDialog'
+import { BarLoader } from 'react-spinners'
 
 export const TicketDetails = () => {
     const { id } = useParams()
@@ -25,20 +26,23 @@ export const TicketDetails = () => {
     const navigate = useNavigate()
     const BASE_QUERY_KEY = 'tickets'
     const queryClient = useQueryClient()
+    const TICKET_MESSAGES_KEY = ['messages', `ticket${id}`]
     const { data: ticket } = useQuery({ queryKey: [BASE_QUERY_KEY, id], queryFn: () => getTicket(id) })
-    const { data: messages } = useQuery({ queryKey: ['messages', `ticket${id}`], queryFn: () => getTicketMessages(id) })
+    const { data: messages, refetch: refetchMessages } = useQuery({ queryKey: TICKET_MESSAGES_KEY, queryFn: () => getTicketMessagesAsync(id) })
     const { data: ticketLogs } = useQuery({ queryKey: ['ticketLogs', `ticket${id}`], queryFn: () => getTicketLogsByTicketId(id) })
-    const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
-    const { data: project } = useQuery({ queryKey: ['projects', ticket?.projectId], queryFn: () => getProject(ticket?.projectId) })
-    const { data: category } = useQuery({ queryKey: ['categories', ticket?.categoryId], queryFn: () => getCategory(id) })
+    const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsersAsync })
+    const { data: projects, isLoading } = useQuery({ queryKey: ["projects"], queryFn: getAllProjectsAsync })
+    const { data: categories } = useQuery({ queryKey: ['categories'], queryFn: getAllCategories })
+
     const author = users?.find(u => u.id == ticket?.createdBy)
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
     const [isCloseTicketDialogOpen, setIsCloseTicketDialogOpen] = useState(false)
     const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false)
     const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false)
     const createMutation = useMutation({
-        mutationFn: createMessage,
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['messages', `ticket${id}`] })
+        mutationFn: createMessageAsync,
+        onSuccess: () => refetchMessages(),
+        onSettled: refetchMessages
     })
     const editMutation = useMutation({
         mutationFn: editTicket,
@@ -71,17 +75,24 @@ export const TicketDetails = () => {
     function addMessage(body) {
         let message = {
             ticketId: id,
-            body: body, date: new Date().toISOString(),
+            body: body,
             userId: user?.id,
-            userFullName: user?.firstname + ' ' + user?.lastname
         }
         createMutation.mutate(message)
     }
     function changeTicketStatus(status) {
         editMutation.mutate({ ...ticket, status })
     }
+    if (!user?.RoleAssignments) return <h1>Vous n&apos;etes pas autorisés</h1>
+    let userRoles = users.find(u => u.id == user.id).roles
+    let projectCategory = categories?.find(c => c.id == ticket?.categoryId)
+    
+    let project = Array.from(projects).find(p => p.id == projectCategory?.projectId)
+    let projectLabel = project?.title
+    if (isLoading) return <BarLoader width={'200px'} color='#e3c48f' />
     return (
         <Paper sx={{ padding: '1em', flexGrow: 1 }} elevation={2}>
+
             <Typography variant='h6' component='span' sx={{ fontWeight: 'bold' }}>Détails du ticket </Typography>
             <Stack direction='row' justifyContent='space-between' paddingRight={2}>
                 <Stack direction='row' mb={2}>
@@ -94,12 +105,20 @@ export const TicketDetails = () => {
                 <Typography variant='subtitle1'>#{id}</Typography>
                 <Stack direction='row' alignItems='center' spacing={1}>
                     <Typography variant='h5' component='h2' fontWeight='bold'>{ticket?.name}</Typography>
-                    <Stack direction='row'>
-                        <Chip size="small" label={project?.title} sx={{ fontWeight: 'bold', backgroundColor: (theme) => theme.palette.primary.light, color: 'white' }} color="default" />
-                        {category && <>
-                            /<Chip size="small" label={category?.name} color="primary" variant='outlined' />
+
+                    {isLoading ? <BarLoader color='#efd23a' width={'200px'} /> : <Stack direction='row'>
+
+                        {/* <Chip size="small" label={projects?.find((p)=>p).title}  */}
+                        <Chip size="small" label={projectLabel}
+                            sx={{
+                                fontWeight: 'bold',
+                                backgroundColor: (theme) => theme.palette.primary.light, color: 'white'
+                            }} color="default" />
+                        {categories && <>
+                            <Typography variant='span' fontWeight='bold' mx={'2px'}> / </Typography>
+                            <Chip size="small" label={projectCategory?.title} color="primary" variant='outlined' />
                         </>}
-                    </Stack>
+                    </Stack>}
                 </Stack>
                 <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent='flex-start' gap='.2em' mb={2}>
                     <Stack direction="row" gap='.2em'>
@@ -122,7 +141,7 @@ export const TicketDetails = () => {
                 <Stack justifyContent='space-between' direction='row'>
                     <Typography variant='body1' fontWeight='bold' mb={2}> Etat</Typography>
                     <Stack direction='row' alignItems='center'>
-                        {isUserInRole(SYSTEM_ROLES.AGENT, user?.id) ?
+                        {userRoles.some(r => r == SYSTEM_ROLES.AGENT) ?
                             <FormControl sx={{ minWidth: '15%' }} size='small'>
                                 <InputLabel id="status-select-label">Etat</InputLabel>
                                 <Select

@@ -7,7 +7,7 @@ import { Delete, MoreVert } from "@mui/icons-material"
 import { SimpleButton } from "../../Components/SimpleButton"
 import { RemoveRoleDialog } from "./RemoveRoleDialog"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { addRoleToUser, getActiveRoleAssignmentsForUser, getAllRoles, getAllUsers, removeRoleFromUser } from "../../Api"
+import { addRoleToUser, getActiveRoleAssignmentsForUser, getAllRoles, getAllUsersAsync, removeRoleFromUser } from "../../Api"
 import { useState } from "react"
 export const UserDetails = () => {
     const [isAddRoleDialogOpen, setIsAddRoleDialogOpen] = useState(false)
@@ -19,7 +19,7 @@ export const UserDetails = () => {
     const { id } = useParams()
     const BASE_QUERY_KEY = ['activeRoleAssignments', id]
 
-    const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
+    const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsersAsync })
     const { data: roleAssignments } = useQuery({ queryKey: BASE_QUERY_KEY, queryFn: () => getActiveRoleAssignmentsForUser(id) })
     const { data: roles } = useQuery({ queryKey: ['roles'], queryFn: getAllRoles })
     const queryClient = useQueryClient()

@@ -1,8 +1,8 @@
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material'
-import { useState } from 'react'
 import PropTypes from 'prop-types'
 export const DropdownSelector = ({ options, handleChange, label, keyField = 'id', labelField = 'name', defaultValue, disabled = false, size = "medium" }) => {
-    const [selectedValue, setSelectedValue] = useState(defaultValue)
+
+    console.log(defaultValue)
     return (
         <FormControl fullWidth sx={{ marginTop: '1em' }}
                 size={size}>
@@ -11,10 +11,9 @@ export const DropdownSelector = ({ options, handleChange, label, keyField = 'id'
                 labelId="select-label"
                 disabled={disabled}
                 id="select"
-                value={selectedValue}
+                value={defaultValue}
                 label={label}
                 onChange={({ target: { value } }) => {
-                    setSelectedValue(value)
                     handleChange(value)
                 }}
             >

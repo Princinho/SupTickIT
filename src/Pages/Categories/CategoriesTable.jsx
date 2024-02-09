@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { Delete, Edit, MoreVert } from '@mui/icons-material'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { getAllUsers } from '../../Api'
+import { getAllUsersAsync } from '../../Api'
 
 
 export const CategoriesTable = ({ categories, showEditDialog, showDeleteDialog, projects, showDetailsDialog, options }) => {
@@ -12,7 +12,7 @@ export const CategoriesTable = ({ categories, showEditDialog, showDeleteDialog, 
         setAnchorEl(null)
     }
 
-    const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
+    const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsersAsync })
     const [anchorEl, setAnchorEl] = useState(null)
     const [focusedEntry, setFocusedEntry] = useState(null)
     const appMoreMenuOpen = Boolean(anchorEl)
