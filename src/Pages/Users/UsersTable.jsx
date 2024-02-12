@@ -1,14 +1,14 @@
 import { Divider, IconButton, ListItemIcon, Menu, MenuItem, Stack, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
 
 import PropTypes from 'prop-types'
-import { Delete, Edit, MoreVert, Tune } from '@mui/icons-material'
+import { Delete, Edit, MoreVert, RestartAlt, Tune } from '@mui/icons-material'
 import { useContext, useState } from 'react'
 import { DataContext } from '../../Contexts'
 import { Link, useNavigate } from 'react-router-dom'
 import { RoleChip } from '../../Components/RoleChip'
 
 
-export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options }) => {
+export const UsersTable = ({ users, showEditDialog, showDeleteDialog, showResetPasswordDialog, options }) => {
     function handleClose() {
         setAnchorEl(null)
     }
@@ -167,29 +167,26 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
 
-                <MenuItem onClick={() => {
-                    handleClose()
-                    showEditDialog(focusedEntry)
-                }}>
-
+                <MenuItem onClick={() => {handleClose();showEditDialog(focusedEntry)}}>
                     <ListItemIcon>
                         <Edit color='warning' fontSize='small' />
                     </ListItemIcon>
                     Modifier
                 </MenuItem>
-                <MenuItem onClick={() => {
-                    navigate(`${focusedEntry?.id}`)
-                }}>
-
+                <MenuItem onClick={() => {handleClose();showResetPasswordDialog(focusedEntry)}}>
+                    <ListItemIcon>
+                        <RestartAlt color='warning' fontSize='small' />
+                    </ListItemIcon>
+                    Reinitialiser le mot de passe
+                </MenuItem>
+                <MenuItem onClick={() => { navigate(`${focusedEntry?.id}`) }}>
                     <ListItemIcon>
                         <Tune color='primary' fontSize='small' />
                     </ListItemIcon>
                     Roles et Accès
                 </MenuItem>
-                <MenuItem onClick={() => {
-                    handleClose()
-                    showDeleteDialog(focusedEntry)
-                }}>
+
+                <MenuItem onClick={() => { handleClose(); showDeleteDialog(focusedEntry) }}>
                     <ListItemIcon>
                         <Delete color='error' fontSize="small" />
                     </ListItemIcon>
@@ -204,5 +201,6 @@ UsersTable.propTypes = {
     showEditDialog: PropTypes.func.isRequired,
     options: PropTypes.object.isRequired,
     showDetailsDialog: PropTypes.func.isRequired,
-    showDeleteDialog: PropTypes.func.isRequired
+    showDeleteDialog: PropTypes.func.isRequired,
+    showResetPasswordDialog:PropTypes.func.isRequired
 }

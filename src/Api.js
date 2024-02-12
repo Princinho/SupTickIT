@@ -78,7 +78,7 @@ async function createProject(newProject) {
     await create(newProject, PROJECTS_ENDPOINT)
 }
 async function editProject(updatedProject) {
-    await edit(updatedProject, PROJECTS_ENDPOINT)    
+    await edit(updatedProject, PROJECTS_ENDPOINT)
 }
 
 async function assignAgent(agentId, ticketId) {
@@ -211,10 +211,17 @@ function createTicket(data) {
         ...data
     })
 }
-
+async function changePassword(payload) {
+    const passwordChangeEndpoint = API_BASE + "authentication/changepassword"
+    var response = await axios.post(passwordChangeEndpoint, payload)
+    if (response.data) return true
+}
+async function resetPassword(user) {
+    const passwordChangeEndpoint = API_BASE + "authentication/ResetUserPassword/" + user.username
+    await axios.post(passwordChangeEndpoint, user)
+}
 async function editTicket(ticket) {
     console.log(ticket)
-    // createTicketLog(generateTicketLogForTicketEdit(ticket))
     await edit(ticket, 'tickets')
     if (ticket.agentId) {
         await assignAgent(ticket.agentId, ticket.id)
@@ -370,7 +377,7 @@ export {
     getCustomerTicketsAsync, getTicket, getTicketMessagesAsync, getTicketsAssignedByMod,
     getAllCategories, createCategoryAsync, editCategory, deleteCategory, getProjectCategoriesAsync, getCategoryAsync,
     getAllUsersAsync, getCompanyUsers, createUser, editUser, deleteUser, createCustomer,
-    getAllRoleAssignments, getAllRoles, addRoleToUser,
+    getAllRoleAssignments, getAllRoles, addRoleToUser, changePassword, resetPassword,
     getActiveRolesForUser, getActiveRoleAssignmentsForUser, isUserInRole, isApiUserInRole,
     removeRoleFromUser, getAvailableAgents, getAgentTickets, getAllAgents,
     getAllTicketLogs, createTicketLog, editTicketLog, deleteTicketLog, getTicketLogsByTicketId,

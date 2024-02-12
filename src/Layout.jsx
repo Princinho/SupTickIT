@@ -6,6 +6,8 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import { stringAvatar } from './utils';
 import { UserContext } from './Contexts';
 import { useAuthorization } from './Hooks/useAuthorization';
+import { ChangePasswordDialog } from './Pages/LayoutComponents/ChangePasswordDialog';
+import { changePassword } from './Api';
 
 const drawerWidth = 240;
 
@@ -16,6 +18,8 @@ export const Layout = (props) => {
     const { window } = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [anchorEl, setAnchorEl] = useState(null)
+    const [isChangePasswordDialogOpen, setIsChangePasswordDialogOpen] = useState(false)
+    const [newPasswordData, setNewPasswordData] = useState(null)
     const userMenuOpen = Boolean(anchorEl)
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
@@ -23,7 +27,23 @@ export const Layout = (props) => {
     function handleClose() {
         setAnchorEl(null)
     }
+    function handleChangePassword(data) {
+        setIsChangePasswordDialogOpen(false)
+        console.log(data)
+        if (data) {
+            changePassword({ ...data, username: user?.username }).then(setUser(null))
+        }
+    }
     const { isPathAuthorizedForUser } = useAuthorization()
+    useEffect(() => {
+        async function callApi() {
+            await changePassword(newPasswordData)
+        }
+        if (newPasswordData) {
+            callApi();
+            setNewPasswordData(null)
+        }
+    }, [newPasswordData])
     const menuIconWidth = '32px'
     const menuItemColor = 'whitesmoke'
     // const selectedMenuItemColor = 'white'
@@ -235,11 +255,11 @@ export const Layout = (props) => {
                 </MenuItem>
                 <Divider />
 
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={() => setIsChangePasswordDialogOpen(true)}>
                     <ListItemIcon>
                         <Settings fontSize="small" />
                     </ListItemIcon>
-                    Paramètres
+                    Changement de mot de passe
                 </MenuItem>
                 <MenuItem onClick={() => {
                     setUser(null)
@@ -251,6 +271,7 @@ export const Layout = (props) => {
                     Déconnexion
                 </MenuItem>
             </Menu>
+            <ChangePasswordDialog handleClose={handleChangePassword} open={isChangePasswordDialogOpen} />
         </Box>
     );
 

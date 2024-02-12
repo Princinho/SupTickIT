@@ -1,5 +1,5 @@
 import { Paper, Stack, Typography } from '@mui/material'
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { PageHeader } from '../../Components/PageHeader'
 import { UsersTable } from './UsersTable'
 import { CreateDialog } from './CreateDialog'
@@ -7,20 +7,20 @@ import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { SYSTEM_ROLES, sortAndFilterData } from '../../utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createUser, deleteUser, editUser,  getAllCompaniesAsync, getAllUsersAsync } from '../../Api'
+import { createUser, deleteUser, editUser,  getAllCompaniesAsync, getAllUsersAsync, resetPassword } from '../../Api'
 import { useNavigate } from 'react-router-dom'
 import { useAuthorization } from '../../Hooks/useAuthorization'
 import { RoleChip } from '../../Components/RoleChip'
-import { UserContext } from '../../Contexts'
+import { ResetPasswordDialog } from './ResetPasswordDialog'
 
 
 export const Users = () => {
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [isResetPasswordDialogOpen, setIsResetPasswordDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [focusedEntry, setFocusedEntry] = useState(null)
-  // const [users, setUsers] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const BASE_QUERY_KEY = 'users'
   const queryClient = useQueryClient()
@@ -62,6 +62,10 @@ export const Users = () => {
     setFocusedEntry(entry)
     setIsEditDialogOpen(true)
   }
+  function showResetPasswordDialog(entry) {
+    setFocusedEntry(entry)
+    setIsResetPasswordDialogOpen(true)
+  }
   function showDeleteDialog(entry) {
     setFocusedEntry(entry)
     setIsDeleteDialogOpen(true)
@@ -80,6 +84,13 @@ export const Users = () => {
     setFocusedEntry(null)
     setIsDeleteDialogOpen(false)
   }
+  function closeResetPasswordDialog(entry) {
+    if (entry) {
+      resetPasswordMutation.mutate(entry)
+    }
+    setFocusedEntry(null)
+    setIsResetPasswordDialogOpen(false)
+  }
 
   const createMutation = useMutation({
     mutationFn: createUser,
@@ -91,6 +102,10 @@ export const Users = () => {
   })
   const deleteMutation = useMutation({
     mutationFn: deleteUser,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+  })
+  const resetPasswordMutation = useMutation({
+    mutationFn: resetPassword,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
   function updateTableOptions(key, value) {
@@ -124,6 +139,7 @@ export const Users = () => {
         options={({ ...tableOptions, handlePageChange, handleRowsPerPageChange })}
         showEditDialog={showEditDialog}
         showDeleteDialog={showDeleteDialog}
+        showResetPasswordDialog={showResetPasswordDialog}
       />
       <CreateDialog open={isCreateDialogOpen}
         companies={companies}
@@ -135,6 +151,7 @@ export const Users = () => {
         }} />
       {focusedEntry && <EditDialog open={isEditDialogOpen} entry={focusedEntry} companies={companies} handleClose={closeEditDialog} />}
       {focusedEntry && <DeleteDialog open={isDeleteDialogOpen} entry={focusedEntry} handleClose={closeDeleteDialog} />}
+      {focusedEntry && <ResetPasswordDialog open={isResetPasswordDialogOpen} entry={focusedEntry} handleClose={closeResetPasswordDialog} />}
       <Stack direction={{ md: 'row' }} gap={2} justifyContent='flex-end' padding={2}>
         <Stack direction='row' alignItems='center' gap={1}>
           <RoleChip roleId={SYSTEM_ROLES.ADMIN} handleClick={() => toggleRole(SYSTEM_ROLES.ADMIN)} />
