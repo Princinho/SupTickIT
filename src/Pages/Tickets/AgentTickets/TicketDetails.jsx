@@ -1,22 +1,24 @@
 
-import { Box, Button, Chip, Divider, FormControl, InputLabel, MenuItem, Paper, Select, Stack, Typography } from '@mui/material'
+import { Box, Button, Chip, Divider, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Typography } from '@mui/material'
 
-import { useContext, useState } from 'react'
-import { createMessageAsync, editTicket, getAllCategories, getAllProjectsAsync, getAllUsersAsync, getTicket, getTicketLogsByTicketId, getTicketMessagesAsync, isUserInRole } from '../../../Api'
+import { useCallback, useContext, useEffect, useState } from 'react'
+import { API_BASE, SERVER_BASE, createMessageAsync, deleteAttachmentAsync, editTicket, getAllCategories, getAllProjectsAsync, getAllUsersAsync, getTicket, getTicketAttachmentsAsync, getTicketLogsByTicketId, getTicketMessagesAsync, isUserInRole } from '../../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { UserContext } from '../../../Contexts'
 import { useNavigate, useParams } from 'react-router-dom'
 import { timeSince } from '../../Companies/utils'
 import { SimpleButton } from '../../../Components/SimpleButton'
 import { Discussion } from '../../../Components/Discussion'
-import { SYSTEM_ROLES, TICKET_STATUS, extractActiveRolesFromUser } from '../../../utils'
+import { SYSTEM_ROLES, TICKET_STATUS } from '../../../utils'
 import { TicketStatus } from '../../../Components/TicketStatus'
 import { SimpleDialog } from '../../../Components/SimpleDialog'
 import ImagePreviewInput from '../../../Components/ImagePreviewInput'
-import { History } from '@mui/icons-material'
+import { Add, History } from '@mui/icons-material'
 import { useTheme } from '@emotion/react'
 import { TicketHistoryDialog } from './TicketHistoryDialog'
 import { BarLoader } from 'react-spinners'
+import axios from 'axios'
+import ImagePreview from '../../../Components/ImagePreview'
 
 export const TicketDetails = () => {
     const { id } = useParams()
@@ -30,6 +32,7 @@ export const TicketDetails = () => {
     const { data: ticket } = useQuery({ queryKey: [BASE_QUERY_KEY, id], queryFn: () => getTicket(id) })
     const { data: messages, refetch: refetchMessages } = useQuery({ queryKey: TICKET_MESSAGES_KEY, queryFn: () => getTicketMessagesAsync(id) })
     const { data: ticketLogs } = useQuery({ queryKey: ['ticketLogs', `ticket${id}`], queryFn: () => getTicketLogsByTicketId(id) })
+    const { data: attachments, refetch: refetchAttachments } = useQuery({ queryKey: ['attachments', `ticket${id}`], queryFn: () => getTicketAttachmentsAsync(id) })
     const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsersAsync })
     const { data: projects, isLoading } = useQuery({ queryKey: ["projects"], queryFn: getAllProjectsAsync })
     const { data: categories } = useQuery({ queryKey: ['categories'], queryFn: getAllCategories })
@@ -37,8 +40,11 @@ export const TicketDetails = () => {
     const author = users?.find(u => u.id == ticket?.createdBy)
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
     const [isCloseTicketDialogOpen, setIsCloseTicketDialogOpen] = useState(false)
+    const [isConfirmDeleteAttachmentDialogOpen, setIsConfirmDeleteAttachmentDialogOpen] = useState(false)
+    const [attachmentToDelete, setAttachmentToDelete] = useState()
     const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false)
     const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false)
+    const [attachmentFile, setAttachmentFile] = useState(null);
     const createMutation = useMutation({
         mutationFn: createMessageAsync,
         onSuccess: () => refetchMessages(),
@@ -47,6 +53,13 @@ export const TicketDetails = () => {
     const editMutation = useMutation({
         mutationFn: editTicket,
         onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY, id] })
+    })
+    const deleteAttachmentMutation = useMutation({
+        mutationFn: deleteAttachmentAsync,
+        onSuccess: () => {
+            refetchAttachments()
+            queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY, id] })
+        }
     })
     function closeHistoryDialog() {
         setIsHistoryDialogOpen(false)
@@ -64,6 +77,13 @@ export const TicketDetails = () => {
             editMutation.mutate({ ...ticket, status: TICKET_STATUS.CLOSED })
         }
         setIsCloseTicketDialogOpen(false)
+    }
+    function closeDeleteAttachmentDialog(confirmDelete) {
+        console.log(confirmDelete)
+        if (confirmDelete) {
+            deleteAttachmentMutation.mutate(attachmentToDelete)
+        }
+        setIsConfirmDeleteAttachmentDialogOpen(false)
     }
     function confirmTicket(proceed) {
         if (proceed) {
@@ -83,10 +103,36 @@ export const TicketDetails = () => {
     function changeTicketStatus(status) {
         editMutation.mutate({ ...ticket, status })
     }
+    const handleFileChange = (e) => {
+        if (e.target.files) {
+            setAttachmentFile(e.target.files[0]);
+        }
+    };
+    const uploadAttachmentFile = useCallback(async () => {
+        if (attachmentFile) {
+            console.log("Uploading file...");
+            const formData = new FormData();
+            formData.append("file", attachmentFile);
+            try {
+                // You can write the URL of your server or any other endpoint used for file upload
+                const result = await axios.post(`${API_BASE}attachments/uploadfile/${id}`, formData);
+                const data = await result.data;
+                console.log(data);
+                refetchAttachments()
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        setAttachmentFile(null)
+    }, [attachmentFile, refetchAttachments, id]);
+    useEffect(() => {
+        if (attachmentFile) uploadAttachmentFile()
+    }, [attachmentFile, uploadAttachmentFile])
     if (!user?.RoleAssignments) return <h1>Vous n&apos;etes pas autorisés</h1>
-    let userRoles = users.find(u => u.id == user.id).roles
+
+    let userRoles = users?.find(u => u.id == user.id).roles
     let projectCategory = categories?.find(c => c.id == ticket?.categoryId)
-    
+
     let project = Array.from(projects).find(p => p.id == projectCategory?.projectId)
     let projectLabel = project?.title
     if (isLoading) return <BarLoader width={'200px'} color='#e3c48f' />
@@ -107,8 +153,6 @@ export const TicketDetails = () => {
                     <Typography variant='h5' component='h2' fontWeight='bold'>{ticket?.name}</Typography>
 
                     {isLoading ? <BarLoader color='#efd23a' width={'200px'} /> : <Stack direction='row'>
-
-                        {/* <Chip size="small" label={projects?.find((p)=>p).title}  */}
                         <Chip size="small" label={projectLabel}
                             sx={{
                                 fontWeight: 'bold',
@@ -141,7 +185,7 @@ export const TicketDetails = () => {
                 <Stack justifyContent='space-between' direction='row'>
                     <Typography variant='body1' fontWeight='bold' mb={2}> Etat</Typography>
                     <Stack direction='row' alignItems='center'>
-                        {userRoles.some(r => r == SYSTEM_ROLES.AGENT) ?
+                        {userRoles?.some(r => r == SYSTEM_ROLES.AGENT) ?
                             <FormControl sx={{ minWidth: '15%' }} size='small'>
                                 <InputLabel id="status-select-label">Etat</InputLabel>
                                 <Select
@@ -184,7 +228,32 @@ export const TicketDetails = () => {
 
                 </Stack>
                 <Typography variant='body1' color='text.secondary' mb={2}> Pièces jointes</Typography>
-                <ImagePreviewInput />
+                {/* <ImagePreviewInput /> */}
+                <Stack direction="row" alignItems='center' gap={3}>
+                    {attachments?.map(a => {
+                        const imageUrl = SERVER_BASE + a.filePath
+                        return <ImagePreview src={imageUrl} fileName={a.fileName} key={a.filePath}
+                            removeCallback={() => {
+                                console.log('removing')
+                                setAttachmentToDelete(a)
+                                setIsConfirmDeleteAttachmentDialogOpen(true)
+                            }}
+                        />
+                    })}
+                    <Box>
+                        <div>
+                            <Button variant='contained' size='large' sx={{ height: '200px', width: '150px',padding:'0' }}>
+                                <label htmlFor="file" className="sr-only" style={{
+                                    display: 'flex', justifyContent: 'center',
+                                    width:'100%',height:'100%',
+                                    alignItems: 'center', borderRadius: '.5em',cursor:'pointer'
+                                }}><Add />
+                                    <input id="file" style={{ display: 'none' }} type="file" onChange={handleFileChange} />
+                                </label>
+                            </Button>
+                        </div>
+                    </Box>
+                </Stack>
             </Box>
             <Box sx={{ position: 'relative' }}>
                 <Box sx={{ maxHeight: '40vh', overflowY: 'scroll' }}>
@@ -207,6 +276,15 @@ export const TicketDetails = () => {
                 dialogTitle='Confirmation de cloture' confirmationButtonColor='error'
                 approveText='Oui'
             />
+            {attachmentToDelete && <SimpleDialog open={isConfirmDeleteAttachmentDialogOpen} handleClose={closeDeleteAttachmentDialog}
+                dialogContent={<Stack>
+                    <Typography variant="body1" mb={2}>Supprimer la piece jointe?</Typography>
+                    <ImagePreview src={SERVER_BASE + attachmentToDelete?.filePath} fileName={attachmentToDelete?.fileName} key={attachmentToDelete?.filePath}
+                    />
+                </Stack>}
+                dialogTitle='Confirmation de cloture' confirmationButtonColor='error'
+                approveText='Oui'
+            />}
             <TicketHistoryDialog open={isHistoryDialogOpen} handleClose={closeHistoryDialog} ticketLogs={ticketLogs} ticket={ticket} />
         </Paper >
     )

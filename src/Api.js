@@ -1,7 +1,8 @@
 import { SYSTEM_ROLES, getSampleDataFromLocalStorage, saveDataToLocalStorage } from "./utils"
 import { sampleData as initialData } from './SampleData.js'
 import axios from "axios"
-const API_BASE = 'https://localhost:7223/api/'
+export const API_BASE = 'https://localhost:7223/api/'
+export const SERVER_BASE = 'https://localhost:7223/'
 const PROJECTS_ENDPOINT = 'projects'
 function getAllEntries(type) {
     let data = getDataFromLocalStorage()
@@ -147,6 +148,11 @@ async function getTicketMessagesAsync(ticketId) {
     console.log(messages)
     return messages
 }
+async function getTicketAttachmentsAsync(ticketId) {
+    let messages = await getAsync(`attachments/byticket/${ticketId}`)
+    console.log(messages)
+    return messages
+}
 
 async function createMessageAsync(entry) {
     let message = await create(entry, 'messages')
@@ -226,6 +232,11 @@ async function editTicket(ticket) {
     if (ticket.agentId) {
         await assignAgent(ticket.agentId, ticket.id)
     }
+}
+async function deleteAttachmentAsync(attachment) {
+    console.log(attachment)
+    await remove(attachment.id, 'attachments')
+
 }
 
 function generateTicketLogForTicketMessage(message) {
@@ -380,7 +391,7 @@ export {
     getAllRoleAssignments, getAllRoles, addRoleToUser, changePassword, resetPassword,
     getActiveRolesForUser, getActiveRoleAssignmentsForUser, isUserInRole, isApiUserInRole,
     removeRoleFromUser, getAvailableAgents, getAgentTickets, getAllAgents,
-    getAllTicketLogs, createTicketLog, editTicketLog, deleteTicketLog, getTicketLogsByTicketId,
+    getAllTicketLogs, createTicketLog, editTicketLog, deleteTicketLog, getTicketLogsByTicketId, getTicketAttachmentsAsync, deleteAttachmentAsync,
     getSystemSettings, saveSystemSettings
 }
 

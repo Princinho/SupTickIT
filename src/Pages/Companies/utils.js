@@ -1,6 +1,6 @@
 export function sortAndFilterData(entries, searchTerm, sortOption) {
   if (!entries) return []
-  let result = entries
+  let result = Array.from(entries)
   if (searchTerm)
     result = result.filter(a => a.title?.toLowerCase().includes(searchTerm.toLowerCase()) || a.name?.toLowerCase().includes(searchTerm.toLowerCase()))
   if (sortOption?.option == 'dateCreated') {

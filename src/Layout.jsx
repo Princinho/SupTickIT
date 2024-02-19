@@ -8,6 +8,7 @@ import { UserContext } from './Contexts';
 import { useAuthorization } from './Hooks/useAuthorization';
 import { ChangePasswordDialog } from './Pages/LayoutComponents/ChangePasswordDialog';
 import { changePassword } from './Api';
+import { ToastContainer, toast } from 'react-toastify';
 
 const drawerWidth = 240;
 
@@ -272,6 +273,7 @@ export const Layout = (props) => {
                 </MenuItem>
             </Menu>
             <ChangePasswordDialog handleClose={handleChangePassword} open={isChangePasswordDialogOpen} />
+            <ToastContainer />
         </Box>
     );
 

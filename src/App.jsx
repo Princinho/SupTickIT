@@ -22,6 +22,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { AccessDenied } from './Pages/Login/AccessDenied.jsx'
 import { SystemSettings } from './Pages/SystemSettings/SystemSettings.jsx'
 
+import 'react-toastify/dist/ReactToastify.css';
 function App() {
   const [user, setUser] = useState(null)
   const [sampleData, setSampleData] = useState(null)

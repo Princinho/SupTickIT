@@ -232,7 +232,7 @@ export const TicketsDashboard = () => {
               tickets={filteredTickets}
               showDetailsDialog={showDetailsDialog}
             />
-            <Typography variant='h4' color={'aquablue'}>Moderators panel</Typography>
+            {/* <Typography variant='h4' color={'aquablue'}>Moderators panel</Typography> */}
           </Box>
 
           {

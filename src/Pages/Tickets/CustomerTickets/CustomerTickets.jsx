@@ -184,7 +184,7 @@ export const CustomerTickets = () => {
           showDetailsDialog={showDetailsDialog}
           showEditDialog={showEditDialog}
           showDeleteDialog={showDeleteDialog} />
-        <Typography variant='h4' color={'red'}>Customers panel</Typography>
+        {/* <Typography variant='h4' color={'red'}>Customers panel</Typography> */}
       </Box>
       <CreateDialog
         projects={projects}

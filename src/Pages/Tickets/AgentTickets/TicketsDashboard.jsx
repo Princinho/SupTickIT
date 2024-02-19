@@ -151,7 +151,7 @@ export const TicketsDashboard = () => {
                     showDetailsDialog={showDetailsDialog}
                 />
                 
-            <Typography variant='h4' color={'blue'}>Agents panel</Typography>
+            {/* <Typography variant='h4' color={'blue'}>Agents panel</Typography> */}
             </Box>
 
             {
