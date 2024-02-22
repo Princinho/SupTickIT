@@ -7,7 +7,7 @@ import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from './utils'
 import { DetailsDialog } from './DetailsDialog'
-import { createCompany, deleteCompany, editCompany, getAllCompaniesAsync } from '../../Api'
+import { createCompany, deleteCompany, editCompany, getAllCompaniesAsync, runWithProgress } from '../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export const Companies = () => {
@@ -57,9 +57,10 @@ export const Companies = () => {
     setTableOptions(prev => ({ ...prev, page }))
   }
   const createMutation = useMutation({
-    mutationFn: createCompany,
+    mutationFn: runWithProgress,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
+  
   const editMutation = useMutation({
     mutationFn: editCompany,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
@@ -178,7 +179,9 @@ export const Companies = () => {
       </Box>
       <CreateDialog open={isCreateDialogOpen} handleClose={(company) => {
         if (company) {
-          createMutation.mutate(company)
+          createMutation.mutate({ data: company, func: createCompany })
+          // toast.promise(createCompany(company), { success: () => { console.log("Created successfully"); refetch(); toast("Simple toast") } })
+
         }
         setIsCreateDialogOpen(false)
       }} />

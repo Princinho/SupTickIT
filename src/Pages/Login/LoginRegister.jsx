@@ -5,9 +5,10 @@ import { Logo } from "../../Components/Logo"
 import { useContext, useState } from "react"
 import { UserContext } from "../../Contexts"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { createUser, getAllCompaniesAsync, loginToApi } from "../../Api"
+import { createUser, getAllCompaniesAsync, loginToApi, runWithProgress } from "../../Api"
 import axios from "axios"
 import { jwtDecode } from "jwt-decode"
+import { ToastContainer } from "react-toastify"
 export const LoginRegister = () => {
   const { user, setUser } = useContext(UserContext)
   const navigate = useNavigate()
@@ -22,27 +23,31 @@ export const LoginRegister = () => {
   const queryClient = useQueryClient()
 
   const createMutation = useMutation({
-    mutationFn: createUser,
+    mutationFn: runWithProgress,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] })
   })
 
- 
+
   async function login() {
     setError(false)
-    let accessToken = await loginToApi(credentials);
-    if (accessToken) {
-      let decodedUser=jwtDecode(accessToken)
-      sessionStorage.setItem("userRoleAssignments",decodedUser.RoleAssignments)
-      sessionStorage.setItem("accessToken", accessToken)
-      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-      let expiryDate = new Date();
-      expiryDate.setDate(expiryDate.getDate() + 1)
-      sessionStorage.setItem("tokenExpiryDate", JSON.stringify(expiryDate))
-      setUser({...decodedUser,RoleAssignments:JSON.parse(decodedUser.RoleAssignments)})
-      navigate('/')
-    }else{
-      setError(true)
-    }
+    runWithProgress({ data: credentials, func: loginToApi }).then(
+      accessToken => {
+        if (accessToken) {
+          let decodedUser = jwtDecode(accessToken)
+          sessionStorage.setItem("userRoleAssignments", decodedUser.RoleAssignments)
+          sessionStorage.setItem("accessToken", accessToken)
+          axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+          let expiryDate = new Date();
+          expiryDate.setDate(expiryDate.getDate() + 1)
+          sessionStorage.setItem("tokenExpiryDate", JSON.stringify(expiryDate))
+          setUser({ ...decodedUser, RoleAssignments: JSON.parse(decodedUser.RoleAssignments) })
+          navigate('/')
+        } else {
+          setError(true)
+        }
+        console.log(accessToken)
+      }
+    )
 
   }
   function register() {
@@ -57,7 +62,7 @@ export const LoginRegister = () => {
       setErrors(prev => ({ ...prev, 'passwordConfirmation': true, password: true }))
     }
     if (!errors) {
-      createMutation.mutate(registrationFormData)
+      createMutation.mutate({data:registrationFormData,func:createUser})
       setUser(registrationFormData)
       navigate('/')
     }
@@ -171,6 +176,7 @@ export const LoginRegister = () => {
               </>}
             </Stack>
           </Paper>
+          <ToastContainer />
         </Stack >
       </form >
     )

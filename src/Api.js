@@ -1,6 +1,7 @@
 import { SYSTEM_ROLES, getSampleDataFromLocalStorage, saveDataToLocalStorage } from "./utils"
 import { sampleData as initialData } from './SampleData.js'
 import axios from "axios"
+import { toast } from "react-toastify"
 export const API_BASE = 'https://localhost:7223/api/'
 export const SERVER_BASE = 'https://localhost:7223/'
 const PROJECTS_ENDPOINT = 'projects'
@@ -114,9 +115,15 @@ async function getAllCompaniesAsync() {
     return await getAsync('companies') || []
 }
 async function createCompany(data) {
-    await create(data, 'companies')
+    return create(data, 'companies')
 }
-
+export async function runWithProgress({ data, func }) {
+    return await toast.promise(func(data), {
+        pending: 'Operation en cours ⏳',
+        success: 'Operation réussie👍',
+        error: `Echec de la Operation 💀`
+    })
+}
 async function editCompany(company) {
     await edit(company, 'companies')
 }
