@@ -7,7 +7,7 @@ import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from '../../utils'
 import { DetailsDialog } from './DetailsDialog'
-import { getSingleAsync , deleteCategory, editCategory, getAllCategories, getAllProjectsAsync } from '../../Api'
+import { getSingleAsync, deleteCategory, editCategoryAsync, getAllCategories, getAllProjectsAsync, createCategoryAsync, runWithProgress } from '../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuthorization } from '../../Hooks/useAuthorization'
 import { useNavigate } from 'react-router-dom'
@@ -63,18 +63,18 @@ export const Categories = () => {
     }
 
     const createMutation = useMutation({
-        mutationFn: getSingleAsync,
+        mutationFn: runWithProgress,
         onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
     })
     const editMutation = useMutation({
-        mutationFn: editCategory,
+        mutationFn: runWithProgress,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
             console.warn("Invalidated")
         }
     })
     const deleteMutation = useMutation({
-        mutationFn: deleteCategory,
+        mutationFn: runWithProgress,
         onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
     })
     return (
@@ -186,7 +186,7 @@ export const Categories = () => {
             <CreateDialog open={isCreateDialogOpen} projects={projects}
                 handleClose={(cat) => {
                     if (cat) {
-                        createMutation.mutate(cat)
+                        createMutation.mutate({ data: cat, func: createCategoryAsync })
                     }
                     setIsCreateDialogOpen(false)
                 }} />
@@ -194,7 +194,7 @@ export const Categories = () => {
                 categoryToEdit && <EditDialog open={isEditDialogOpen} projects={projects}
                     category={categoryToEdit}
                     handleClose={(cat) => {
-                        if (cat) { editMutation.mutate(cat) }
+                        if (cat) { editMutation.mutate({ data: cat, func: editCategoryAsync }) }
                         setIsEditDialogOpen(false)
                     }}
 
@@ -212,7 +212,7 @@ export const Categories = () => {
                 categoryToDelete && <DeleteDialog open={isDeleteDialogOpen} projects={projects}
                     category={categoryToDelete}
                     handleClose={(confirm) => {
-                        if (confirm) { deleteMutation.mutate(categoryToDelete.id) }
+                        if (confirm) { deleteMutation.mutate({ data: categoryToDelete.id, func: deleteCategory }) }
                         setIsDeleteDialogOpen(false)
                     }}
 

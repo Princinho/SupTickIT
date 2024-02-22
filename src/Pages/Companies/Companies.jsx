@@ -60,13 +60,13 @@ export const Companies = () => {
     mutationFn: runWithProgress,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
-  
+
   const editMutation = useMutation({
-    mutationFn: editCompany,
+    mutationFn: runWithProgress,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
   const deleteMutation = useMutation({
-    mutationFn: deleteCompany,
+    mutationFn: runWithProgress,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
 
@@ -188,7 +188,7 @@ export const Companies = () => {
       {
         companyToEdit && <EditDialog open={isEditDialogOpen} entry={companyToEdit}
           handleClose={(company) => {
-            if (company) { editMutation.mutate(company) }
+            if (company) { editMutation.mutate({ data: company, func: editCompany }) }
             setIsEditDialogOpen(false)
           }}
 
@@ -204,8 +204,8 @@ export const Companies = () => {
       }
       {
         companyToDelete && <DeleteDialog open={isDeleteDialogOpen} entry={companyToDelete}
-          handleClose={(app) => {
-            if (app) { deleteMutation.mutate(app) }
+          handleClose={(company) => {
+            if (company) { deleteMutation.mutate({ data: company, func: deleteCompany }) }
             setIsDeleteDialogOpen(false)
           }}
 

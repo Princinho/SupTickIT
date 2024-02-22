@@ -100,7 +100,6 @@ function editEntry(updatedEntry, type) {
 }
 async function edit(updatedEntry, endpoint) {
     let updateUrl = `${API_BASE}${endpoint}/${updatedEntry.id}`
-    console.log(updateUrl, endpoint)
     let response = (await axios.put(updateUrl, updatedEntry)).data
     return response
 }
@@ -118,10 +117,11 @@ async function createCompany(data) {
     return create(data, 'companies')
 }
 export async function runWithProgress({ data, func }) {
+    console.log('running')
     return await toast.promise(func(data), {
         pending: 'Operation en cours ⏳',
         success: 'Operation réussie👍',
-        error: `Echec de la Operation 💀`
+        error: `Echec de l' Operation 💀`
     })
 }
 async function editCompany(company) {
@@ -275,8 +275,8 @@ async function createCategoryAsync(data) {
     await create(data, 'ticketCategories')
 }
 
-function editCategory(data) {
-    edit(data, 'ticketCategories')
+async function editCategoryAsync(data) {
+    return await edit(data, 'ticketCategories')
 }
 
 async function deleteCategory(id) {
@@ -393,7 +393,7 @@ export {
     getAllCompaniesAsync, createCompany, editCompany, deleteCompany,
     getAllTicketsAsync, createTicket, editTicket, deleteTicket,
     getCustomerTicketsAsync, getTicket, getTicketMessagesAsync, getTicketsAssignedByMod,
-    getAllCategories, createCategoryAsync, editCategory, deleteCategory, getProjectCategoriesAsync, getCategoryAsync,
+    getAllCategories, createCategoryAsync, editCategoryAsync, deleteCategory, getProjectCategoriesAsync, getCategoryAsync,
     getAllUsersAsync, getCompanyUsers, createUser, editUser, deleteUser, createCustomer,
     getAllRoleAssignments, getAllRoles, addRoleToUser, changePassword, resetPassword,
     getActiveRolesForUser, getActiveRoleAssignmentsForUser, isUserInRole, isApiUserInRole,
