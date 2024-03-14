@@ -3,10 +3,10 @@ import PropTypes from 'prop-types'
 import { useState } from "react"
 export const CreateDialog = ({ open, handleClose, projects }) => {
     //TODO: Faire bosser la pagination
-    const [formData, setFormData] = useState({ name: '', description: '', projectId: '' })
+    const [formData, setFormData] = useState({ title: '', description: '', projectId: '' })
 
     function reset() {
-        setFormData({ name: '', description: '', projectId: '' })
+        setFormData({ title: '', description: '', projectId: '' })
     }
 
     const [titleError, setTitleError] = useState(false)
@@ -39,8 +39,8 @@ export const CreateDialog = ({ open, handleClose, projects }) => {
                         label="Nom de la catégorie *"
                         error={titleError}
                         type="text"
-                        value={formData.name}
-                        onChange={(event) => setFormData(prev => ({ ...prev, name: event.target.value }))}
+                        value={formData.title}
+                        onChange={(event) => setFormData(prev => ({ ...prev, title: event.target.value }))}
                         fullWidth
                         variant="standard"
                     />
@@ -61,7 +61,7 @@ export const CreateDialog = ({ open, handleClose, projects }) => {
                         handleClose()
                     }}>Annuler</Button>
                     <Button onClick={() => {
-                        if (!formData.name) {
+                        if (!formData.title) {
                             setTitleError(true)
                             return
                         } else {

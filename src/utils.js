@@ -14,11 +14,21 @@ const TICKET_PRIORITY = {
     CRITICAL: 3,
 
 }
+const NEW_ACCOUNT_DEFAULT_PASSWORD = 'Account#12345'
 const SYSTEM_ROLES = {
     ADMIN: 1,
     MODERATOR: 2,
     AGENT: 3,
-    CUSTOMER: 4
+    CUSTOMER: 4,
+}
+const SYTEM_ROLES_WITH_LABELS = [
+    { id: 1, code: 'admin', nom: 'Administrateur', description: 'Administrateur' },
+    { id: 2, code: 'mod', nom: 'Moderateur', description: 'Moderateur' },
+    { id: 3, code: 'agent', nom: 'Agent', description: 'Agent' },
+    { id: 4, code: 'client', nom: 'Client', description: 'Client' },
+]
+const SYSTEM_LABELS = {
+    PRODUCT_REF: 'Référence Produit'
 }
 function stringToColor(string) {
     let hash = 0;
@@ -43,15 +53,15 @@ function stringToColor(string) {
 function stringAvatar(name) {
     if (!name) return
     const subNames = name.split(' ')
-    const firstName = subNames[0]
-    let lastName = null
+    const firstname = subNames[0]
+    let lastname = null
     if (subNames.length > 1)
-        lastName = subNames[1]
+        lastname = subNames[1]
     return {
         sx: {
             bgcolor: stringToColor(name),
         },
-        children: `${firstName[0]}${lastName ? lastName[0] : firstName[1]}`,
+        children: `${firstname[0]}${lastname ? lastname[0] : firstname[1]}`,
     };
 }
 function getRandomNumber(min, max) {
@@ -80,13 +90,20 @@ function addOnemonth(date) {
     }
     return date;
 }
+function getHighestId(array) {
+    if (!array) return 0
+    console.log(array)
+    return array.reduce((prev, curr) => {
+        curr.id > prev.id ? curr.id : prev.id
+    }, 0)
+}
 function sortAndFilterData(array, searchTerm, sortOption) {
     if (!array) return []
     let result = array
     if (searchTerm)
         result = result.filter(a => a.title?.toLowerCase().includes(searchTerm.toLowerCase()) || a.name?.toLowerCase().includes(searchTerm.toLowerCase())
-            || a.firstName?.toLowerCase().includes(searchTerm.toLowerCase())
-            || a.lastName?.toLowerCase().includes(searchTerm.toLowerCase()))
+            || a.firstname?.toLowerCase().includes(searchTerm.toLowerCase())
+            || a.lastname?.toLowerCase().includes(searchTerm.toLowerCase()))
     if (sortOption == 'dateCreated') {
         result = result.sort((a, b) => {
             return new Date(b.dateCreated) - new Date(a.dateCreated)
@@ -96,13 +113,19 @@ function sortAndFilterData(array, searchTerm, sortOption) {
             return a.id - b.id
         })
     } else {
-
         result = result.sort((a, b) => {
             return (('' + a[sortOption]).toLowerCase()).localeCompare(('' + b[sortOption]).toLowerCase());
         })
     }
     // console.log(result)
     return result
+}
+function isInRole(user, roleId) {
+    if (!user) return false
+    console.log(user.RoleAssignments)
+    let roleAssignments = user.RoleAssignments
+    console.log(roleAssignments)
+    return roleAssignments?.some(r => r.RoleId == roleId && new Date(r.StartDate) < new Date() && new Date(r.ExpiryDate) > new Date())
 }
 function getAvailablePriorities() {
     return [
@@ -117,10 +140,19 @@ function formatToInput(dateObject) {
     // console.log(result)
     return result
 }
+function extractActiveRolesFromUser(user) {
+    let allUserRoles = user.RoleAssignments
+    if (!allUserRoles) return []
+    // console.log(allUserRoles)
+
+    let startedRoles = allUserRoles.filter(r => new Date(r.StartDate) < new Date())
+    let runningRoles = startedRoles.filter(r => !r.ExpiryDate || new Date(r.ExpiryDate) > new Date())
+    return runningRoles
+}
 export {
-    stringAvatar, stringToColor,
+    stringAvatar, stringToColor, extractActiveRolesFromUser,
     getSampleDataFromLocalStorage, saveDataToLocalStorage,
     getRandomNumber, addOnemonth, sortAndFilterData,
-    getAvailablePriorities, formatToInput,
-    TICKET_STATUS, TICKET_PRIORITY, SYSTEM_ROLES
+    getAvailablePriorities, formatToInput, getHighestId, isInRole,
+    TICKET_STATUS, TICKET_PRIORITY, SYSTEM_ROLES, SYSTEM_LABELS, SYTEM_ROLES_WITH_LABELS, NEW_ACCOUNT_DEFAULT_PASSWORD
 }

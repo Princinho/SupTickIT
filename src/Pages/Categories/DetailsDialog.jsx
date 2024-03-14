@@ -2,14 +2,12 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, 
 import PropTypes from 'prop-types'
 
 export const DetailsDialog = ({ open, handleClose, category, project }) => {
-
-    console.log(category)
     return (
         <Box>
             <Dialog open={open} onClose={() => handleClose()}>
                 <DialogTitle>Détails de la categorie</DialogTitle>
                 <DialogContent>
-                    <Typography variant="span" sx={{ fontWeight: 'bold' }}>{category.name}</Typography>
+                    <Typography variant="span" sx={{ fontWeight: 'bold' }}>{category.title}</Typography>
                     <Typography>{category.description}</Typography>
                     <Stack direction='row' spacing={1}>
 

@@ -12,6 +12,7 @@ export const TicketsTable = ({ tickets, users, showDetailsDialog, options }) => 
 
     dayjs.locale('fr')
     const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } = options
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tickets.length) : 0;
     return (
         <TableContainer>
 
@@ -30,13 +31,14 @@ export const TicketsTable = ({ tickets, users, showDetailsDialog, options }) => 
                 </TableHead>
                 <TableBody>
                     {tickets?.length > 0 ?
+
                         (rowsPerPage > 0
                             ? tickets.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             : tickets
                         ).map((ticket) => {
 
                             const creator = users?.find(u => u.id == ticket.createdBy)
-                            const creatorName = creator ? creator?.firstName + " " + creator?.lastName : "??"
+                            const creatorName = creator ? creator?.firstname + " " + creator?.lastname : "??"
                             return (
                                 <TableRow onClick={() => showDetailsDialog(ticket)}
                                     key={'appli' + ticket.id}
@@ -79,7 +81,7 @@ export const TicketsTable = ({ tickets, users, showDetailsDialog, options }) => 
                                         </Stack>
                                     </TableCell>
                                     <TableCell>
-                                        {ticket.agentId ? users?.find(user => user.id == ticket.agentId)?.firstName
+                                        {ticket.agentId ? users?.find(user => user.id == ticket.agentId)?.firstname
                                             : <Chip size='small' label="Non assigné" color="default" />
                                         }
                                     </TableCell>
@@ -101,6 +103,15 @@ export const TicketsTable = ({ tickets, users, showDetailsDialog, options }) => 
                                 <Typography variant='subtitle1' color='primary' textAlign='center'> Aucune donnée disponible</Typography>
                             </TableCell>
                         </TableRow>}
+                    {emptyRows > 0 && (
+                        <TableRow
+                            style={{
+                                height: (53) * emptyRows,
+                            }}
+                        >
+                            <TableCell colSpan={7} />
+                        </TableRow>
+                    )}
                 </TableBody>
                 <TableFooter>
                     <TableRow>
@@ -124,7 +135,7 @@ export const TicketsTable = ({ tickets, users, showDetailsDialog, options }) => 
                     </TableRow>
                 </TableFooter>
             </Table>
-        </TableContainer>
+        </TableContainer >
 
     )
 }

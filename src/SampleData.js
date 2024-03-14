@@ -134,17 +134,18 @@ export const sampleData = {
         //     companyId: ''
         // }
         {
-            id: 1, firstName: 'GATIEN', lastName: 'GNAKOU-EDJAMBO',
+            id: 1, firstname: 'GATIEN', lastname: 'GNAKOU-EDJAMBO',
             username: 'spadmin@gmail.com', password: 'Admin123#', roles: ['admin'],
             lastLoginDate: '2023/10/32',
             companyId: ''
         }
     ],
     roles: [
-        { id: '1', code: 'admin', nom: 'Administrateur', description: 'Administrateur' },
-        { id: '2', code: 'mod', nom: 'Moderateur', description: 'Moderateur' },
-        { id: '3', code: 'agent', nom: 'Agent', description: 'Agent' },
-        { id: '4', code: 'client', nom: 'Client', description: 'Client' },
+        { id: 1, code: 'admin', nom: 'Administrateur', description: 'Administrateur' },
+        { id: 2, code: 'mod', nom: 'Moderateur', description: 'Moderateur' },
+        { id: 3, code: 'agent', nom: 'Agent', description: 'Agent' },
+        { id: 4, code: 'client', nom: 'Client', description: 'Client' },
+        { id: 5, code: 'customer_admin', nom: 'Administrateur Client', description: 'Administrateur Client' },
     ],
     rolesAffectations: [
         { id: 1, userId: 1, roleId: 1, startDate: '2023/10/27', endDate: null }

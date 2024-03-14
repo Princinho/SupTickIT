@@ -7,7 +7,7 @@ import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from './utils'
 import { DetailsDialog } from './DetailsDialog'
-import { createCompany, deleteCompany, editCompany, getAllCompanies } from '../../Api'
+import { createCompany, deleteCompany, editCompany, getAllCompaniesAsync, runWithProgress } from '../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export const Companies = () => {
@@ -25,7 +25,7 @@ export const Companies = () => {
   const BASE_QUERY_KEY = 'companies'
   // const [companies, setCompanies] = useState([])
   const queryClient = useQueryClient()
-  const { data: companies } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCompanies })
+  const { data: companies } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCompaniesAsync })
 
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
@@ -57,15 +57,16 @@ export const Companies = () => {
     setTableOptions(prev => ({ ...prev, page }))
   }
   const createMutation = useMutation({
-    mutationFn: createCompany,
+    mutationFn: runWithProgress,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
+
   const editMutation = useMutation({
-    mutationFn: editCompany,
+    mutationFn: runWithProgress,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
   const deleteMutation = useMutation({
-    mutationFn: deleteCompany,
+    mutationFn: runWithProgress,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
 
@@ -178,14 +179,16 @@ export const Companies = () => {
       </Box>
       <CreateDialog open={isCreateDialogOpen} handleClose={(company) => {
         if (company) {
-          createMutation.mutate(company)
+          createMutation.mutate({ data: company, func: createCompany })
+          // toast.promise(createCompany(company), { success: () => { console.log("Created successfully"); refetch(); toast("Simple toast") } })
+
         }
         setIsCreateDialogOpen(false)
       }} />
       {
         companyToEdit && <EditDialog open={isEditDialogOpen} entry={companyToEdit}
           handleClose={(company) => {
-            if (company) { editMutation.mutate(company) }
+            if (company) { editMutation.mutate({ data: company, func: editCompany }) }
             setIsEditDialogOpen(false)
           }}
 
@@ -201,8 +204,8 @@ export const Companies = () => {
       }
       {
         companyToDelete && <DeleteDialog open={isDeleteDialogOpen} entry={companyToDelete}
-          handleClose={(app) => {
-            if (app) { deleteMutation.mutate(app) }
+          handleClose={(company) => {
+            if (company) { deleteMutation.mutate({ data: company, func: deleteCompany }) }
             setIsDeleteDialogOpen(false)
           }}
 

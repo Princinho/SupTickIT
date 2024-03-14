@@ -7,3 +7,9 @@ body {
 img {
   width: 100%;
 }
+.image-preview img{
+  border-radius: .5em;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, .2);
+  height: 200px;
+  object-fit: cover;
+}

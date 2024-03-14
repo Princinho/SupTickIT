@@ -71,9 +71,9 @@ export const ProjectsTable = ({ projects, users,showEditDialog, showDeleteDialog
                                         <TableCell align="left">
                                             <Stack direction={{ md: 'row' }} alignItems='center' spacing={2}>
 
-                                                <Avatar {...stringAvatar(creator ? creator.firstName + " " + creator.lastName : "??")} />
+                                                <Avatar {...stringAvatar(creator ? creator.firstname + " " + creator.lastname : "??")} />
 
-                                                <Typography variant='subtitle2'> {users?.find(u => u.id == project.createdBy)?.firstName}</Typography>
+                                                <Typography variant='subtitle2'> {users?.find(u => u.id == project.createdBy)?.firstname}</Typography>
                                             </Stack>
 
                                         </TableCell>

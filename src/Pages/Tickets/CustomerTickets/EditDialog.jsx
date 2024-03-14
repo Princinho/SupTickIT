@@ -1,33 +1,35 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material"
 import PropTypes from 'prop-types'
-import { useContext, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { DropdownSelector } from "../../../Components/DropdownSelector"
-import { getCompanyProjects, getProjectCategories } from "../../../Api"
-import { UserContext } from "../../../Contexts"
-export const EditDialog = ({ open, handleClose, entry }) => {
-    const { user } = useContext(UserContext)
-    console.log(user)
+export const EditDialog = ({ open, handleClose, categories, projects, entry }) => {
+    // const { user } = useContext(UserContext)
+    // console.log(user)
     //TODO: Faire bosser la pagination
-    const initData = { ...entry }
-    const [formData, setFormData] = useState(initData)
+
     const [nameError, setNameError] = useState(false)
-    function reset() {
-        setFormData(initData)
-    }
+
+    const [formData, setFormData] = useState({ ...entry })
+    const resetForm = useCallback(() => {
+        setFormData({ ...entry })
+    },[entry])
+    useEffect(() => {
+        resetForm()
+    }, [entry, resetForm])
     return (
         <Box>
             <Dialog open={open} onClose={() => handleClose()}>
                 <DialogTitle>Nouveau ticket</DialogTitle>
                 <DialogContent>
                     <DropdownSelector label="Projet *" labelField="title"
-                        options={getCompanyProjects(user?.companyId)}
-                        defaultValue={entry.projectId}
+                        options={projects}
+                        defaultValue={`${categories?.find(cat => cat.id == entry.categoryId)?.projectId}`}
                         handleChange={value => setFormData(prev => ({ ...prev, projectId: value }))}
                     />
-                    <DropdownSelector label="Catégorie" labelField="name"
-                        disabled={!formData.projectId}
-                        options={getProjectCategories(formData?.projectId)}
-                        defaultValue={formData?.categoryId}
+                    <DropdownSelector label="Catégorie" labelField="title"
+                        disabled={!formData.categoryId}
+                        options={categories}
+                        defaultValue={`${formData?.categoryId}`}
                         handleChange={value => setFormData(prev => ({ ...prev, categoryId: value }))}
                     />
                     <TextField
@@ -38,6 +40,17 @@ export const EditDialog = ({ open, handleClose, entry }) => {
                         type="text"
                         value={formData.name}
                         onChange={(event) => setFormData(prev => ({ ...prev, name: event.target.value }))}
+                        fullWidth
+                        variant="standard"
+                    />
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Numero de carte"
+                        error={nameError}
+                        type="text"
+                        value={formData.productRef}
+                        onChange={(event) => setFormData(prev => ({ ...prev, productRef: event.target.value }))}
                         fullWidth
                         variant="standard"
                     />
@@ -62,11 +75,11 @@ export const EditDialog = ({ open, handleClose, entry }) => {
                         onClick={() => {
                             if (!formData.name) {
                                 setNameError(true)
-                                
+
                             } else {
                                 setNameError(false)
                                 handleClose(formData)
-                                reset()
+                                resetForm()
                             }
                         }}>Enregistrer</Button>
                 </DialogActions>
@@ -77,5 +90,7 @@ export const EditDialog = ({ open, handleClose, entry }) => {
 EditDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
-    entry: PropTypes.object.isRequired
+    entry: PropTypes.object.isRequired,
+    categories:PropTypes.array.isRequired,
+    projects:PropTypes.array.isRequired,
 }

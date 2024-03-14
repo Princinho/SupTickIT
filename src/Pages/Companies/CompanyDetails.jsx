@@ -8,7 +8,7 @@ import { RemoveProject } from "./RemoveProject";
 import { SimpleButton } from "../../Components/SimpleButton";
 import { AddCompanyToProjectDialog } from "./AddCompanyToProjectDialog";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { editCompany, getAllCompanies, getAllProjects } from "../../Api";
+import { assignProject, getAllCompaniesAsync, getAllProjectsAsync, unAssignProject } from "../../Api";
 export const CompanyDetails = () => {
     const [focusedProject, setFocusedProject] = useState(null)
 
@@ -19,47 +19,43 @@ export const CompanyDetails = () => {
     const { id } = useParams()
     const BASE_QUERY_KEY = 'companies'
     const queryClient = useQueryClient()
-    const { data: companies } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCompanies })
-    const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
-    const company = companies?.find(app => app?.id == id);
+    const { isLoading, data: companies } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCompaniesAsync })
+    const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjectsAsync })
+    const company = companies?.find(comp => comp?.id == id);
     // const companyProjects = 
     const navigate = useNavigate()
     function handleMenuClose() {
         setAnchorEl(null)
     }
-    const editMutation = useMutation({
-        mutationFn: editCompany,
+    const assignProjectMutation = useMutation({
+        mutationFn: assignProject,
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+    })
+    const unassignProjectMutation = useMutation({
+        mutationFn: unAssignProject,
         onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
     })
     function closeRemoveDialog(project) {
         // console.log(project)
         if (project) {
             // TODO: Code pour retirer le projet a l'entreprise
-
-
-            let editedCompany = companies.find(c => c.id == id)
-            editMutation.mutate({
-                ...editedCompany,
-                projects: [...editedCompany.projects.filter(projId => projId != project.id)]
+            unassignProjectMutation.mutate({
+                projectId: project.id, companyId:id
             })
         }
         setFocusedProject(null)
         setIsRemoveProjectMenuOpen(false)
     }
-    function addProject(company, projectId) {
-        console.log(company)
-        console.log(projectId)
+    function addProject(projectId) {
         if (company && projectId) {
 
-            let editedCompany = companies.find(c => c?.id == id)
-            editMutation.mutate({
-                ...editedCompany,
-                projects: [...editedCompany.projects, projectId]
+            assignProjectMutation.mutate({
+                projectId, companyId: id
             })
         }
         setIsAddProjectDialogOpen(false)
     }
-
+    console.log("Company", company)
     const projectColumns = [
         {
             name: 'Nom', selector: row => <Typography variant="body1">{row.title}</Typography>,
@@ -85,7 +81,7 @@ export const CompanyDetails = () => {
             maxWidth: '64px'
         },
     ]
-    if (!company) return <Box sx={{ minHeight: '200px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>Nothing</Box>
+    if (isLoading) return <Box sx={{ minHeight: '200px', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>Loading...</Box>
     return (
         <>
             <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
@@ -113,9 +109,9 @@ export const CompanyDetails = () => {
                             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Projets en cours</Typography>
                             <AddButton onClick={() => setIsAddProjectDialogOpen(true)} />
                         </Stack>
-                        <DataTable columns={projectColumns}
-                            data={company.projects?.map(projId => projects?.find(p => p?.id == projId)) || []}
-                            responsive={false} />
+                        {projects && companies && <DataTable columns={projectColumns}
+                            data={company.projects?.map(proj => projects?.find(p => p?.id == proj.id)) || []}
+                            responsive={false} />}
                     </Paper>
                 </Grid>
             </Grid>

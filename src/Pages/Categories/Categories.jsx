@@ -7,7 +7,7 @@ import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from '../../utils'
 import { DetailsDialog } from './DetailsDialog'
-import { createCategory, deleteCategory, editCategory, getAllCategories, getAllProjects } from '../../Api'
+import { getSingleAsync, deleteCategory, editCategoryAsync, getAllCategories, getAllProjectsAsync, createCategoryAsync, runWithProgress } from '../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuthorization } from '../../Hooks/useAuthorization'
 import { useNavigate } from 'react-router-dom'
@@ -23,17 +23,16 @@ export const Categories = () => {
     const [categoryToDetail, setCategoryToDetail] = useState(null)
     const [categoryToDelete, setCategoryToDelete] = useState(null)
     const [sortOption, setSortOption] = useState({ option: 'name' })
-    const { isUserAuthorized } = useAuthorization()
     const navigate = useNavigate()
     const queryClient = useQueryClient()
-    const { data: categories } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCategories })
-    const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjects })
+    const { data: categories, refetch: refetchCategories } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllCategories })
+    const { data: projects } = useQuery({ queryKey: ['projects'], queryFn: getAllProjectsAsync })
     const [tableOptions, setTableOptions] = useState({
         rowsPerPage: 5, page: 0, count: categories?.length, handlePageChange: setCurrentPage,
         handleRowsPerPageChange: changeRowsPerPage
     })
 
-
+    const { isUserAuthorized } = useAuthorization()
     useEffect(() => {
         if (!isUserAuthorized()) {
             navigate("/accessdenied")
@@ -56,37 +55,26 @@ export const Categories = () => {
         setIsDetailsDialogOpen(true)
         setCategoryToDetail(category)
     }
-    // function createCategory(data) {
-    //     setCategories(prev => {
-    //         let result = [{ ...data, id: categories.length + 1, dateCreated: new Date().toISOString(), createdBy: user?.id }, ...prev]
-    //         return result
-    //     })
-    // }
     function setRowsPerPage(rowsPerPage) {
         setTableOptions(prev => ({ ...prev, rowsPerPage }))
     }
     function setCurrentPage(page) {
         setTableOptions(prev => ({ ...prev, page }))
     }
-    // function editCategory(cat) {
-    //     setCategories(prevEntries => prevEntries.map(
-    //         prevEntry => prevEntry.id == cat.id ? { ...prevEntry, ...cat } : prevEntry
-    //     ))
-    // }
-    // function deleteCategory(category) {
-    //     setCategories(prev => prev.filter(cat => cat.id != category.id))
-    // }
 
     const createMutation = useMutation({
-        mutationFn: createCategory,
+        mutationFn: runWithProgress,
         onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
     })
     const editMutation = useMutation({
-        mutationFn: editCategory,
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+        mutationFn: runWithProgress,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+            console.warn("Invalidated")
+        }
     })
     const deleteMutation = useMutation({
-        mutationFn: deleteCategory,
+        mutationFn: runWithProgress,
         onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
     })
     return (
@@ -198,7 +186,7 @@ export const Categories = () => {
             <CreateDialog open={isCreateDialogOpen} projects={projects}
                 handleClose={(cat) => {
                     if (cat) {
-                        createMutation.mutate(cat)
+                        createMutation.mutate({ data: cat, func: createCategoryAsync })
                     }
                     setIsCreateDialogOpen(false)
                 }} />
@@ -206,7 +194,7 @@ export const Categories = () => {
                 categoryToEdit && <EditDialog open={isEditDialogOpen} projects={projects}
                     category={categoryToEdit}
                     handleClose={(cat) => {
-                        if (cat) { editMutation.mutate(cat) }
+                        if (cat) { editMutation.mutate({ data: cat, func: editCategoryAsync }) }
                         setIsEditDialogOpen(false)
                     }}
 
@@ -223,8 +211,8 @@ export const Categories = () => {
             {
                 categoryToDelete && <DeleteDialog open={isDeleteDialogOpen} projects={projects}
                     category={categoryToDelete}
-                    handleClose={(cat) => {
-                        if (cat) { deleteMutation.mutate(cat) }
+                    handleClose={(confirm) => {
+                        if (confirm) { deleteMutation.mutate({ data: categoryToDelete.id, func: deleteCategory }) }
                         setIsDeleteDialogOpen(false)
                     }}
 

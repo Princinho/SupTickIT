@@ -1,14 +1,9 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography } from "@mui/material"
 import PropTypes from 'prop-types'
-import { useContext } from "react"
-import { getAllCategories, getCompanyProjects } from "../../../Api"
-import { UserContext } from "../../../Contexts"
-export const DeleteDialog = ({ open, handleClose, entry }) => {
-    const { user } = useContext(UserContext)
-    console.log(user)
-    //TODO: Faire bosser la pagination
-
-
+export const DeleteDialog = ({ open, handleClose, categories, projects, entry }) => {
+    
+    let projId = categories?.find(cat => cat.id == entry.categoryId)?.projectId
+    
     return (
         <Box>
             <Dialog open={open} onClose={() => handleClose()}>
@@ -23,13 +18,13 @@ export const DeleteDialog = ({ open, handleClose, entry }) => {
                             <Typography variant="span">Catégorie</Typography>
                         </Grid>
                         <Grid item xs={6}>
-                            <Typography variant="span">{getAllCategories().find(p => p.id == entry?.categoryId)?.name}</Typography>
+                            <Typography variant="span">{categories?.find(p => p.id == entry?.categoryId)?.title}</Typography>
                         </Grid>
                         <Grid item xs={6}>
                             <Typography variant="span">Projet</Typography>
                         </Grid>
                         <Grid item xs={6}>
-                            <Typography variant="span">{getCompanyProjects(user?.companyId).find(p => p.id == entry.projectId)?.title}</Typography>
+                            <Typography variant="span">{projects?.find(p => p.id == projId)?.title}</Typography>
                         </Grid>
                         <Grid item xs={6}>
                             <Typography variant="span">Description</Typography>
@@ -58,5 +53,7 @@ export const DeleteDialog = ({ open, handleClose, entry }) => {
 DeleteDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
-    entry: PropTypes.object.isRequired
+    entry: PropTypes.object.isRequired,
+    categories:PropTypes.array.isRequired,
+    projects:PropTypes.array.isRequired,
 }

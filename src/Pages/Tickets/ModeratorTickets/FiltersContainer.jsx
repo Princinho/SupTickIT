@@ -14,7 +14,6 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
     const [isAddCustomersDialogOpen, setIsAddCustomersDialogOpen] = useState(false)
     const MAX_DISPLAYED_ENTRIES = 3
     let resetBtnColor = theme.palette.primary.light
-    console.log(filters)
     function resetAllFilters() {
         setFilters(initialFilters)
     }
@@ -34,7 +33,7 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
         setFilters(prev => ({ ...prev, statuses: [] }))
     }
     useEffect(() => {
-        console.log('Apply FIlters is ', applyFilters)
+
         if (applyFilters) applyFilters(filters)
     }, [filters])
     function closeAddAgentsDialog() {
@@ -123,15 +122,17 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
             </Stack>
             <TextField id="search-by-agent"
                 size="small" aria-label="Filtrer par agent"
+                value={filters.agentSearchTerm}
+                onChange={(event) => { setFilters(prev => ({ ...prev, agentSearchTerm: event.target.value })) }}
                 label="Recherche agent" variant="outlined" sx={{ marginBottom: '1em' }} />
             <Stack mb={2} >
-                {agents?.filter(agent => filters.agentSearchTerm ? (agent.firstName + " " + agent.lastName).includes(filters.agentSearchTerm) : true)
+                {agents?.filter(agent => filters.agentSearchTerm ? (agent.firstname + " " + agent.lastname).toLowerCase().includes(filters.agentSearchTerm.toLowerCase()) : true)
                     .slice(0, MAX_DISPLAYED_ENTRIES)
                     .map(agent => <FormControlLabel key={`agent-${agent.id}`} sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                         control={
-                            <Checkbox checked={filters.agentIds.includes(agent.id)} onChange={() => toggleAgent(agent.id)} />
+                            <Checkbox checked={filters?.agentIds?.includes(agent.id)} onChange={() => toggleAgent(agent.id)} />
                         }
-                        label={agent.firstName + " " + agent.lastName}
+                        label={agent.firstname + " " + agent.lastname}
                     />
                     )}
 
@@ -141,7 +142,7 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                             onClick={() => setIsAddAgentsDialogOpen(true)}
                         >{agents?.length - MAX_DISPLAYED_ENTRIES} de plus</Link>
                         <SelectListDialog
-                            entries={agents.map(agent => ({ ...agent, fullName: `${agent.firstName} ${agent.lastName}` }))
+                            entries={agents.map(agent => ({ ...agent, fullName: `${agent.firstname} ${agent.lastname}` }))
                             }
                             keyField='id' labelField='fullName'
                             placeholder={"Nom Complet"}
@@ -161,15 +162,21 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                 </Stack>
                 <TextField id="search-by-client"
                     size="small" aria-label="Filtrer par client"
+                    value={filters.customerSearchTerm}
+                    onChange={(event) => { setFilters(prev => ({ ...prev, customerSearchTerm: event.target.value })) }}
                     label="Recherche client" variant="outlined" sx={{ marginBottom: '1em' }} />
                 <Stack mb={2} >
-                    {customers?.slice(0, MAX_DISPLAYED_ENTRIES)
-                        .map(customer => <FormControlLabel key={`customer-${customer.id}`} sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
+                    {customers?.filter(customer =>
+                        filters.customerSearchTerm ? (customer.firstname + " " + customer.lastname).toLowerCase().includes(filters.customerSearchTerm.toLowerCase())
+                            : true)
+                        .slice(0, MAX_DISPLAYED_ENTRIES)
+                        .map(customer =>{console.log(customers)
+                            return  <FormControlLabel key={`customer-${customer.id}`} sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                             control={
-                                <Checkbox checked={filters.customerIds.includes(customer.id)} onChange={() => toggleCustomer(customer.id)} />
+                                <Checkbox checked={filters?.customerIds?.includes(customer.id)} onChange={() => toggleCustomer(customer.id)} />
                             }
-                            label={customer.firstName + " " + customer.lastName}
-                        />
+                            label={customer.firstname + " " + customer.lastname}
+                        />}
                         )}
 
                     {customers?.length > MAX_DISPLAYED_ENTRIES &&
@@ -178,7 +185,7 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                                 onClick={() => setIsAddCustomersDialogOpen(true)}
                             >{customers?.length - MAX_DISPLAYED_ENTRIES} de plus</Link>
                             <SelectListDialog
-                                entries={customers.map(agent => ({ ...agent, fullName: `${agent.firstName} ${agent.lastName}` }))}
+                                entries={customers.map(agent => ({ ...agent, fullName: `${agent.firstname} ${agent.lastname}` }))}
                                 keyField='id' labelField='fullName'
                                 placeholder={"Nom Complet"}
                                 open={isAddCustomersDialogOpen}
@@ -223,18 +230,6 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                     />
                     <FormControlLabel sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
                         control={
-                            <Checkbox checked={filters?.statuses?.includes(TICKET_STATUS.REJECTED)}
-                                onChange={() => toggleStatus(TICKET_STATUS.REJECTED)}
-                            />
-                        }
-                        label={
-                            <Stack direction='row' alignItems='center' spacing={1}>
-                                <StatusDot type={TICKET_STATUS.REJECTED} />
-                                <Typography variant="body1" >Rejeté</Typography>
-                            </Stack>}
-                    />
-                    <FormControlLabel sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
-                        control={
                             <Checkbox checked={filters?.statuses?.includes(TICKET_STATUS.APPROVED)}
                                 onChange={() => toggleStatus(TICKET_STATUS.APPROVED)}
                             />
@@ -242,7 +237,19 @@ export const FiltersContainer = ({ agents, customers, applyFilters, filters, set
                         label={
                             <Stack direction='row' alignItems='center' spacing={1}>
                                 <StatusDot type={TICKET_STATUS.APPROVED} />
-                                <Typography variant="body1" >Approuvé</Typography>
+                                <Typography variant="body1" >Satisfait</Typography>
+                            </Stack>}
+                    />
+                    <FormControlLabel sx={{ '& .MuiCheckbox-root': { paddingBlock: '.2em' } }}
+                        control={
+                            <Checkbox checked={filters?.statuses?.includes(TICKET_STATUS.REJECTED)}
+                                onChange={() => toggleStatus(TICKET_STATUS.REJECTED)}
+                            />
+                        }
+                        label={
+                            <Stack direction='row' alignItems='center' spacing={1}>
+                                <StatusDot type={TICKET_STATUS.REJECTED} />
+                                <Typography variant="body1" >Insatisfait</Typography>
                             </Stack>}
                     />
                 </Box>

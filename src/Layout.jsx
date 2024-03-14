@@ -6,6 +6,9 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import { stringAvatar } from './utils';
 import { UserContext } from './Contexts';
 import { useAuthorization } from './Hooks/useAuthorization';
+import { ChangePasswordDialog } from './Pages/LayoutComponents/ChangePasswordDialog';
+import { changePassword } from './Api';
+import { ToastContainer, toast } from 'react-toastify';
 
 const drawerWidth = 240;
 
@@ -16,6 +19,8 @@ export const Layout = (props) => {
     const { window } = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [anchorEl, setAnchorEl] = useState(null)
+    const [isChangePasswordDialogOpen, setIsChangePasswordDialogOpen] = useState(false)
+    const [newPasswordData, setNewPasswordData] = useState(null)
     const userMenuOpen = Boolean(anchorEl)
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
@@ -23,7 +28,23 @@ export const Layout = (props) => {
     function handleClose() {
         setAnchorEl(null)
     }
+    function handleChangePassword(data) {
+        setIsChangePasswordDialogOpen(false)
+        console.log(data)
+        if (data) {
+            changePassword({ ...data, username: user?.username }).then(setUser(null))
+        }
+    }
     const { isPathAuthorizedForUser } = useAuthorization()
+    useEffect(() => {
+        async function callApi() {
+            await changePassword(newPasswordData)
+        }
+        if (newPasswordData) {
+            callApi();
+            setNewPasswordData(null)
+        }
+    }, [newPasswordData])
     const menuIconWidth = '32px'
     const menuItemColor = 'whitesmoke'
     // const selectedMenuItemColor = 'white'
@@ -80,14 +101,22 @@ export const Layout = (props) => {
                             <ListItemText primary={"Tickets"} sx={listItemStyles} />
                         </ListItemButton>
                     </ListItem>}
-                    <ListItem disablePadding  >
-                        <ListItemButton >
+                    {isPathAuthorizedForUser('/partnerusers') && <ListItem disablePadding  >
+                        <ListItemButton onClick={() => navigate('partnerusers')}>
+                            <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
+                                <ListAltIcon sx={{ color: menuItemColor }} />
+                            </ListItemIcon>
+                            <ListItemText primary={"Comptes Utilisateur"} sx={listItemStyles} />
+                        </ListItemButton>
+                    </ListItem>}
+                    {isPathAuthorizedForUser('/systemsettings') && <ListItem disablePadding  >
+                        <ListItemButton onClick={() => navigate('systemsettings')}>
                             <ListItemIcon sx={{ minWidth: menuIconWidth }}  >
                                 <ListAltIcon sx={{ color: menuItemColor }} />
                             </ListItemIcon>
                             <ListItemText primary={"Paramètres"} sx={listItemStyles} />
                         </ListItemButton>
-                    </ListItem>
+                    </ListItem>}
                     <Divider />
                     <ListItem disablePadding  >
                         <ListItemButton >
@@ -135,7 +164,7 @@ export const Layout = (props) => {
                     </IconButton>
                     <Stack direction='row' sx={{ width: '100%' }} justifyContent='flex-end'>
                         <IconButton onClick={event => setAnchorEl(event.target)}>
-                            {user && <Avatar {...stringAvatar(user?.firstName + " " + user?.lastName)} />}
+                            {user && <Avatar {...stringAvatar(user?.firstname + " " + user?.lastname)} />}
                         </IconButton>
                     </Stack>
                 </Toolbar>
@@ -227,11 +256,11 @@ export const Layout = (props) => {
                 </MenuItem>
                 <Divider />
 
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={() => setIsChangePasswordDialogOpen(true)}>
                     <ListItemIcon>
                         <Settings fontSize="small" />
                     </ListItemIcon>
-                    Paramètres
+                    Changement de mot de passe
                 </MenuItem>
                 <MenuItem onClick={() => {
                     setUser(null)
@@ -243,6 +272,8 @@ export const Layout = (props) => {
                     Déconnexion
                 </MenuItem>
             </Menu>
+            <ChangePasswordDialog handleClose={handleChangePassword} open={isChangePasswordDialogOpen} />
+            <ToastContainer />
         </Box>
     );
 

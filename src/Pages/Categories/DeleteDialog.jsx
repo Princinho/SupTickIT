@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 
 export const DeleteDialog = ({ open, handleClose, category, projects }) => {
 
-    console.log(category)
     return (
         <Box>
             <Dialog open={open} onClose={() => handleClose()}>
@@ -16,8 +15,8 @@ export const DeleteDialog = ({ open, handleClose, category, projects }) => {
                     <Typography>{category.description}</Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Annuler</Button>
-                    <Button color="error" variant="outlined" onClick={() => handleClose(category)}>Supprimer</Button>
+                    <Button onClick={()=>handleClose(false)}>Annuler</Button>
+                    <Button color="error" variant="outlined" onClick={() => handleClose(true)}>Supprimer</Button>
                 </DialogActions>
             </Dialog>
         </Box>

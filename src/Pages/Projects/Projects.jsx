@@ -7,7 +7,7 @@ import { DeleteDialog } from './DeleteDialog'
 import { sortAndFilterData } from './utils'
 import { DetailsDialog } from './DetailsDialog'
 import { stringAvatar } from '../../utils'
-import { createProject, deleteProject, editProject, getAllCompanies, getAllProjects, getAllUsers } from '../../Api'
+import { createProject, deleteProject, editProject, getAllCompaniesAsync, getAllProjectsAsync, getAllUsersAsync, runWithProgress } from '../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuthorization } from '../../Hooks/useAuthorization'
 import { useNavigate } from 'react-router-dom'
@@ -26,17 +26,17 @@ export const Projects = () => {
   const [sortOption, setSortOption] = useState({ option: 'title' })
   const { isUserAuthorized } = useAuthorization()
   const navigate = useNavigate()
-  
+
   useEffect(() => {
     if (!isUserAuthorized()) {
-        navigate("/accessdenied")
+      navigate("/accessdenied")
     }
-}, [])
+  }, [])
   // const [projects, setProjects] = useState([])
   const BASE_QUERY_KEY = 'projects'
-  const { data: projects } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllProjects })
-  const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
-  const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompanies })
+  const { data: projects } = useQuery({ queryKey: [BASE_QUERY_KEY], queryFn: getAllProjectsAsync })
+  const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsersAsync })
+  const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompaniesAsync })
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
@@ -65,16 +65,19 @@ export const Projects = () => {
   }
   const queryClient = useQueryClient()
   const createMutation = useMutation({
-    mutationFn: createProject,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+    mutationFn: runWithProgress,// createProject,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
+      queryClient.invalidateQueries({ queryKey: ["companies"] })
+    }
   })
 
   const editMutation = useMutation({
-    mutationFn: editProject,
+    mutationFn: runWithProgress,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
   const deleteMutation = useMutation({
-    mutationFn: deleteProject,
+    mutationFn: runWithProgress,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
 
@@ -84,17 +87,6 @@ export const Projects = () => {
   function setCurrentPage(page) {
     setTableOptions(prev => ({ ...prev, page }))
   }
-  // const assignProjectMutation = useMutation({
-  //   mutationFn: assignProject,
-  //   onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
-  // })
-  // // console.log(projects)
-  // function assignProjectToCompanies(project) {
-  //   for (const companyId of project.companies) {
-  //     assignProjectMutation.mutate(project, companyId)
-  //   }
-  // }
-  console.log(users, '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
   const appMoreMenuOpen = Boolean(anchorEl)
   return (
     <>
@@ -207,7 +199,8 @@ export const Projects = () => {
           companies={companies || []}
           handleClose={(project) => {
             if (project) {
-              createMutation.mutate(project)
+
+              createMutation.mutate({ data: project, func: createProject })
               // assignProjectToCompanies(project)
             }
             setIsCreateDialogOpen(false)
@@ -215,7 +208,7 @@ export const Projects = () => {
         {
           projectToEdit && <EditDialog open={isEditDialogOpen} project={projectToEdit}
             handleClose={(app) => {
-              if (app) { editMutation.mutate(app) }
+              if (app) { editMutation.mutate({ data: app, func: editProject }) }
               setIsEditDialogOpen(false)
             }}
 
@@ -231,8 +224,8 @@ export const Projects = () => {
         }
         {
           projectToDelete && <DeleteDialog open={isDeleteDialogOpen} project={projectToDelete}
-            handleClose={(app) => {
-              if (app) { deleteMutation.mutate(app) }
+            handleClose={(proj) => {
+              if (proj) { deleteMutation.mutate({ data: proj.id, func: deleteProject }) }
               setIsDeleteDialogOpen(false)
             }}
 
@@ -246,9 +239,8 @@ export const Projects = () => {
         {
           sortAndFilterData(projects, searchTerm, sortOption).map(
             project => {
-              console.log(project)
               const creator = users?.find(u => u.id == project.createdBy)
-              const creatorName = creator ? creator.firstName + " " + creator.lastName : "??"
+              const creatorName = creator ? creator.firstname + " " + creator.lastname : "??"
               return <Grid item component='paper' key={`proj-${project.id}`} >
                 <Paper sx={{ width: { xs: '300px', md: '30vw' }, minHeight: '200px', padding: '1em' }}>
                   <Stack direction='row' justifyContent='space-between' alignItems='center'>
@@ -279,21 +271,17 @@ export const Projects = () => {
                     </Stack>
                   </Stack>
                   <Divider />
-                  {companies?.some(c => {
-                    console.log(c, '########################')
-                    return c.projects?.includes(+project.id)
-                  }) ?
-                    <>
-                      <Typography variant='subtitle1' fontWeight='bold'>Participants</Typography>
-                      <Typography variant="subtitle2">
-                        {companies?.filter(company => {
-                          // console.log(company, project)
-                          return company.projects?.includes(project?.id)
-                        }).map(company => company.name).join(', ')}
-                      </Typography>
-                    </> :
-                    <Typography variant='subtitle2'>Non deployé</Typography>
-                  }
+
+                  <>
+                    <Typography variant='subtitle1' fontWeight='bold'>Participants</Typography>
+                    <Typography variant="subtitle2">
+                      {companies?.filter(company => {
+                        // console.log(company, project)
+                        return company.projects.some(p => p.id == project.id)
+                      }).map(company => company.name).join(', ') || <Typography variant='subtitle2'>Non deployé</Typography>}
+                    </Typography>
+                  </>
+
                 </Paper>
               </Grid>
             }

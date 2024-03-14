@@ -9,16 +9,13 @@ Permettre de creer des comptes pour les partenaires. Ces comptes seront des comp
 
 
 
+Permettre de filtrer les agents ou clients de la liste dans la barre de filtrage des tickets
 
 
-
-
-
-
-
-
-
-Afficher quelque part l'auteur du ticket
-Afficher aussi le projet concerné par le ticket
-Questions:
-Permettre a l'admin de s'affilier a une entreprise par un selecteur dans la navbar?
+===================================
+badges shouold be smaller (Users listing)
+identifiant=>mail
+rendre la legende des roles cliquable et lister uniquement les users dont les roles incluent le role cliqué
+Utiliser le bouton de reset de filtres arrondi dans le paper principal pour  pour fermer le filtre des tickets
+Approuver/rejeter=> Satisfait/non satisfait
+Changer Ferme en cloture.

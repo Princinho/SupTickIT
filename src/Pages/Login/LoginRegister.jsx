@@ -5,7 +5,10 @@ import { Logo } from "../../Components/Logo"
 import { useContext, useState } from "react"
 import { UserContext } from "../../Contexts"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { createUser, getAllCompanies, getAllUsers } from "../../Api"
+import { createUserAsync, getAllCompaniesAsync, loginToApi, runWithProgress } from "../../Api"
+import axios from "axios"
+import { jwtDecode } from "jwt-decode"
+import { ToastContainer } from "react-toastify"
 export const LoginRegister = () => {
   const { user, setUser } = useContext(UserContext)
   const navigate = useNavigate()
@@ -15,32 +18,42 @@ export const LoginRegister = () => {
   const [currentForm, setCurrentForm] = useState('login')
   const [errors, setErrors] = useState(null)
 
-  const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompanies })
-  const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsers })
+  const { data: companies } = useQuery({ queryKey: ['companies'], queryFn: getAllCompaniesAsync })
+  // const { data: users } = useQuery({ queryKey: ['users'], queryFn: getAllUsersAsync })
   const queryClient = useQueryClient()
 
   const createMutation = useMutation({
-    mutationFn: createUser,
+    mutationFn: runWithProgress,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] })
   })
-  function login() {
 
-    console.log(credentials)
+
+  async function login() {
     setError(false)
-    let matchingUser = users.find(u => u.username == credentials.username && u.password == credentials.password)
-    if (matchingUser) {
-      setUser(matchingUser)
-      navigate('/')
-    }
-    else {
-      setError(true)
-    }
+    runWithProgress({ data: credentials, func: loginToApi }).then(
+      accessToken => {
+        if (accessToken) {
+          let decodedUser = jwtDecode(accessToken)
+          sessionStorage.setItem("userRoleAssignments", decodedUser.RoleAssignments)
+          sessionStorage.setItem("accessToken", accessToken)
+          axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+          let expiryDate = new Date();
+          expiryDate.setDate(expiryDate.getDate() + 1)
+          sessionStorage.setItem("tokenExpiryDate", JSON.stringify(expiryDate))
+          setUser({ ...decodedUser, RoleAssignments: JSON.parse(decodedUser.RoleAssignments) })
+          navigate('/')
+        } else {
+          setError(true)
+        }
+        console.log(accessToken)
+      }
+    )
+
   }
   function register() {
     setErrors(null)
-    console.log(registrationFormData)
-    if (!registrationFormData.firstName) { setErrors(prev => ({ ...prev, 'firstName': true })) }
-    if (!registrationFormData.lastName) { setErrors(prev => ({ ...prev, 'lastName': true })) }
+    if (!registrationFormData.firstname) { setErrors(prev => ({ ...prev, 'firstname': true })) }
+    if (!registrationFormData.lastname) { setErrors(prev => ({ ...prev, 'lastname': true })) }
     if (!registrationFormData.companyId) { setErrors(prev => ({ ...prev, 'companyId': true })) }
     if (!registrationFormData.username) { setErrors(prev => ({ ...prev, 'username': true })) }
     if (!registrationFormData.password) { setErrors(prev => ({ ...prev, 'password': true })) }
@@ -48,18 +61,14 @@ export const LoginRegister = () => {
     if (registrationFormData.password != registrationFormData.passwordConfirmation) {
       setErrors(prev => ({ ...prev, 'passwordConfirmation': true, password: true }))
     }
-    console.log(errors)
     if (!errors) {
-      // setSampleData(
-      //   prev => ({ ...prev, users: [...prev.users, { ...registrationFormData, id: users?.length + 1 }] })
-      // )
-      createMutation.mutate(registrationFormData)
+      createMutation.mutate({data:registrationFormData,func:createUserAsync  })
       setUser(registrationFormData)
       navigate('/')
     }
   }
 
-  if (user) { navigate('/projects') }
+  if (user) { navigate('/') }
   else {
     return (
       <form>
@@ -122,13 +131,13 @@ export const LoginRegister = () => {
                 </Box>
 
                 <Stack direction='column' width='100%' spacing={2} alignItems='center'>
-                  <TextField variant="outlined" size="small" error={errors?.lastName} label="Nom"
+                  <TextField variant="outlined" size="small" error={errors?.lastname} label="Nom"
                     sx={{ minWidth: '60%' }}
-                    onChange={event => setRegistrationFormData(prev => ({ ...prev, lastName: event.target.value }))}
+                    onChange={event => setRegistrationFormData(prev => ({ ...prev, lastname: event.target.value }))}
                   ></TextField>
-                  <TextField variant="outlined" size="small" error={errors?.firstName} label="Prénoms"
+                  <TextField variant="outlined" size="small" error={errors?.firstname} label="Prénoms"
                     sx={{ minWidth: '60%' }}
-                    onChange={event => setRegistrationFormData(prev => ({ ...prev, firstName: event.target.value }))}
+                    onChange={event => setRegistrationFormData(prev => ({ ...prev, firstname: event.target.value }))}
                   ></TextField>
                   <FormControl sx={{ minWidth: '60%' }} size="small">
                     <InputLabel id="company-select-label">Entreprise</InputLabel>
@@ -167,6 +176,7 @@ export const LoginRegister = () => {
               </>}
             </Stack>
           </Paper>
+          <ToastContainer />
         </Stack >
       </form >
     )
