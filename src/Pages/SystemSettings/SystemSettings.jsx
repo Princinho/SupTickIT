@@ -26,7 +26,7 @@ export const SystemSettings = () => {
     })
     useEffect(() => setSettings({ ...systemSettings }), [systemSettings])
     const saveSettings = () => {
-        updateMutation.mutate(settings)
+        updateMutation.mutate({ stringified: JSON.stringify(settings) })
     }
     return (<>
         <Typography variant="h3" mb={2}>Configurations système</Typography>
@@ -34,16 +34,15 @@ export const SystemSettings = () => {
             <Grid item component='paper'>
                 <Paper sx={{ minHeight: '5em', minWidth: '15em', padding: '.5em 1em' }}>
                     <Typography variant="h6">Désignation de la référence produit</Typography>
-                    {systemSettings && <TextField
+                    <TextField
                         autoFocus
                         margin="dense"
-                        label="Désignation"
                         type="text"
                         value={settings?.productRefLabel}
                         onChange={event => setSettings(prev => ({ ...prev, productRefLabel: event.target.value }))}
                         fullWidth
                         variant="standard"
-                    />}
+                    />
                 </Paper>
             </Grid>
         </Grid>}

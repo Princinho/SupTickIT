@@ -136,7 +136,9 @@ export const UserDetails = () => {
             </Grid>
             <AddRoleDialog open={isAddRoleDialogOpen} roles={roles || []}
                 currentlyAssignedRoles={user?.roleAssignments?.filter(r => r.userId == id) || []} handleClose={handleAddRoleDialogClose} />
-            <RemoveRoleDialog open={isRemoveRoleDialogOpen} handleClose={handleRemoveRoleDialogClose} roleAssignMent={roleToDelete} />
+            <RemoveRoleDialog open={isRemoveRoleDialogOpen} 
+            handleClose={handleRemoveRoleDialogClose} user={user}
+            roleAssignMent={roleToDelete} />
 
             <Menu
                 anchorEl={anchorEl}

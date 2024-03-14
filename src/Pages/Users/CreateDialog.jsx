@@ -4,11 +4,9 @@ import { useContext, useState } from "react"
 import { NEW_ACCOUNT_DEFAULT_PASSWORD, SYSTEM_ROLES, isInRole } from "../../utils"
 import { UserContext } from "../../Contexts"
 export const CreateDialog = ({ open, handleClose, companies }) => {
-    //TODO: Faire bosser la pagination
     const [formData, setFormData] = useState({ firstname: "", lastname: "", isCompanyAccount: false, companyId: '', username: '' })
     const [nameError, setNameError] = useState(false)
     const { user } = useContext(UserContext)
-    console.log(user)
     return (
         <Box>
             <Dialog open={open} onClose={() => handleClose()}>
@@ -47,13 +45,12 @@ export const CreateDialog = ({ open, handleClose, companies }) => {
                         fullWidth
                         variant="standard"
                     />
-                    {isInRole(user,SYSTEM_ROLES.ADMIN) && <FormControlLabel control={
-                        <Switch checked={formData.isCompanyAccount}
+                    {isInRole(user, SYSTEM_ROLES.ADMIN) && <FormControlLabel control={
+                        <Switch checked={formData.isCompanyAccount || false}
                             onChange={() => setFormData(prev => ({ ...prev, isCompanyAccount: !prev.isCompanyAccount }))} />}
                         label="Compte Partenaire" />}
 
                     {formData.isCompanyAccount &&
-                        <>
                             <FormControl fullWidth sx={{ marginTop: '1em' }}>
                                 <InputLabel id="company-select-label">Entreprise partenaire </InputLabel>
                                 <Select
@@ -69,7 +66,6 @@ export const CreateDialog = ({ open, handleClose, companies }) => {
 
                                 </Select>
                             </FormControl>
-                        </>
                     }
                 </DialogContent>
                 <DialogActions>
@@ -80,7 +76,6 @@ export const CreateDialog = ({ open, handleClose, companies }) => {
                     <Button onClick={() => {
                         if (!(formData.firstname && formData.lastname && formData.username) || (formData.isCompanyAccount && !formData.companyId)) {
                             setNameError(true)
-                            return
                         } else {
                             setNameError(false)
                             let createObject = { ...formData }

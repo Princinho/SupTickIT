@@ -5,8 +5,12 @@ import { useState } from "react"
 export const EditDialog = ({ open, handleClose, companies, entry }) => {
     //TODO: Faire bosser la pagination
 
-    const [formData, setFormData] = useState({ id: entry.id, firstname: entry.firstname, lastname: entry.lastname, companyId: entry.companyId, username: entry.username })
+    const [formData, setFormData] = useState({
+        id: entry.id, firstname: entry.firstname,
+        lastname: entry.lastname, companyId: entry.companyId, username: entry.username
+    })
     const [nameError, setNameError] = useState(false)
+    console.log(formData)
     return (
         <Box>
             <Dialog open={open} onClose={() => handleClose()}>
@@ -63,8 +67,8 @@ export const EditDialog = ({ open, handleClose, companies, entry }) => {
 
                                 </Select>
                             </FormControl>
-                            {formData.companyId &&
-                                <FormControlLabel control={<Switch checked={formData.canManagePartnerUsers} onChange={() => setFormData(prev => ({ ...prev, canManagePartnerUsers: !prev.canManagePartnerUsers }))} />} label="Autoriser a gerer les utilisateurs du partenaire" />}
+                            {/* {formData.companyId &&
+                                <FormControlLabel control={<Switch checked={formData.canManagePartnerUsers} onChange={() => setFormData(prev => ({ ...prev, canManagePartnerUsers: !prev.canManagePartnerUsers }))} />} label="Autoriser a gerer les utilisateurs du partenaire" />} */}
                         </>
                     }
                 </DialogContent>
@@ -74,9 +78,8 @@ export const EditDialog = ({ open, handleClose, companies, entry }) => {
                         handleClose()
                     }}>Annuler</Button>
                     <Button onClick={() => {
-                        if (!(formData.firstname && formData.lastname && formData.username && formData.companyId)) {
+                        if (!(formData.firstname && formData.lastname && formData.username)) {
                             setNameError(true)
-                            return
                         } else {
                             setNameError(false)
                             handleClose(formData)

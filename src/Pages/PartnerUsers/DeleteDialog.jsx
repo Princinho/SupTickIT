@@ -1,10 +1,7 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from "@mui/material"
 import PropTypes from 'prop-types'
-import { useContext } from "react"
-import { DataContext } from "../../Contexts"
-export const DeleteDialog = ({ open, handleClose, entry }) => {
+export const DeleteDialog = ({ open, handleClose,companies, entry }) => {
     //TODO: Faire bosser la pagination
-    const { sampleData } = useContext(DataContext)
 
     return (
         <Box>
@@ -14,7 +11,7 @@ export const DeleteDialog = ({ open, handleClose, entry }) => {
                     <Stack>
                         <Typography variant="body1">{entry.firstname} {entry.lastname}</Typography>
                         <Typography variant="body1">{entry.username}</Typography>
-                        <Typography variant="body1">{sampleData.companies.find(c => c.id == entry.companyId)?.name}</Typography>
+                        <Typography variant="body1">{companies?.find(c => c.id == entry.companyId)?.name}</Typography>
                     </Stack>
                 </DialogContent>
                 <DialogActions>
@@ -37,6 +34,7 @@ DeleteDialog.propTypes = {
     entry: PropTypes.shape({
         id: PropTypes.string,
         firstname: PropTypes.string,
+        companies: PropTypes.array.isRequired,
         lastname: PropTypes.string,
         companyId: PropTypes.string,
         username: PropTypes.string

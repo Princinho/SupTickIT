@@ -7,7 +7,7 @@ import { EditDialog } from './EditDialog'
 import { DeleteDialog } from './DeleteDialog'
 import { SYSTEM_ROLES, sortAndFilterData } from '../../utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createUser, deleteUser, editUser,  getAllCompaniesAsync, getAllUsersAsync, resetPassword } from '../../Api'
+import { createUserAsync, deleteUserAsync, editUserAsync, getAllCompaniesAsync, getAllUsersAsync, resetPassword, runWithProgress } from '../../Api'
 import { useNavigate } from 'react-router-dom'
 import { useAuthorization } from '../../Hooks/useAuthorization'
 import { RoleChip } from '../../Components/RoleChip'
@@ -72,14 +72,14 @@ export const Users = () => {
   }
   function closeEditDialog(entry) {
     if (entry) {
-      editMutation.mutate(entry)
+      editMutation.mutate({ data: entry, func: editUserAsync })
     }
     setFocusedEntry(null)
     setIsEditDialogOpen(false)
   }
   function closeDeleteDialog(entry) {
     if (entry) {
-      deleteMutation.mutate(entry)
+      deleteMutation.mutate({ data: entry, func: deleteUserAsync })
     }
     setFocusedEntry(null)
     setIsDeleteDialogOpen(false)
@@ -93,15 +93,15 @@ export const Users = () => {
   }
 
   const createMutation = useMutation({
-    mutationFn: createUser,
+    mutationFn: runWithProgress,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
   const editMutation = useMutation({
-    mutationFn: editUser,
+    mutationFn: runWithProgress,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
   const deleteMutation = useMutation({
-    mutationFn: deleteUser,
+    mutationFn: runWithProgress,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
   const resetPasswordMutation = useMutation({
@@ -118,6 +118,8 @@ export const Users = () => {
   function handleRowsPerPageChange(value) {
     updateTableOptions('rowsPerPage', value)
   }
+  console.log(users)
+  console.log(companies)
   // if(!user)return 
   return (
     <Paper sx={{ padding: '1em', paddingRight: 0, flexGrow: 1 }} elevation={2}>
@@ -137,6 +139,7 @@ export const Users = () => {
       <UsersTable
         users={sortAndFilterData(users?.filter(u => roleFilter ? u.roles.some(r => r == roleFilter) : true), searchTerm, tableOptions.sortOption || "")}
         options={({ ...tableOptions, handlePageChange, handleRowsPerPageChange })}
+        companies={companies}
         showEditDialog={showEditDialog}
         showDeleteDialog={showDeleteDialog}
         showResetPasswordDialog={showResetPasswordDialog}
@@ -145,13 +148,15 @@ export const Users = () => {
         companies={companies}
         handleClose={(user) => {
           if (user) {
-            createMutation.mutate(user)
+            createMutation.mutate({ data: user, func: createUserAsync })
           }
           setIsCreateDialogOpen(false)
         }} />
       {focusedEntry && <EditDialog open={isEditDialogOpen} entry={focusedEntry} companies={companies} handleClose={closeEditDialog} />}
-      {focusedEntry && <DeleteDialog open={isDeleteDialogOpen} entry={focusedEntry} handleClose={closeDeleteDialog} />}
-      {focusedEntry && <ResetPasswordDialog open={isResetPasswordDialogOpen} entry={focusedEntry} handleClose={closeResetPasswordDialog} />}
+      {focusedEntry && <DeleteDialog open={isDeleteDialogOpen} entry={focusedEntry}
+        companies={companies} handleClose={closeDeleteDialog} />}
+      {focusedEntry && <ResetPasswordDialog open={isResetPasswordDialogOpen} companies={companies}
+        entry={focusedEntry} handleClose={closeResetPasswordDialog} />}
       <Stack direction={{ md: 'row' }} gap={2} justifyContent='flex-end' padding={2}>
         <Stack direction='row' alignItems='center' gap={1}>
           <RoleChip roleId={SYSTEM_ROLES.ADMIN} handleClick={() => toggleRole(SYSTEM_ROLES.ADMIN)} />

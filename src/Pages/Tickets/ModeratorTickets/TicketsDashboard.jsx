@@ -2,7 +2,7 @@ import { ArrowBack, ArrowForward, HighlightOff, Search, Tune } from '@mui/icons-
 import { Box, Button, ButtonGroup, FormControl, Grid, InputAdornment, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { editTicket, getAllCategories, getAllProjectsAsync, getAllTicketsAsync, getAllUsersAsync, isUserInRole } from '../../../Api'
+import { editTicket, getAllCategories, getAllProjectsAsync, getAllTicketsAsync, getAllUsersAsync, isUserInRole, runWithProgress } from '../../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { TicketsTable } from './TicketsTable'
 import { TicketDetailsDialog } from './TicketDetailsDialog'
@@ -111,7 +111,7 @@ export const TicketsDashboard = () => {
     return newFilteredTickets
   }
   const editMutation = useMutation({
-    mutationFn: editTicket,
+    mutationFn: runWithProgress,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] })
   })
   function openFilters() {
@@ -243,7 +243,7 @@ export const TicketsDashboard = () => {
               handleClose={(ticket) => {
                 if (ticket) {
                   console.log(ticket)
-                  editMutation.mutate({ ...focusedEntry, ...ticket })
+                  editMutation.mutate({ data: { ...focusedEntry, ...ticket }, func: editTicket })
                 }
 
                 setIsDetailsDialogOpen(false)

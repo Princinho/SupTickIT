@@ -5,7 +5,7 @@ import { Logo } from "../../Components/Logo"
 import { useContext, useState } from "react"
 import { UserContext } from "../../Contexts"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { createUser, getAllCompaniesAsync, loginToApi, runWithProgress } from "../../Api"
+import { createUserAsync, getAllCompaniesAsync, loginToApi, runWithProgress } from "../../Api"
 import axios from "axios"
 import { jwtDecode } from "jwt-decode"
 import { ToastContainer } from "react-toastify"
@@ -62,7 +62,7 @@ export const LoginRegister = () => {
       setErrors(prev => ({ ...prev, 'passwordConfirmation': true, password: true }))
     }
     if (!errors) {
-      createMutation.mutate({data:registrationFormData,func:createUser})
+      createMutation.mutate({data:registrationFormData,func:createUserAsync  })
       setUser(registrationFormData)
       navigate('/')
     }

@@ -2,18 +2,16 @@ import { Divider, IconButton, ListItemIcon, Menu, MenuItem, Stack, Table, TableB
 
 import PropTypes from 'prop-types'
 import { Delete, Edit, MoreVert, RestartAlt, Tune } from '@mui/icons-material'
-import { useContext, useState } from 'react'
-import { DataContext } from '../../Contexts'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { RoleChip } from '../../Components/RoleChip'
 
 
-export const UsersTable = ({ users, showEditDialog, showDeleteDialog, showResetPasswordDialog, options }) => {
+export const UsersTable = ({ users, showEditDialog, companies, showDeleteDialog, showResetPasswordDialog, options }) => {
     function handleClose() {
         setAnchorEl(null)
     }
     const [anchorEl, setAnchorEl] = useState(null)
-    const { sampleData } = useContext(DataContext)
     const [focusedEntry, setFocusedEntry] = useState(null)
     const appMoreMenuOpen = Boolean(anchorEl)
     const navigate = useNavigate()
@@ -84,7 +82,7 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, showResetP
                                     </TableCell>
                                     <TableCell>
                                         <Typography variant='body2'>
-                                            {sampleData.companies.find(company => company.id == user.companyId)?.name}
+                                            {companies?.find(company => company.id == user.companyId)?.name}
                                         </Typography>
                                     </TableCell>
                                     <TableCell>
@@ -201,6 +199,7 @@ UsersTable.propTypes = {
     showEditDialog: PropTypes.func.isRequired,
     options: PropTypes.object.isRequired,
     showDetailsDialog: PropTypes.func.isRequired,
+    companies:PropTypes.array.isRequired,
     showDeleteDialog: PropTypes.func.isRequired,
     showResetPasswordDialog:PropTypes.func.isRequired
 }

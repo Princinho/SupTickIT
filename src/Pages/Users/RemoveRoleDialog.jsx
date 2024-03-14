@@ -3,9 +3,9 @@ import PropTypes from "prop-types"
 import { useContext } from "react"
 import { DataContext } from "../../Contexts"
 
-export const RemoveRoleDialog = ({ open, handleClose, roleAssignMent }) => {
-    const { sampleData } = useContext(DataContext)
+export const RemoveRoleDialog = ({ open, handleClose, roleAssignMent, user }) => {
     console.log(roleAssignMent)
+    const { sampleData } = useContext(DataContext)
     console.log(sampleData.users.find(u => u.id == roleAssignMent.userId))
     return (
         <Box>
@@ -14,7 +14,7 @@ export const RemoveRoleDialog = ({ open, handleClose, roleAssignMent }) => {
                 <DialogContent>
                     <Stack direction='row' spacing={1}>
                         <Typography variant="body1">Utilisateur: </Typography>
-                        <Typography variant="body1" fontWeight='bold'>{sampleData.users.find(u => u.id == roleAssignMent.userId)?.firstname}</Typography>
+                        <Typography variant="body1" fontWeight='bold'>{user?.firstname}</Typography>
                     </Stack>
                     <Stack direction='row' spacing={1}>
                         <Typography variant="body1">Role:</Typography>
@@ -32,5 +32,6 @@ export const RemoveRoleDialog = ({ open, handleClose, roleAssignMent }) => {
 RemoveRoleDialog.propTypes = {
     open: PropTypes.bool,
     handleClose: PropTypes.func,
-    roleAssignMent: PropTypes.object
+    roleAssignMent: PropTypes.object,
+    user: PropTypes.object
 }

@@ -2,17 +2,15 @@ import { Divider, IconButton, ListItemIcon, Menu, MenuItem, Table, TableBody, Ta
 
 import PropTypes from 'prop-types'
 import { Delete, Edit, MoreVert } from '@mui/icons-material'
-import { useContext, useState } from 'react'
-import { DataContext } from '../../Contexts'
 import { RoleChip } from '../../Components/RoleChip'
+import { useState } from 'react'
 
 
-export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options }) => {
+export const UsersTable = ({ users, showEditDialog, companies, showDeleteDialog, options }) => {
     function handleClose() {
         setAnchorEl(null)
     }
     const [anchorEl, setAnchorEl] = useState(null)
-    const { sampleData } = useContext(DataContext)
     const [focusedEntry, setFocusedEntry] = useState(null)
     const appMoreMenuOpen = Boolean(anchorEl)
     const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } = options
@@ -43,58 +41,59 @@ export const UsersTable = ({ users, showEditDialog, showDeleteDialog, options })
                             ).map((user) => {
                                 console.log(user)
                                 return (
-                                <TableRow
-                                    key={'appli' + user.id}
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                    hovere
-                                >
-                                    <TableCell component="th" scope="row">
-                                        {user.id}
-                                    </TableCell>
-                                    <TableCell component="th" scope="row">
-                                        <Typography variant='body2'>
-                                            {`${user.firstname} ${user.lastname}`}
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell align="left"
-                                    // onClick={() => navigate(`${user.id}`)}
+                                    <TableRow
+                                        key={'appli' + user.id}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        hovere
                                     >
-
-                                        <Typography color='text.secondary' sx={{
-                                            overflow: "hidden",
-                                            textOverflow: "ellipsis",
-                                            display: "-webkit-box",
-                                            "WebkitLineClamp": '1',
-                                            "WebkitBoxOrient": "vertical"
-                                        }}
-                                            variant='span'
+                                        <TableCell component="th" scope="row">
+                                            {user.id}
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            <Typography variant='body2'>
+                                                {`${user.firstname} ${user.lastname}`}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell align="left"
+                                        // onClick={() => navigate(`${user.id}`)}
                                         >
 
-                                            {user.username}
-                                        </Typography>
+                                            <Typography color='text.secondary' sx={{
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                                display: "-webkit-box",
+                                                "WebkitLineClamp": '1',
+                                                "WebkitBoxOrient": "vertical"
+                                            }}
+                                                variant='span'
+                                            >
 
-                                    </TableCell>
-                                    <TableCell>
-                                        {user.roles?.map(role => <RoleChip key={`role-${user.id}-${role}`} roleId={role} />)}
-                                    </TableCell>
-                                    <TableCell>
-                                        {user.lastLoginDate}
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant='body2'>
-                                            {sampleData.companies.find(company => company.id == user.companyId)?.name}
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <IconButton onClick={event => {
-                                            setFocusedEntry(user)
-                                            setAnchorEl(event.currentTarget)
-                                        }}>
-                                            <MoreVert />
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
-                            )}) :
+                                                {user.username}
+                                            </Typography>
+
+                                        </TableCell>
+                                        <TableCell>
+                                            {user.roles?.map(role => <RoleChip key={`role-${user.id}-${role}`} roleId={role} />)}
+                                        </TableCell>
+                                        <TableCell>
+                                            {user.lastLoginDate}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography variant='body2'>
+                                                {companies?.find(company => company.id == user.companyId)?.name}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <IconButton onClick={event => {
+                                                setFocusedEntry(user)
+                                                setAnchorEl(event.currentTarget)
+                                            }}>
+                                                <MoreVert />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                )
+                            }) :
                             <TableRow>
                                 <TableCell colSpan={5}>
                                     <Typography variant='subtitle1' color='primary' textAlign='center'> Aucune donnée disponible</Typography>
@@ -197,5 +196,6 @@ UsersTable.propTypes = {
     showEditDialog: PropTypes.func.isRequired,
     options: PropTypes.object.isRequired,
     showDetailsDialog: PropTypes.func.isRequired,
-    showDeleteDialog: PropTypes.func.isRequired
+    showDeleteDialog: PropTypes.func.isRequired,
+    companies: PropTypes.array.isRequired
 }

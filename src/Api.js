@@ -54,11 +54,11 @@ function getOrInitData() {
     }
     return storedData
 }
-function getSystemSettings() {
-    return getSingleton('settings')
+async function getSystemSettings() {
+    return getAsync('settings')
 }
-function saveSystemSettings(settings) {
-    saveSingleton('settings', settings)
+async function saveSettingsAsync(settings) {
+    create( settings,'settings')
 }
 function saveSingleton(type, settings) {
     let storedData = getOrInitData()
@@ -291,7 +291,7 @@ async function getAllUsersAsync() {
 
 }
 
-async function createUser(data) {
+async function createUserAsync(data) {
     await create(data, 'authentication/register')
 }
 function createCustomer(data) {
@@ -299,12 +299,13 @@ function createCustomer(data) {
     addRoleToUser({ roleId: SYSTEM_ROLES.CUSTOMER, startDate: new Date().toISOString(), userId: result.id })
 }
 
-function editUser(data) {
-    editEntry(data, 'users')
+async function editUserAsync(data) {
+    console.log(data)
+    return await edit(data, 'users')
 }
 
-function deleteUser(data) {
-    deleteEntry(data, 'users')
+async function deleteUserAsync(data) {
+   await remove(data.id, 'users')
 }
 async function getAvailableAgents(companyId) {
     let companyAgents = (await getCompanyUsers(companyId)).filter(user => isUserInRole(SYSTEM_ROLES.AGENT, user.id))
@@ -394,11 +395,11 @@ export {
     getAllTicketsAsync, createTicket, editTicket, deleteTicket,
     getCustomerTicketsAsync, getTicket, getTicketMessagesAsync, getTicketsAssignedByMod,
     getAllCategories, createCategoryAsync, editCategoryAsync, deleteCategory, getProjectCategoriesAsync, getCategoryAsync,
-    getAllUsersAsync, getCompanyUsers, createUser, editUser, deleteUser, createCustomer,
+    getAllUsersAsync, getCompanyUsers, createUserAsync, editUserAsync,  deleteUserAsync, createCustomer,
     getAllRoleAssignments, getAllRoles, addRoleToUser, changePassword, resetPassword,
     getActiveRolesForUser, getActiveRoleAssignmentsForUser, isUserInRole, isApiUserInRole,
     removeRoleFromUser, getAvailableAgents, getAgentTickets, getAllAgents,
     getAllTicketLogs, createTicketLog, editTicketLog, deleteTicketLog, getTicketLogsByTicketId, getTicketAttachmentsAsync, deleteAttachmentAsync,
-    getSystemSettings, saveSystemSettings
+    getSystemSettings, saveSettingsAsync as saveSystemSettings
 }
 

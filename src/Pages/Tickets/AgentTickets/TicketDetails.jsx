@@ -1,8 +1,8 @@
 
-import { Box, Button, Chip, Divider, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Typography } from '@mui/material'
+import { Box, Button, Chip, Divider, FormControl, InputLabel, MenuItem, Paper, Select, Stack, Typography } from '@mui/material'
 
 import { useCallback, useContext, useEffect, useState } from 'react'
-import { API_BASE, SERVER_BASE, createMessageAsync, deleteAttachmentAsync, editTicket, getAllCategories, getAllProjectsAsync, getAllUsersAsync, getTicket, getTicketAttachmentsAsync, getTicketLogsByTicketId, getTicketMessagesAsync, isUserInRole } from '../../../Api'
+import { API_BASE, SERVER_BASE, createMessageAsync, deleteAttachmentAsync, editTicket, getAllCategories, getAllProjectsAsync, getAllUsersAsync, getTicket, getTicketAttachmentsAsync, getTicketLogsByTicketId, getTicketMessagesAsync, isUserInRole, runWithProgress } from '../../../Api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { UserContext } from '../../../Contexts'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -12,13 +12,13 @@ import { Discussion } from '../../../Components/Discussion'
 import { SYSTEM_ROLES, TICKET_STATUS } from '../../../utils'
 import { TicketStatus } from '../../../Components/TicketStatus'
 import { SimpleDialog } from '../../../Components/SimpleDialog'
-import ImagePreviewInput from '../../../Components/ImagePreviewInput'
 import { Add, History } from '@mui/icons-material'
 import { useTheme } from '@emotion/react'
 import { TicketHistoryDialog } from './TicketHistoryDialog'
 import { BarLoader } from 'react-spinners'
 import axios from 'axios'
 import ImagePreview from '../../../Components/ImagePreview'
+import { toast } from 'react-toastify'
 
 export const TicketDetails = () => {
     const { id } = useParams()
@@ -46,16 +46,16 @@ export const TicketDetails = () => {
     const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false)
     const [attachmentFile, setAttachmentFile] = useState(null);
     const createMutation = useMutation({
-        mutationFn: createMessageAsync,
+        mutationFn: runWithProgress,
         onSuccess: () => refetchMessages(),
         onSettled: refetchMessages
     })
     const editMutation = useMutation({
-        mutationFn: editTicket,
+        mutationFn: runWithProgress,
         onSuccess: () => queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY, id] })
     })
     const deleteAttachmentMutation = useMutation({
-        mutationFn: deleteAttachmentAsync,
+        mutationFn: runWithProgress,
         onSuccess: () => {
             refetchAttachments()
             queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY, id] })
@@ -67,28 +67,28 @@ export const TicketDetails = () => {
     function rejectTicket(proceed) {
         if (proceed) {
             console.warn('Ticket has been rejected')
-            editMutation.mutate({ ...ticket, status: TICKET_STATUS.REJECTED })
+            editMutation.mutate({ data: { ...ticket, status: TICKET_STATUS.REJECTED }, func: editTicket })
         }
         setIsRejectDialogOpen(false)
     }
     function closeTicket(proceed) {
         if (proceed) {
             console.warn('Ticket has been rejected')
-            editMutation.mutate({ ...ticket, status: TICKET_STATUS.CLOSED })
+            editMutation.mutate({ data: { ...ticket, status: TICKET_STATUS.CLOSED }, func: editTicket })
         }
         setIsCloseTicketDialogOpen(false)
     }
     function closeDeleteAttachmentDialog(confirmDelete) {
         console.log(confirmDelete)
         if (confirmDelete) {
-            deleteAttachmentMutation.mutate(attachmentToDelete)
+            deleteAttachmentMutation.mutate({ data: attachmentToDelete, func: deleteAttachmentAsync })
         }
         setIsConfirmDeleteAttachmentDialogOpen(false)
     }
     function confirmTicket(proceed) {
         if (proceed) {
             console.info('Ticket has been confirmed')
-            editMutation.mutate({ ...ticket, status: TICKET_STATUS.APPROVED })
+            editMutation.mutate({ data: { ...ticket, status: TICKET_STATUS.APPROVED }, func: editTicket })
         }
         setIsConfirmDialogOpen(false)
     }
@@ -98,10 +98,10 @@ export const TicketDetails = () => {
             body: body,
             userId: user?.id,
         }
-        createMutation.mutate(message)
+        createMutation.mutate({ data: message, func: createMessageAsync })
     }
     function changeTicketStatus(status) {
-        editMutation.mutate({ ...ticket, status })
+        editMutation.mutate({ data: { ...ticket, status }, func: editTicket })
     }
     const handleFileChange = (e) => {
         if (e.target.files) {
@@ -115,10 +115,17 @@ export const TicketDetails = () => {
             formData.append("file", attachmentFile);
             try {
                 // You can write the URL of your server or any other endpoint used for file upload
-                const result = await axios.post(`${API_BASE}attachments/uploadfile/${id}`, formData);
-                const data = await result.data;
-                console.log(data);
-                refetchAttachments()
+                toast.promise(axios.post(`${API_BASE}attachments/uploadfile/${id}`, formData), {
+                    pending: 'Operation en cours ⏳',
+                    success: 'Operation réussie👍',
+                    error: `Echec de l' Operation 💀`
+                })
+                    .then(result => {
+                        const data = result.data;
+                        console.log(data);
+                        refetchAttachments()
+
+                    })
             } catch (error) {
                 console.error(error);
             }
@@ -242,11 +249,11 @@ export const TicketDetails = () => {
                     })}
                     <Box>
                         <div>
-                            <Button variant='contained' size='large' sx={{ height: '200px', width: '150px',padding:'0' }}>
+                            <Button variant='contained' size='large' sx={{ height: '200px', width: '150px', padding: '0' }}>
                                 <label htmlFor="file" className="sr-only" style={{
                                     display: 'flex', justifyContent: 'center',
-                                    width:'100%',height:'100%',
-                                    alignItems: 'center', borderRadius: '.5em',cursor:'pointer'
+                                    width: '100%', height: '100%',
+                                    alignItems: 'center', borderRadius: '.5em', cursor: 'pointer'
                                 }}><Add />
                                     <input id="file" style={{ display: 'none' }} type="file" onChange={handleFileChange} />
                                 </label>
