@@ -19,7 +19,11 @@ import { useState } from "react";
 import { useTheme } from "@emotion/react";
 export const CreateDialog = ({ open, handleClose, companies }) => {
   //TODO: Faire bosser la pagination
-  const [formData, setFormData] = useState({ title: "", description: "" });
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    productReferenceName: "",
+  });
   const theme = useTheme();
   const [formErrors, setFormErrors] = useState([]);
   const [selectedCompanies, setSelectedCompanies] = useState([]);
