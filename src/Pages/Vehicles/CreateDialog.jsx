@@ -169,8 +169,8 @@ export const CreateDialog = ({ open, customers, handleClose }) => {
               } else {
                 console.log(formData);
                 handleClose(formData);
+                reset();
               }
-              reset();
             }}
           >
             Enregistrer
