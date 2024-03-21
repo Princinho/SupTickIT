@@ -232,18 +232,8 @@ async function deleteAttachmentAsync(attachment) {
 function deleteTicket(data) {
   deleteEntry(data, "tickets");
 }
-async function getAllCategories() {
-  return await getAsync("ticketcategories");
-}
 async function getAllServiceCategories() {
   return await getAsync("ServiceCategories");
-}
-async function getCategoryAsync(id) {
-  let response = (await axios.get(`${API_BASE}ticketcategories/${id}`)).data;
-  return response;
-}
-async function createCategoryAsync(data) {
-  await create(data, "ticketCategories");
 }
 async function createServiceCategoryAsync(data) {
   await create(data, "ServiceCategories");
@@ -252,12 +242,48 @@ async function createServiceCategoryAsync(data) {
 async function editServiceCategoryAsync(data) {
   return await edit(data, "ServiceCategories");
 }
-async function editCategoryAsync(data) {
-  return await edit(data, "ticketCategories");
-}
-
 async function deleteServiceCategory(id) {
   await remove(id, "ServiceCategories");
+}
+async function getAllVehicles() {
+  return await getAsync("Vehicles");
+}
+async function createVehicleAsync(data) {
+  await create(data, "Vehicles");
+}
+
+async function editVehicleAsync(data) {
+  return await edit(data, "Vehicles");
+}
+async function deleteVehicleAsync(id) {
+  await remove(id, "Vehicles");
+}
+async function getAllCustomers() {
+  return await getAsync("Customers");
+}
+async function createCustomerAsync(data) {
+  await create(data, "Customers");
+}
+
+async function editCustomerAsync(data) {
+  return await edit(data, "Customers");
+}
+async function deleteCustomerAsync(id) {
+  await remove(id, "Customers");
+}
+async function getAllCategories() {
+  return await getAsync("ticketcategories");
+}
+async function getCategoryAsync(id) {
+  let response = (await axios.get(`${API_BASE}ticketcategories/${id}`)).data;
+  return response;
+}
+async function createCategoryAsync(data) {
+  await create(data, "ticketCategories");
+}
+
+async function editCategoryAsync(data) {
+  return await edit(data, "ticketCategories");
 }
 
 async function deleteCategory(id) {
@@ -392,6 +418,14 @@ async function removeRoleFromUser(id) {
 }
 
 export {
+  getAllVehicles,
+  createVehicleAsync,
+  editVehicleAsync,
+  deleteVehicleAsync,
+  getAllCustomers,
+  createCustomerAsync,
+  editCustomerAsync,
+  deleteCustomerAsync,
   getOrInitData,
   loginToApi,
   getDataFromLocalStorage,

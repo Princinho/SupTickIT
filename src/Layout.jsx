@@ -101,6 +101,20 @@ export const Layout = (props) => {
               />
             </ListItemButton>
           </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton
+              selected={matchPath("/vehicles/*", path) || false}
+              onClick={() => navigate("vehicles")}
+            >
+              <ListItemIcon sx={{ minWidth: menuIconWidth }}>
+                <ListAltIcon sx={{ color: menuItemColor }} />
+              </ListItemIcon>
+              <ListItemText
+                primary={"Véhicules"}
+                sx={{ ...listItemStyles, textDecoration: "none" }}
+              />
+            </ListItemButton>
+          </ListItem>
 
           {isPathAuthorizedForUser("/projects") && (
             <ListItem disablePadding>

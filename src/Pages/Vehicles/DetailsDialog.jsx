@@ -5,42 +5,31 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Divider,
   Typography,
 } from "@mui/material";
 import PropTypes from "prop-types";
 
-export const DeleteDialog = ({ open, handleClose, category }) => {
+export const DetailsDialog = ({ open, handleClose, category }) => {
   return (
     <Box>
       <Dialog open={open} onClose={() => handleClose()}>
-        <DialogTitle>Supprimer la catégorie</DialogTitle>
-
+        <DialogTitle>Détails de la catégorie</DialogTitle>
         <DialogContent>
           <Typography variant="span" sx={{ fontWeight: "bold" }}>
             {category.name}
           </Typography>
-          <Divider />
-
           <Typography>{category.description}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => handleClose(false)}>Annuler</Button>
-          <Button
-            color="error"
-            variant="outlined"
-            onClick={() => handleClose(true)}
-          >
-            Supprimer
-          </Button>
+          <Button onClick={handleClose}>Fermer</Button>
         </DialogActions>
       </Dialog>
     </Box>
   );
 };
-DeleteDialog.propTypes = {
+DetailsDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
   category: PropTypes.object.isRequired,
-  projects: PropTypes.array,
+  customer: PropTypes.object.isRequired,
 };

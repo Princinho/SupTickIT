@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import PropTypes from "prop-types";
 
-export const DeleteDialog = ({ open, handleClose, category }) => {
+export const DeleteDialog = ({ open, handleClose, customer, entry }) => {
   return (
     <Box>
       <Dialog open={open} onClose={() => handleClose()}>
@@ -18,11 +18,19 @@ export const DeleteDialog = ({ open, handleClose, category }) => {
 
         <DialogContent>
           <Typography variant="span" sx={{ fontWeight: "bold" }}>
-            {category.name}
+            {entry?.make} &nbsp;
+            {entry?.model}&nbsp;
+            {entry?.year}
           </Typography>
           <Divider />
-
-          <Typography>{category.description}</Typography>
+          <Typography>Couleur</Typography>
+          <Typography fontWeight="bold">{entry?.color}</Typography>
+          <Divider />
+          <Typography>Propriétaire</Typography>
+          <Typography fontWeight="bold">
+            {customer?.firstname || "Inconnu"}&nbsp;{" "}
+            {customer?.lastname || "Inconnu"}
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => handleClose(false)}>Annuler</Button>
@@ -41,6 +49,6 @@ export const DeleteDialog = ({ open, handleClose, category }) => {
 DeleteDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
-  category: PropTypes.object.isRequired,
-  projects: PropTypes.array,
+  entry: PropTypes.object.isRequired,
+  customer: PropTypes.object,
 };

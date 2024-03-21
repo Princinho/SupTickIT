@@ -12,7 +12,7 @@ export const themeOptions = {
     },
     mode: "dark",
     primary: {
-      main: "#ff521b",
+      main: "#f57505",
     },
     secondary: {
       main: "#edd382",
