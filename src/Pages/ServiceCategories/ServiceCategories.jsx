@@ -14,65 +14,79 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { CompaniesTable } from "./CompaniesTable";
-import { useState } from "react";
+import { CategoriesTable } from "./Table";
+import { useEffect, useState } from "react";
 import { CreateDialog } from "./CreateDialog";
 import { EditDialog } from "./EditDialog";
 import { DeleteDialog } from "./DeleteDialog";
-import { sortAndFilterData } from "./utils";
+
 import { DetailsDialog } from "./DetailsDialog";
 import {
-  createCompany,
-  deleteCompany,
-  editCompany,
-  getAllCompaniesAsync,
+  getAllProjectsAsync,
   runWithProgress,
+  getAllServiceCategories,
+  editServiceCategoryAsync,
+  createServiceCategoryAsync,
+  deleteServiceCategory,
 } from "../../Api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RightSidedButton } from "../../Components/RightSidedButton";
+import { sortAndFilterData } from "../../utils";
 
-export const Companies = () => {
-  // TODO: Add company creation date and company subscription date.
-
+export const ServiceCategories = () => {
+  const BASE_QUERY_KEY = "servicecategories";
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [companyToEdit, setCompanyToEdit] = useState(null);
-  const [companyToDetail, setCompanyToDetail] = useState(null);
-  const [companyToDelete, setCompanyToDelete] = useState(null);
+  const [categoryToEdit, setCategoryToEdit] = useState(null);
+  const [categoryToDetail, setCategoryToDetail] = useState(null);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [sortOption, setSortOption] = useState({ option: "name" });
-  const BASE_QUERY_KEY = "companies";
-  // const [companies, setCompanies] = useState([])
+  // const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { data: companies } = useQuery({
+  const { data: categories } = useQuery({
     queryKey: [BASE_QUERY_KEY],
-    queryFn: getAllCompaniesAsync,
+    queryFn: getAllServiceCategories,
   });
-
+  const { data: projects } = useQuery({
+    queryKey: ["projects"],
+    queryFn: getAllProjectsAsync,
+  });
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
-    count: companies?.length,
+    count: categories?.length || 0,
     handlePageChange: setCurrentPage,
     handleRowsPerPageChange: changeRowsPerPage,
   });
+  useEffect(() => {
+    setTableOptions((prev) => ({ ...prev, count: categories?.length || 0 }));
+  }, [categories]);
+  // const { isUserAuthorized } = useAuthorization();
+  // useEffect(() => {
+  //   if (!isUserAuthorized()) {
+  //     navigate("/accessdenied");
+  //   }
+  // }, []);
+  console.log("Page num", tableOptions.page);
+  console.log("categories", categories);
   function changeRowsPerPage(rowsPerPage) {
     setRowsPerPage(rowsPerPage);
     setCurrentPage(0);
   }
-  function showEditDialog(company) {
+  function showEditDialog(category) {
     setIsEditDialogOpen(true);
-    setCompanyToEdit(company);
+    setCategoryToEdit(category);
   }
-  function showDeleteDialog(company) {
+  function showDeleteDialog(category) {
     setIsDeleteDialogOpen(true);
-    setCompanyToDelete(company);
+    setCategoryToDelete(category);
   }
-  function showDetailsDialog(company) {
+  function showDetailsDialog(category) {
     setIsDetailsDialogOpen(true);
-    setCompanyToDetail(company);
+    setCategoryToDetail(category);
   }
   function setRowsPerPage(rowsPerPage) {
     setTableOptions((prev) => ({ ...prev, rowsPerPage }));
@@ -80,34 +94,35 @@ export const Companies = () => {
   function setCurrentPage(page) {
     setTableOptions((prev) => ({ ...prev, page }));
   }
+
   const createMutation = useMutation({
     mutationFn: runWithProgress,
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] }),
   });
-
   const editMutation = useMutation({
     mutationFn: runWithProgress,
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] });
+      console.warn("Invalidated");
+    },
   });
   const deleteMutation = useMutation({
     mutationFn: runWithProgress,
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] }),
   });
-
   return (
     <Paper sx={{ padding: "1em", paddingRight: 0, flexGrow: 1 }} elevation={2}>
       <Typography variant="h5" component="span" sx={{ fontWeight: "bold" }}>
-        Entreprises
+        Catégories de services
       </Typography>
       <Stack direction="row" mb={2}>
         <Typography color="text.secondary" sx={{ fontWeight: "bold" }}>
           Menu /
         </Typography>
         <Typography color="primary.light" sx={{ fontWeight: "bold" }}>
-          Entreprises
+          &nbsp;Catégories de services
         </Typography>
       </Stack>
 
@@ -139,7 +154,7 @@ export const Companies = () => {
               >
                 <MenuItem value={"name"}>Nom</MenuItem>
                 <MenuItem value={"id"}>Id</MenuItem>
-                {/* <MenuItem value={'dateCreated'}>Date</MenuItem> */}
+                <MenuItem value={"dateCreated"}>Date</MenuItem>
               </Select>
             </FormControl>
           </Stack>
@@ -152,7 +167,7 @@ export const Companies = () => {
             justifyContent={{ xs: "flex-start", sm: "flex-end" }}
           >
             <TextField
-              id="companies-index-search-box"
+              id="categories-index-search-box"
               size="small"
               sx={{ minWidth: "30%" }}
               onChange={(event) => setSearchTerm(event.target.value)}
@@ -188,7 +203,6 @@ export const Companies = () => {
             >
               <Button
                 disabled={tableOptions.page == 0}
-                sx={{}}
                 onClick={() => setCurrentPage(tableOptions.page - 1)}
               >
                 <ArrowBack />
@@ -199,7 +213,6 @@ export const Companies = () => {
                   Math.ceil(tableOptions.count / tableOptions.rowsPerPage) - 1
                 }
                 onClick={() => setCurrentPage(tableOptions.page + 1)}
-                sx={{}}
               >
                 <ArrowForward />
               </Button>
@@ -210,9 +223,10 @@ export const Companies = () => {
         </Grid>
       </Grid>
       <Box sx={{ marginRight: "1em", mt: 2 }}>
-        <CompaniesTable
+        <CategoriesTable
           options={tableOptions}
-          companies={sortAndFilterData(companies, searchTerm, sortOption)}
+          categories={sortAndFilterData(categories, searchTerm, sortOption)}
+          projects={projects}
           showDetailsDialog={showDetailsDialog}
           showEditDialog={showEditDialog}
           showDeleteDialog={showDeleteDialog}
@@ -220,42 +234,54 @@ export const Companies = () => {
       </Box>
       <CreateDialog
         open={isCreateDialogOpen}
-        handleClose={(company) => {
-          if (company) {
-            createMutation.mutate({ data: company, func: createCompany });
-            // toast.promise(createCompany(company), { success: () => { console.log("Created successfully"); refetch(); toast("Simple toast") } })
+        projects={projects}
+        handleClose={(cat) => {
+          if (cat) {
+            createMutation.mutate({
+              data: cat,
+              func: createServiceCategoryAsync,
+            });
           }
           setIsCreateDialogOpen(false);
         }}
       />
-      {companyToEdit && (
+      {categoryToEdit && (
         <EditDialog
           open={isEditDialogOpen}
-          entry={companyToEdit}
-          handleClose={(company) => {
-            if (company) {
-              editMutation.mutate({ data: company, func: editCompany });
+          projects={projects}
+          category={categoryToEdit}
+          handleClose={(cat) => {
+            if (cat) {
+              editMutation.mutate({
+                data: cat,
+                func: editServiceCategoryAsync,
+              });
             }
             setIsEditDialogOpen(false);
           }}
         />
       )}
-      {companyToDetail && (
+      {categoryToDetail && (
         <DetailsDialog
           open={isDetailsDialogOpen}
-          entry={companyToDetail}
+          category={categoryToDetail}
+          project={projects.find((p) => p.id == categoryToDetail?.projectId)}
           handleClose={() => {
             setIsDetailsDialogOpen(false);
           }}
         />
       )}
-      {companyToDelete && (
+      {categoryToDelete && (
         <DeleteDialog
           open={isDeleteDialogOpen}
-          entry={companyToDelete}
-          handleClose={(company) => {
-            if (company) {
-              deleteMutation.mutate({ data: company, func: deleteCompany });
+          projects={projects}
+          category={categoryToDelete}
+          handleClose={(confirm) => {
+            if (confirm) {
+              deleteMutation.mutate({
+                data: categoryToDelete.id,
+                func: deleteServiceCategory,
+              });
             }
             setIsDeleteDialogOpen(false);
           }}

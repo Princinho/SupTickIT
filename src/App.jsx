@@ -31,6 +31,7 @@ import { AccessDenied } from "./Pages/Login/AccessDenied.jsx";
 import { SystemSettings } from "./Pages/SystemSettings/SystemSettings.jsx";
 
 import "react-toastify/dist/ReactToastify.css";
+import { ServiceCategories } from "./Pages/ServiceCategories/ServiceCategories.jsx";
 function App() {
   const [user, setUser] = useState(null);
   const [sampleData, setSampleData] = useState(null);
@@ -69,6 +70,7 @@ function App() {
           <Route path="users" element={<Users />} />
           <Route path="users/:id" element={<UserDetails />} />
           <Route path="categories" element={<Categories />} />
+          <Route path="servicecategories" element={<ServiceCategories />} />
           <Route path="tickets" element={<Tickets />} />
           <Route path="tickets/:id" element={<TicketDetails />} />
           <Route path="systemsettings" element={<SystemSettings />} />

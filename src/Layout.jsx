@@ -87,6 +87,21 @@ export const Layout = (props) => {
       <Divider />
       <Box>
         <List sx={{ paddingBlock: "0" }}>
+          <ListItem disablePadding>
+            <ListItemButton
+              selected={matchPath("/servicecategories/*", path) || false}
+              onClick={() => navigate("servicecategories")}
+            >
+              <ListItemIcon sx={{ minWidth: menuIconWidth }}>
+                <ListAltIcon sx={{ color: menuItemColor }} />
+              </ListItemIcon>
+              <ListItemText
+                primary={"Catégories de Service"}
+                sx={{ ...listItemStyles, textDecoration: "none" }}
+              />
+            </ListItemButton>
+          </ListItem>
+
           {isPathAuthorizedForUser("/projects") && (
             <ListItem disablePadding>
               <ListItemButton
