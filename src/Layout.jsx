@@ -31,7 +31,7 @@ import { UserContext } from "./Contexts";
 import { useAuthorization } from "./Hooks/useAuthorization";
 import { ChangePasswordDialog } from "./Pages/LayoutComponents/ChangePasswordDialog";
 import { changePassword } from "./Api";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 
 const drawerWidth = 240;
 
@@ -96,7 +96,21 @@ export const Layout = (props) => {
                 <ListAltIcon sx={{ color: menuItemColor }} />
               </ListItemIcon>
               <ListItemText
-                primary={"Catégories de Service"}
+                primary={"Catégories de pièces"}
+                sx={{ ...listItemStyles, textDecoration: "none" }}
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton
+              selected={matchPath("/services/*", path) || false}
+              onClick={() => navigate("services")}
+            >
+              <ListItemIcon sx={{ minWidth: menuIconWidth }}>
+                <ListAltIcon sx={{ color: menuItemColor }} />
+              </ListItemIcon>
+              <ListItemText
+                primary={"Pièces"}
                 sx={{ ...listItemStyles, textDecoration: "none" }}
               />
             </ListItemButton>
@@ -129,8 +143,22 @@ export const Layout = (props) => {
               />
             </ListItemButton>
           </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton
+              selected={matchPath("/quotes/*", path) || false}
+              onClick={() => navigate("quotes")}
+            >
+              <ListItemIcon sx={{ minWidth: menuIconWidth }}>
+                <ListAltIcon sx={{ color: menuItemColor }} />
+              </ListItemIcon>
+              <ListItemText
+                primary={"Devis"}
+                sx={{ ...listItemStyles, textDecoration: "none" }}
+              />
+            </ListItemButton>
+          </ListItem>
 
-          {isPathAuthorizedForUser("/projects") && (
+          {/* {isPathAuthorizedForUser("/projects") && (
             <ListItem disablePadding>
               <ListItemButton
                 selected={matchPath("/projects/*", path) || false}
@@ -187,7 +215,7 @@ export const Layout = (props) => {
                 <ListItemText primary={"Utilisateurs"} sx={listItemStyles} />
               </ListItemButton>
             </ListItem>
-          )}
+          )} */}
           {isPathAuthorizedForUser("/tickets/") && (
             <ListItem disablePadding>
               <ListItemButton

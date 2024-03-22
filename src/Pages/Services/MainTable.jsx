@@ -18,7 +18,8 @@ import { Delete, Edit, MoreVert } from "@mui/icons-material";
 import { useState } from "react";
 
 export const MainTable = ({
-  customers,
+  services,
+  categories,
   showEditDialog,
   showDeleteDialog,
   showDetailsDialog,
@@ -34,26 +35,27 @@ export const MainTable = ({
   const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } =
     options;
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - customers.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - services.length) : 0;
   return (
     <>
       <TableContainer>
         <Table
           sx={{ minWidth: 320 }}
           size="small"
-          aria-label="list of customers"
+          aria-label="list of services"
         >
           <TableHead>
             <TableRow>
-              <TableCell align="left">Nom</TableCell>
-              <TableCell align="left">Téléphone</TableCell>
-              <TableCell align="left">Adresse</TableCell>
+              <TableCell align="left">Service</TableCell>
+              <TableCell align="left">Catégorie</TableCell>
+              <TableCell align="left">Prix Unitaire</TableCell>
+              <TableCell align="left">Prix Modifiable</TableCell>
               <TableCell align="left">Options</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {customers?.length > 0 ? (
-              customers.map((entry) => {
+            {services?.length > 0 ? (
+              services.map((entry) => {
                 return (
                   <TableRow
                     key={"appli" + entry.id}
@@ -61,25 +63,7 @@ export const MainTable = ({
                     hover
                   >
                     <TableCell component="th" scope="row">
-                      {entry.firstname}&nbsp;
-                      {entry.lastname}
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      {entry.phone}
-                    </TableCell>
-                    <TableCell
-                      align="left"
-                      sx={{ cursor: "pointer", maxWidth: "30%" }}
-                      width="30%"
-                      onClick={() => showDetailsDialog(entry)}
-                    >
-                      <Typography
-                        variant="span"
-                        sx={{ my: 0, fontWeight: "bold" }}
-                      >
-                        {entry.adress}
-                      </Typography>
-                      <br />
+                      <Typography>{entry.name}</Typography>
                       <Typography
                         color="text.secondary"
                         sx={{
@@ -91,10 +75,32 @@ export const MainTable = ({
                         }}
                         variant="span"
                       >
-                        {entry.email}
+                        {entry.description}
                       </Typography>
                     </TableCell>
-
+                    <TableCell component="th" scope="row">
+                      {
+                        categories.find((c) => c.id == entry.serviceCategoryId)
+                          ?.name
+                      }
+                    </TableCell>
+                    <TableCell
+                      align="left"
+                      onClick={() => showDetailsDialog(entry)}
+                    >
+                      <Typography
+                        variant="span"
+                        sx={{ my: 0, fontWeight: "bold" }}
+                      >
+                        {entry.price}
+                      </Typography>
+                      <br />
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      <Typography>
+                        {entry.isLineEditAllowed ? "Oui" : "Non"}
+                      </Typography>
+                    </TableCell>
                     <TableCell>
                       <IconButton
                         onClick={(event) => {
@@ -138,7 +144,7 @@ export const MainTable = ({
                 rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
                 labelRowsPerPage="Eléments par page"
                 colSpan={6}
-                count={customers?.length || 0}
+                count={services?.length || 0}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 SelectProps={{
@@ -219,7 +225,8 @@ export const MainTable = ({
   );
 };
 MainTable.propTypes = {
-  customers: PropTypes.array.isRequired,
+  services: PropTypes.array.isRequired,
+  categories: PropTypes.array.isRequired,
   showEditDialog: PropTypes.func.isRequired,
   options: PropTypes.object.isRequired,
   showDetailsDialog: PropTypes.func.isRequired,

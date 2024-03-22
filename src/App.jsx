@@ -34,6 +34,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { ServiceCategories } from "./Pages/ServiceCategories/ServiceCategories.jsx";
 import { Vehicles } from "./Pages/Vehicles/Vehicles.jsx";
 import { Customers } from "./Pages/Customers/Customers.jsx";
+import { Quotes } from "./Pages/Quotes/Quotes.jsx";
+import { Services } from "./Pages/Services/Services.jsx";
 function App() {
   const [user, setUser] = useState(null);
   const [sampleData, setSampleData] = useState(null);
@@ -73,8 +75,10 @@ function App() {
           <Route path="users/:id" element={<UserDetails />} />
           <Route path="categories" element={<Categories />} />
           <Route path="servicecategories" element={<ServiceCategories />} />
+          <Route path="services" element={<Services />} />
           <Route path="vehicles" element={<Vehicles />} />
           <Route path="customers" element={<Customers />} />
+          <Route path="quotes" element={<Quotes />} />
           <Route path="tickets" element={<Tickets />} />
           <Route path="tickets/:id" element={<TicketDetails />} />
           <Route path="systemsettings" element={<SystemSettings />} />

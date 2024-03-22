@@ -218,8 +218,7 @@ export const Customers = () => {
       <Box sx={{ marginRight: "1em", mt: 2 }}>
         <MainTable
           options={tableOptions}
-          categories={sortAndFilterData(customers, searchTerm, sortOption)}
-          customers={customers}
+          customers={sortAndFilterData(customers, searchTerm, sortOption)}
           showEditDialog={showEditDialog}
           showDeleteDialog={showDeleteDialog}
         />

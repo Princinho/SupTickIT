@@ -14,78 +14,75 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { CategoriesTable } from "./CategoriesTable";
+import { MainTable } from "./MainTable";
 import { useEffect, useState } from "react";
 import { CreateDialog } from "./CreateDialog";
 import { EditDialog } from "./EditDialog";
 import { DeleteDialog } from "./DeleteDialog";
-import { sortAndFilterData } from "../../utils";
-import { DetailsDialog } from "./DetailsDialog";
+
 import {
-  deleteCategory,
-  editCategoryAsync,
-  getAllCategories,
-  getAllProjectsAsync,
-  createCategoryAsync,
   runWithProgress,
+  getAllParts,
+  createPartAsync,
+  editPartAsync,
+  deletePartAsync,
+  getAllServiceCategories,
 } from "../../Api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useAuthorization } from "../../Hooks/useAuthorization";
-import { useNavigate } from "react-router-dom";
 import { RightSidedButton } from "../../Components/RightSidedButton";
+import { sortAndFilterData } from "../../utils";
 
-export const Categories = () => {
-  const BASE_QUERY_KEY = "servicecategories";
+export const Services = () => {
+  const BASE_QUERY_KEY = "services";
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [categoryToEdit, setCategoryToEdit] = useState(null);
-  const [categoryToDetail, setCategoryToDetail] = useState(null);
-  const [categoryToDelete, setCategoryToDelete] = useState(null);
+  const [entryToEdit, setEntryToEdit] = useState(null);
+  const [entryToDelete, setEntryToDelete] = useState(null);
   const [sortOption, setSortOption] = useState({ option: "name" });
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { data: categories } = useQuery({
+  const { data: services } = useQuery({
     queryKey: [BASE_QUERY_KEY],
-    queryFn: getAllCategories,
+    queryFn: getAllParts,
   });
-  const { data: projects } = useQuery({
-    queryKey: ["projects"],
-    queryFn: getAllProjectsAsync,
+
+  const { data: categories } = useQuery({
+    queryKey: ["servicecategories"],
+    //TODO: Renommer servicecategories en partscategories
+    queryFn: getAllServiceCategories,
   });
+
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
-    count: categories?.length,
+    count: services?.length || 0,
     handlePageChange: setCurrentPage,
     handleRowsPerPageChange: changeRowsPerPage,
   });
-
-  const { isUserAuthorized } = useAuthorization();
   useEffect(() => {
-    if (!isUserAuthorized()) {
-      navigate("/accessdenied");
-    }
-  }, []);
-
+    setTableOptions((prev) => ({ ...prev, count: services?.length || 0 }));
+  }, [services]);
+  // const { isUserAuthorized } = useAuthorization();
+  // useEffect(() => {
+  //   if (!isUserAuthorized()) {
+  //     navigate("/accessdenied");
+  //   }
+  // }, []);
   function changeRowsPerPage(rowsPerPage) {
     setRowsPerPage(rowsPerPage);
     setCurrentPage(0);
   }
   function showEditDialog(category) {
     setIsEditDialogOpen(true);
-    setCategoryToEdit(category);
+    setEntryToEdit(category);
   }
   function showDeleteDialog(category) {
     setIsDeleteDialogOpen(true);
-    setCategoryToDelete(category);
+    setEntryToDelete(category);
   }
-  function showDetailsDialog(category) {
-    setIsDetailsDialogOpen(true);
-    setCategoryToDetail(category);
-  }
+
   function setRowsPerPage(rowsPerPage) {
     setTableOptions((prev) => ({ ...prev, rowsPerPage }));
   }
@@ -113,14 +110,14 @@ export const Categories = () => {
   return (
     <Paper sx={{ padding: "1em", paddingRight: 0, flexGrow: 1 }} elevation={2}>
       <Typography variant="h5" component="span" sx={{ fontWeight: "bold" }}>
-        Catégories de ticket
+        Pièces
       </Typography>
       <Stack direction="row" mb={2}>
         <Typography color="text.secondary" sx={{ fontWeight: "bold" }}>
           Menu /
         </Typography>
         <Typography color="primary.light" sx={{ fontWeight: "bold" }}>
-          Catégories
+          &nbsp;Pièces
         </Typography>
       </Stack>
 
@@ -221,58 +218,55 @@ export const Categories = () => {
         </Grid>
       </Grid>
       <Box sx={{ marginRight: "1em", mt: 2 }}>
-        <CategoriesTable
+        <MainTable
           options={tableOptions}
-          categories={sortAndFilterData(categories, searchTerm, sortOption)}
-          projects={projects}
-          showDetailsDialog={showDetailsDialog}
+          categories={categories}
+          services={sortAndFilterData(services, searchTerm, sortOption)}
           showEditDialog={showEditDialog}
           showDeleteDialog={showDeleteDialog}
         />
       </Box>
       <CreateDialog
         open={isCreateDialogOpen}
-        projects={projects}
+        services={services}
+        categories={categories}
         handleClose={(cat) => {
           if (cat) {
-            createMutation.mutate({ data: cat, func: createCategoryAsync });
+            createMutation.mutate({
+              data: cat,
+              func: createPartAsync,
+            });
           }
           setIsCreateDialogOpen(false);
         }}
       />
-      {categoryToEdit && (
+      {entryToEdit && (
         <EditDialog
           open={isEditDialogOpen}
-          projects={projects}
-          category={categoryToEdit}
+          services={services}
+          categories={categories}
+          entry={entryToEdit}
           handleClose={(cat) => {
             if (cat) {
-              editMutation.mutate({ data: cat, func: editCategoryAsync });
+              editMutation.mutate({
+                data: cat,
+                func: editPartAsync,
+              });
             }
             setIsEditDialogOpen(false);
           }}
         />
       )}
-      {categoryToDetail && (
-        <DetailsDialog
-          open={isDetailsDialogOpen}
-          category={categoryToDetail}
-          project={projects.find((p) => p.id == categoryToDetail?.projectId)}
-          handleClose={() => {
-            setIsDetailsDialogOpen(false);
-          }}
-        />
-      )}
-      {categoryToDelete && (
+      {entryToDelete && (
         <DeleteDialog
           open={isDeleteDialogOpen}
-          projects={projects}
-          category={categoryToDelete}
+          entry={entryToDelete}
+          categories={categories}
           handleClose={(confirm) => {
             if (confirm) {
               deleteMutation.mutate({
-                data: categoryToDelete.id,
-                func: deleteCategory,
+                data: entryToDelete.id,
+                func: deletePartAsync,
               });
             }
             setIsDeleteDialogOpen(false);

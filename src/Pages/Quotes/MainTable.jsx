@@ -18,10 +18,12 @@ import { Delete, Edit, MoreVert } from "@mui/icons-material";
 import { useState } from "react";
 
 export const MainTable = ({
-  customers,
+  quotes,
   showEditDialog,
   showDeleteDialog,
   showDetailsDialog,
+  customers,
+  vehicles,
   options,
 }) => {
   function handleClose() {
@@ -34,38 +36,44 @@ export const MainTable = ({
   const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } =
     options;
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - customers.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - quotes.length) : 0;
   return (
     <>
       <TableContainer>
-        <Table
-          sx={{ minWidth: 320 }}
-          size="small"
-          aria-label="list of customers"
-        >
+        <Table sx={{ minWidth: 320 }} size="small" aria-label="list of quotes">
           <TableHead>
             <TableRow>
-              <TableCell align="left">Nom</TableCell>
-              <TableCell align="left">Téléphone</TableCell>
-              <TableCell align="left">Adresse</TableCell>
+              <TableCell align="left">Reference</TableCell>
+              <TableCell align="left">Date</TableCell>
+              <TableCell align="left">Client</TableCell>
+              <TableCell align="left">Vehicule</TableCell>
+              <TableCell align="left">Total TTC</TableCell>
               <TableCell align="left">Options</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {customers?.length > 0 ? (
-              customers.map((entry) => {
+            {quotes?.length > 0 ? (
+              quotes.map((entry) => {
+                // console.log(users)
+                const customer = customers?.find(
+                  (c) => c.id == entry.customerId
+                );
+                const vehicle = vehicles?.find((c) => c.id == entry.customerId);
+
                 return (
                   <TableRow
-                    key={"appli" + entry.id}
+                    key={"devisnum" + entry.id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     hover
                   >
                     <TableCell component="th" scope="row">
-                      {entry.firstname}&nbsp;
-                      {entry.lastname}
+                      {entry.referenceNumber}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      {entry.phone}
+                      {entry.date}
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      {customer?.firstname + " " + customer?.lastname}
                     </TableCell>
                     <TableCell
                       align="left"
@@ -77,7 +85,10 @@ export const MainTable = ({
                         variant="span"
                         sx={{ my: 0, fontWeight: "bold" }}
                       >
-                        {entry.adress}
+                        {vehicle.make}&nbsp;
+                        {vehicle.model}&nbsp;
+                        {vehicle.year}&nbsp;
+                        {vehicle.color}&nbsp;
                       </Typography>
                       <br />
                       <Typography
@@ -91,8 +102,11 @@ export const MainTable = ({
                         }}
                         variant="span"
                       >
-                        {entry.email}
+                        158218 Km
                       </Typography>
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      {entry.totalWithTaxOrBonuses}
                     </TableCell>
 
                     <TableCell>
@@ -110,7 +124,7 @@ export const MainTable = ({
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={5}>
+                <TableCell colSpan={7}>
                   <Typography
                     variant="subtitle1"
                     color="primary"
@@ -137,8 +151,8 @@ export const MainTable = ({
               <TablePagination
                 rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
                 labelRowsPerPage="Eléments par page"
-                colSpan={6}
-                count={customers?.length || 0}
+                colSpan={7}
+                count={quotes?.length || 0}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 SelectProps={{
@@ -220,6 +234,8 @@ export const MainTable = ({
 };
 MainTable.propTypes = {
   customers: PropTypes.array.isRequired,
+  quotes: PropTypes.array.isRequired,
+  vehicles: PropTypes.array.isRequired,
   showEditDialog: PropTypes.func.isRequired,
   options: PropTypes.object.isRequired,
   showDetailsDialog: PropTypes.func.isRequired,

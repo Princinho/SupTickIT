@@ -258,6 +258,32 @@ async function editVehicleAsync(data) {
 async function deleteVehicleAsync(id) {
   await remove(id, "Vehicles");
 }
+async function getAllQuotes() {
+  return await getAsync("Quotes");
+}
+async function createQuoteAsync(data) {
+  await create(data, "Quotes");
+}
+
+async function editQuoteAsync(data) {
+  return await edit(data, "Quotes");
+}
+async function deleteQuoteAsync(id) {
+  await remove(id, "Quotes");
+}
+async function getAllParts() {
+  return await getAsync("Services");
+}
+async function createPartAsync(data) {
+  await create(data, "Services");
+}
+
+async function editPartAsync(data) {
+  return await edit(data, "Services");
+}
+async function deletePartAsync(id) {
+  await remove(id, "Services");
+}
 async function getAllCustomers() {
   return await getAsync("Customers");
 }
@@ -422,6 +448,14 @@ export {
   createVehicleAsync,
   editVehicleAsync,
   deleteVehicleAsync,
+  getAllParts,
+  createPartAsync,
+  editPartAsync,
+  deletePartAsync,
+  getAllQuotes,
+  createQuoteAsync,
+  editQuoteAsync,
+  deleteQuoteAsync,
   getAllCustomers,
   createCustomerAsync,
   editCustomerAsync,
