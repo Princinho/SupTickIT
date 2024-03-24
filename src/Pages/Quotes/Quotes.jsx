@@ -22,16 +22,18 @@ import { DeleteDialog } from "./DeleteDialog";
 
 import {
   runWithProgress,
-  editVehicleAsync,
-  createVehicleAsync,
-  deleteVehicleAsync,
   getAllCustomers,
   getAllQuotes,
   getAllVehicles,
+  getAllParts,
+  createQuoteAsync,
+  editQuoteAsync,
+  deleteQuoteAsync,
 } from "../../Api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RightSidedButton } from "../../Components/RightSidedButton";
 import { sortAndFilterData } from "../../utils";
+import { toast } from "react-toastify";
 
 export const Quotes = () => {
   const BASE_QUERY_KEY = "quotes";
@@ -49,7 +51,7 @@ export const Quotes = () => {
     queryFn: getAllQuotes,
   });
 
-  const { data: customers } = useQuery({
+  const { data: customers, isError: isCustomerError } = useQuery({
     queryKey: ["customers"],
     queryFn: getAllCustomers,
   });
@@ -57,7 +59,13 @@ export const Quotes = () => {
     queryKey: ["vehicles"],
     queryFn: getAllVehicles,
   });
-
+  const { data: parts } = useQuery({
+    queryKey: ["parts"],
+    queryFn: getAllParts,
+  });
+  if (isCustomerError) {
+    toast.error("Impossible d'acceder a la liste des clients");
+  }
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
@@ -78,13 +86,13 @@ export const Quotes = () => {
     setRowsPerPage(rowsPerPage);
     setCurrentPage(0);
   }
-  function showEditDialog(category) {
+  function showEditDialog(entry) {
     setIsEditDialogOpen(true);
-    setEntryToEdit(category);
+    setEntryToEdit(entry);
   }
-  function showDeleteDialog(category) {
+  function showDeleteDialog(entry) {
     setIsDeleteDialogOpen(true);
-    setEntryToDelete(category);
+    setEntryToDelete(entry);
   }
 
   function setRowsPerPage(rowsPerPage) {
@@ -103,7 +111,6 @@ export const Quotes = () => {
     mutationFn: runWithProgress,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] });
-      console.warn("Invalidated");
     },
   });
   const deleteMutation = useMutation({
@@ -114,14 +121,14 @@ export const Quotes = () => {
   return (
     <Paper sx={{ padding: "1em", paddingRight: 0, flexGrow: 1 }} elevation={2}>
       <Typography variant="h5" component="span" sx={{ fontWeight: "bold" }}>
-        Catégories de services
+        Devis
       </Typography>
       <Stack direction="row" mb={2}>
         <Typography color="text.secondary" sx={{ fontWeight: "bold" }}>
           Menu /
         </Typography>
         <Typography color="primary.light" sx={{ fontWeight: "bold" }}>
-          &nbsp;Catégories de services
+          &nbsp;Devis
         </Typography>
       </Stack>
 
@@ -235,11 +242,12 @@ export const Quotes = () => {
         open={isCreateDialogOpen}
         customers={customers}
         vehicles={vehicles}
+        parts={parts}
         handleClose={(cat) => {
           if (cat) {
             createMutation.mutate({
               data: cat,
-              func: createVehicleAsync,
+              func: createQuoteAsync,
             });
           }
           setIsCreateDialogOpen(false);
@@ -254,7 +262,7 @@ export const Quotes = () => {
             if (cat) {
               editMutation.mutate({
                 data: cat,
-                func: editVehicleAsync,
+                func: editQuoteAsync,
               });
             }
             setIsEditDialogOpen(false);
@@ -280,7 +288,7 @@ export const Quotes = () => {
             if (confirm) {
               deleteMutation.mutate({
                 data: entryToDelete.id,
-                func: deleteVehicleAsync,
+                func: deleteQuoteAsync,
               });
             }
             setIsDeleteDialogOpen(false);

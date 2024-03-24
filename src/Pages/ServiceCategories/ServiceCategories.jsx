@@ -24,7 +24,7 @@ import { DetailsDialog } from "./DetailsDialog";
 import {
   getAllProjectsAsync,
   runWithProgress,
-  getAllServiceCategories,
+  getAllPartCategories,
   editServiceCategoryAsync,
   createServiceCategoryAsync,
   deleteServiceCategory,
@@ -48,7 +48,7 @@ export const ServiceCategories = () => {
   const queryClient = useQueryClient();
   const { data: categories } = useQuery({
     queryKey: [BASE_QUERY_KEY],
-    queryFn: getAllServiceCategories,
+    queryFn: getAllPartCategories,
   });
   const { data: projects } = useQuery({
     queryKey: ["projects"],

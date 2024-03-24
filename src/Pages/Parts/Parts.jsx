@@ -26,13 +26,13 @@ import {
   createPartAsync,
   editPartAsync,
   deletePartAsync,
-  getAllServiceCategories,
+  getAllPartCategories,
 } from "../../Api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RightSidedButton } from "../../Components/RightSidedButton";
 import { sortAndFilterData } from "../../utils";
 
-export const Services = () => {
+export const Parts = () => {
   const BASE_QUERY_KEY = "services";
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(false);
@@ -51,7 +51,7 @@ export const Services = () => {
   const { data: categories } = useQuery({
     queryKey: ["servicecategories"],
     //TODO: Renommer servicecategories en partscategories
-    queryFn: getAllServiceCategories,
+    queryFn: getAllPartCategories,
   });
 
   const [tableOptions, setTableOptions] = useState({

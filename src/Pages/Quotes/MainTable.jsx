@@ -54,11 +54,11 @@ export const MainTable = ({
           <TableBody>
             {quotes?.length > 0 ? (
               quotes.map((entry) => {
-                // console.log(users)
+                console.log(entry);
                 const customer = customers?.find(
                   (c) => c.id == entry.customerId
                 );
-                const vehicle = vehicles?.find((c) => c.id == entry.customerId);
+                const vehicle = vehicles?.find((c) => c.id == entry.vehicleId);
 
                 return (
                   <TableRow
@@ -70,7 +70,7 @@ export const MainTable = ({
                       {entry.referenceNumber}
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      {entry.date}
+                      {new Date(entry.date).toLocaleDateString()}
                     </TableCell>
                     <TableCell component="th" scope="row">
                       {customer?.firstname + " " + customer?.lastname}
@@ -85,10 +85,10 @@ export const MainTable = ({
                         variant="span"
                         sx={{ my: 0, fontWeight: "bold" }}
                       >
-                        {vehicle.make}&nbsp;
-                        {vehicle.model}&nbsp;
-                        {vehicle.year}&nbsp;
-                        {vehicle.color}&nbsp;
+                        {vehicle?.make}&nbsp;
+                        {vehicle?.model}&nbsp;
+                        {vehicle?.year}&nbsp;
+                        {vehicle?.color}&nbsp;
                       </Typography>
                       <br />
                       <Typography
@@ -106,7 +106,7 @@ export const MainTable = ({
                       </Typography>
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      {entry.totalWithTaxOrBonuses}
+                      {entry.total}
                     </TableCell>
 
                     <TableCell>

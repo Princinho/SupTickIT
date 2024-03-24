@@ -80,7 +80,7 @@ export const MainTable = ({
                     </TableCell>
                     <TableCell component="th" scope="row">
                       {
-                        categories.find((c) => c.id == entry.serviceCategoryId)
+                        categories?.find((c) => c.id == entry.serviceCategoryId)
                           ?.name
                       }
                     </TableCell>

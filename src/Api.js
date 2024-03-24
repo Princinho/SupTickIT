@@ -232,18 +232,18 @@ async function deleteAttachmentAsync(attachment) {
 function deleteTicket(data) {
   deleteEntry(data, "tickets");
 }
-async function getAllServiceCategories() {
-  return await getAsync("ServiceCategories");
+async function getAllPartCategories() {
+  return await getAsync("PartCategories");
 }
 async function createServiceCategoryAsync(data) {
-  await create(data, "ServiceCategories");
+  await create(data, "PartCategories");
 }
 
 async function editServiceCategoryAsync(data) {
-  return await edit(data, "ServiceCategories");
+  return await edit(data, "PartCategories");
 }
 async function deleteServiceCategory(id) {
-  await remove(id, "ServiceCategories");
+  await remove(id, "PartCategories");
 }
 async function getAllVehicles() {
   return await getAsync("Vehicles");
@@ -264,7 +264,9 @@ async function getAllQuotes() {
 async function createQuoteAsync(data) {
   await create(data, "Quotes");
 }
-
+async function getNextQuoteRef() {
+  return await getAsync("Quotes/nextref");
+}
 async function editQuoteAsync(data) {
   return await edit(data, "Quotes");
 }
@@ -272,17 +274,17 @@ async function deleteQuoteAsync(id) {
   await remove(id, "Quotes");
 }
 async function getAllParts() {
-  return await getAsync("Services");
+  return await getAsync("Parts");
 }
 async function createPartAsync(data) {
-  await create(data, "Services");
+  await create(data, "Parts");
 }
 
 async function editPartAsync(data) {
-  return await edit(data, "Services");
+  return await edit(data, "Parts");
 }
 async function deletePartAsync(id) {
-  await remove(id, "Services");
+  await remove(id, "Parts");
 }
 async function getAllCustomers() {
   return await getAsync("Customers");
@@ -453,6 +455,7 @@ export {
   editPartAsync,
   deletePartAsync,
   getAllQuotes,
+  getNextQuoteRef,
   createQuoteAsync,
   editQuoteAsync,
   deleteQuoteAsync,
@@ -491,7 +494,7 @@ export {
   createCategoryAsync,
   editCategoryAsync,
   deleteCategory,
-  getAllServiceCategories,
+  getAllPartCategories,
   createServiceCategoryAsync,
   editServiceCategoryAsync,
   deleteServiceCategory,

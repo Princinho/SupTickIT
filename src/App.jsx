@@ -35,7 +35,7 @@ import { ServiceCategories } from "./Pages/ServiceCategories/ServiceCategories.j
 import { Vehicles } from "./Pages/Vehicles/Vehicles.jsx";
 import { Customers } from "./Pages/Customers/Customers.jsx";
 import { Quotes } from "./Pages/Quotes/Quotes.jsx";
-import { Services } from "./Pages/Services/Services.jsx";
+import { Parts } from "./Pages/Parts/Parts.jsx";
 function App() {
   const [user, setUser] = useState(null);
   const [sampleData, setSampleData] = useState(null);
@@ -75,7 +75,7 @@ function App() {
           <Route path="users/:id" element={<UserDetails />} />
           <Route path="categories" element={<Categories />} />
           <Route path="servicecategories" element={<ServiceCategories />} />
-          <Route path="services" element={<Services />} />
+          <Route path="services" element={<Parts />} />
           <Route path="vehicles" element={<Vehicles />} />
           <Route path="customers" element={<Customers />} />
           <Route path="quotes" element={<Quotes />} />

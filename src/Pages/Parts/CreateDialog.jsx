@@ -32,11 +32,12 @@ export const CreateDialog = ({ open, categories, handleClose }) => {
     setFormData({
       ...init,
     });
+    setTouchedFields([]);
   }
   return (
     <Box>
       <Dialog open={open} onClose={() => handleClose()}>
-        <DialogTitle>Modifier la Pièce</DialogTitle>
+        <DialogTitle>Nouvelle la Pièce</DialogTitle>
         <DialogContent>
           <FormControl fullWidth sx={{ marginTop: "1em" }}>
             <InputLabel id="clt-select-label">Catégorie</InputLabel>
@@ -98,7 +99,7 @@ export const CreateDialog = ({ open, categories, handleClose }) => {
               margin="dense"
               label="Prix Unitaire*"
               error={touchedFields.includes("price") && !formData.price}
-              type="text"
+              type="number"
               value={formData.price}
               onChange={(event) => {
                 setTouchedFields((prev) => [...prev, "price"]);
