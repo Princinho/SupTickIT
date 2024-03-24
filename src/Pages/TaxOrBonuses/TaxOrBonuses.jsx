@@ -22,21 +22,18 @@ import { DeleteDialog } from "./DeleteDialog";
 
 import {
   runWithProgress,
-  getAllCustomers,
-  getAllQuotes,
-  getAllVehicles,
   getAllParts,
-  createQuoteAsync,
-  editQuoteAsync,
-  deleteQuoteAsync,
+  createPartAsync,
+  editPartAsync,
+  deletePartAsync,
+  getAllPartCategories,
 } from "../../Api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RightSidedButton } from "../../Components/RightSidedButton";
 import { sortAndFilterData } from "../../utils";
-import { toast } from "react-toastify";
 
-export const Quotes = () => {
-  const BASE_QUERY_KEY = "quotes";
+export const Parts = () => {
+  const BASE_QUERY_KEY = "services";
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -46,36 +43,27 @@ export const Quotes = () => {
   const [sortOption, setSortOption] = useState({ option: "name" });
   // const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { data: quotes } = useQuery({
+  const { data: services } = useQuery({
     queryKey: [BASE_QUERY_KEY],
-    queryFn: getAllQuotes,
-  });
-
-  const { data: customers, isError: isCustomerError } = useQuery({
-    queryKey: ["customers"],
-    queryFn: getAllCustomers,
-  });
-  const { data: vehicles } = useQuery({
-    queryKey: ["vehicles"],
-    queryFn: getAllVehicles,
-  });
-  const { data: parts } = useQuery({
-    queryKey: ["parts"],
     queryFn: getAllParts,
   });
-  if (isCustomerError) {
-    toast.error("Impossible d'acceder a la liste des clients");
-  }
+
+  const { data: categories } = useQuery({
+    queryKey: ["servicecategories"],
+    //TODO: Renommer servicecategories en partscategories
+    queryFn: getAllPartCategories,
+  });
+
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
-    count: quotes?.length || 0,
+    count: services?.length || 0,
     handlePageChange: setCurrentPage,
     handleRowsPerPageChange: changeRowsPerPage,
   });
   useEffect(() => {
-    setTableOptions((prev) => ({ ...prev, count: quotes?.length || 0 }));
-  }, [quotes]);
+    setTableOptions((prev) => ({ ...prev, count: services?.length || 0 }));
+  }, [services]);
   // const { isUserAuthorized } = useAuthorization();
   // useEffect(() => {
   //   if (!isUserAuthorized()) {
@@ -86,13 +74,13 @@ export const Quotes = () => {
     setRowsPerPage(rowsPerPage);
     setCurrentPage(0);
   }
-  function showEditDialog(entry) {
+  function showEditDialog(category) {
     setIsEditDialogOpen(true);
-    setEntryToEdit(entry);
+    setEntryToEdit(category);
   }
-  function showDeleteDialog(entry) {
+  function showDeleteDialog(category) {
     setIsDeleteDialogOpen(true);
-    setEntryToDelete(entry);
+    setEntryToDelete(category);
   }
 
   function setRowsPerPage(rowsPerPage) {
@@ -111,6 +99,7 @@ export const Quotes = () => {
     mutationFn: runWithProgress,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [BASE_QUERY_KEY] });
+      console.warn("Invalidated");
     },
   });
   const deleteMutation = useMutation({
@@ -121,14 +110,14 @@ export const Quotes = () => {
   return (
     <Paper sx={{ padding: "1em", paddingRight: 0, flexGrow: 1 }} elevation={2}>
       <Typography variant="h5" component="span" sx={{ fontWeight: "bold" }}>
-        Devis
+        Pièces
       </Typography>
       <Stack direction="row" mb={2}>
         <Typography color="text.secondary" sx={{ fontWeight: "bold" }}>
           Menu /
         </Typography>
         <Typography color="primary.light" sx={{ fontWeight: "bold" }}>
-          &nbsp;Devis
+          &nbsp;Pièces
         </Typography>
       </Stack>
 
@@ -231,23 +220,21 @@ export const Quotes = () => {
       <Box sx={{ marginRight: "1em", mt: 2 }}>
         <MainTable
           options={tableOptions}
-          quotes={sortAndFilterData(quotes, searchTerm, sortOption)}
-          vehicles={vehicles}
-          customers={customers}
+          categories={categories}
+          services={sortAndFilterData(services, searchTerm, sortOption)}
           showEditDialog={showEditDialog}
           showDeleteDialog={showDeleteDialog}
         />
       </Box>
       <CreateDialog
         open={isCreateDialogOpen}
-        customers={customers}
-        vehicles={vehicles}
-        parts={parts}
+        services={services}
+        categories={categories}
         handleClose={(cat) => {
           if (cat) {
             createMutation.mutate({
               data: cat,
-              func: createQuoteAsync,
+              func: createPartAsync,
             });
           }
           setIsCreateDialogOpen(false);
@@ -256,44 +243,30 @@ export const Quotes = () => {
       {entryToEdit && (
         <EditDialog
           open={isEditDialogOpen}
-          customers={customers}
+          services={services}
+          categories={categories}
           entry={entryToEdit}
-          vehicles={vehicles}
-          parts={parts}
-          handleClose={(entry) => {
-            if (entry) {
+          handleClose={(cat) => {
+            if (cat) {
               editMutation.mutate({
-                data: entry,
-                func: editQuoteAsync,
+                data: cat,
+                func: editPartAsync,
               });
             }
             setIsEditDialogOpen(false);
           }}
         />
       )}
-      {/* {entryToDetail && (
-        <DetailsDialog
-          open={isDetailsDialogOpen}
-          entry={entryToDetail}
-          customer={customers.find((p) => p.id == entryToDetail?.customerId)}
-          handleClose={() => {
-            setIsDetailsDialogOpen(false);
-          }}
-        />
-      )} */}
       {entryToDelete && (
         <DeleteDialog
           open={isDeleteDialogOpen}
-          customers={customers}
-          vehicles={vehicles}
-          parts={parts}
-          customer={customers.find((p) => p.id == entryToDelete?.customerId)}
           entry={entryToDelete}
+          categories={categories}
           handleClose={(confirm) => {
             if (confirm) {
               deleteMutation.mutate({
                 data: entryToDelete.id,
-                func: deleteQuoteAsync,
+                func: deletePartAsync,
               });
             }
             setIsDeleteDialogOpen(false);

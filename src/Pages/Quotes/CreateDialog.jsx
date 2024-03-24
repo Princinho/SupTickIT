@@ -49,6 +49,7 @@ export const CreateDialog = ({
     quantity: 1,
     pricePerUnit: 0,
     totalPrice: 0,
+    isLineEditAllowed: false,
     part: {},
   };
   const [touchedFields, setTouchedFields] = useState([]);
@@ -117,6 +118,7 @@ export const CreateDialog = ({
     [customers, formData?.customerId]
   );
   console.log("included", partsIncluded);
+  console.log("Current", currentPart);
   return (
     <Box>
       <Dialog open={open} fullScreen onClose={() => handleClose()}>
@@ -275,6 +277,10 @@ export const CreateDialog = ({
                     return {
                       ...prev,
                       part: newValue,
+                      isLineEditAllowed: newValue
+                        ? parts.find((p) => p.id == newValue?.id)
+                            .isLineEditAllowed
+                        : false,
                       pricePerUnit: newValue
                         ? parts.find((p) => p.id == newValue?.id).price
                         : 0,
@@ -303,7 +309,7 @@ export const CreateDialog = ({
                 margin="dense"
                 size="small"
                 label="Quantité*"
-                type="text"
+                type="number"
                 value={currentPart.quantity}
                 onChange={({ target: { value } }) => {
                   setCurrentPart((prev) => ({
@@ -321,7 +327,8 @@ export const CreateDialog = ({
                 margin="dense"
                 size="small"
                 label="Prix Unitaire*"
-                type="text"
+                type="number"
+                disabled={!currentPart.isLineEditAllowed}
                 value={currentPart.pricePerUnit}
                 onChange={({ target: { value } }) => {
                   setCurrentPart((prev) => ({
@@ -340,7 +347,7 @@ export const CreateDialog = ({
                   margin="dense"
                   size="small"
                   label="Total*"
-                  type="text"
+                  type="number"
                   value={currentPart.pricePerUnit * currentPart.quantity}
                   variant="standard"
                   fullWidth

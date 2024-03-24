@@ -286,6 +286,19 @@ async function editPartAsync(data) {
 async function deletePartAsync(id) {
   await remove(id, "Parts");
 }
+async function getAllTaxOrBonuses() {
+  return await getAsync("TaxOrBonuses");
+}
+async function createTaxOrBonusAsync(data) {
+  await create(data, "TaxOrBonuses");
+}
+
+async function editTaxOrBonusAsync(data) {
+  return await edit(data, "TaxOrBonuses");
+}
+async function deleteTaxOrBonusAsync(id) {
+  await remove(id, "TaxOrBonuses");
+}
 async function getAllCustomers() {
   return await getAsync("Customers");
 }
@@ -454,6 +467,10 @@ export {
   createPartAsync,
   editPartAsync,
   deletePartAsync,
+  getAllTaxOrBonuses,
+  createTaxOrBonusAsync,
+  editTaxOrBonusAsync,
+  deleteTaxOrBonusAsync,
   getAllQuotes,
   getNextQuoteRef,
   createQuoteAsync,
