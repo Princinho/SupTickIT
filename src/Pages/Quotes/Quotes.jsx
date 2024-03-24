@@ -258,10 +258,12 @@ export const Quotes = () => {
           open={isEditDialogOpen}
           customers={customers}
           entry={entryToEdit}
-          handleClose={(cat) => {
-            if (cat) {
+          vehicles={vehicles}
+          parts={parts}
+          handleClose={(entry) => {
+            if (entry) {
               editMutation.mutate({
-                data: cat,
+                data: entry,
                 func: editQuoteAsync,
               });
             }

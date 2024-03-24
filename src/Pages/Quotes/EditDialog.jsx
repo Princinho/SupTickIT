@@ -16,8 +16,6 @@ import AddIcon from "@mui/icons-material/Add";
 import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
 import { Remove } from "@mui/icons-material";
-import { getNextQuoteRef } from "../../Api";
-import { useQuery } from "@tanstack/react-query";
 import { formatToInput } from "../../utils";
 export const EditDialog = ({
   open,
@@ -29,15 +27,9 @@ export const EditDialog = ({
 }) => {
   const init = {
     ...entry,
+    mileage: "",
   };
-  const {
-    data: nextRef,
-    isLoading: isLoadingRef,
-    refetch: refetchRef,
-  } = useQuery({
-    queryKey: ["QuoteRef"],
-    queryFn: getNextQuoteRef,
-  });
+
   const [formData, setFormData] = useState({
     ...init,
   });
@@ -48,28 +40,19 @@ export const EditDialog = ({
     part: {},
   };
   const [touchedFields, setTouchedFields] = useState([]);
-  const [partsIncluded, setPartsIncluded] = useState([]);
+  const [partsIncluded, setPartsIncluded] = useState([...entry.quoteDetails]);
   const [currentPart, setCurrentPart] = useState({ ...partsInit });
-  useEffect(() => {
-    setFormData((prev) => ({ ...prev, referenceNumber: nextRef }));
-  }, [nextRef, isLoadingRef, formData.customerId]);
+
   useEffect(() => {
     console.log(formData.vehicleId);
     const newVehicle = vehicles?.find((v) => v.id == formData?.vehicleId);
     const owner = customers?.find((c) => c.id == newVehicle?.customerId);
-    console.log(owner);
     setFormData((prev) => ({
       ...prev,
       customerId: owner?.id || "",
     }));
   }, [formData.vehicleId, customers, vehicles]);
-  function reset() {
-    setFormData({
-      ...init,
-    });
-    refetchRef();
-    setPartsIncluded([]);
-  }
+
   function currentPartValid() {
     return (
       currentPart.part &&
@@ -95,7 +78,7 @@ export const EditDialog = ({
     };
     console.log(result);
     handleClose(result);
-    reset();
+    // reset();
   }
   const total = useMemo(
     () =>
@@ -123,7 +106,10 @@ export const EditDialog = ({
               size="small"
               sx={{ marginTop: "1em" }}
               disabled={!vehicles}
-              value={formData.vehicle}
+              value={{
+                id: formData.vehicleId,
+                label: vehicles?.find((v) => v.id == formData.vehicleId)?.vin,
+              }}
               isOptionEqualToValue={(opt, val) => opt.id == val?.id}
               onChange={(e, newValue) => {
                 setFormData((prev) => {
@@ -137,7 +123,6 @@ export const EditDialog = ({
               getOptionLabel={(option) => option?.label || ""}
               fullWidth
               disablePortal
-              id="parts-dropdown"
               options={
                 vehicles?.map((p) => ({
                   label: p.vin,
@@ -173,7 +158,7 @@ export const EditDialog = ({
                 touchedFields.includes("referenceNumber") &&
                 !formData.referenceNumber
               }
-              disabled={isLoadingRef}
+              disabled
               type="text"
               value={formData.referenceNumber}
               onChange={(event) => {
@@ -273,7 +258,7 @@ export const EditDialog = ({
                 margin="dense"
                 size="small"
                 label="Quantité*"
-                type="text"
+                type="number"
                 value={currentPart.quantity}
                 onChange={({ target: { value } }) => {
                   setCurrentPart((prev) => ({
@@ -291,7 +276,7 @@ export const EditDialog = ({
                 margin="dense"
                 size="small"
                 label="Prix Unitaire*"
-                type="text"
+                type="number"
                 value={currentPart.pricePerUnit}
                 onChange={({ target: { value } }) => {
                   setCurrentPart((prev) => ({
