@@ -5,24 +5,21 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
   FormControlLabel,
-  InputLabel,
-  MenuItem,
-  Select,
   Stack,
   Switch,
   TextField,
 } from "@mui/material";
 import PropTypes from "prop-types";
 import { useState } from "react";
-export const CreateDialog = ({ open, categories, handleClose }) => {
+export const CreateDialog = ({ open, handleClose }) => {
   const init = {
     name: "",
     description: "",
-    partCategoryId: "",
-    isLineEditAllowed: false,
-    price: 0,
+    isBonus: false,
+    isEnabled: false,
+    isPercentage: false,
+    amount: 0,
   };
   const [formData, setFormData] = useState({
     ...init,
@@ -37,31 +34,8 @@ export const CreateDialog = ({ open, categories, handleClose }) => {
   return (
     <Box>
       <Dialog open={open} onClose={() => handleClose()}>
-        <DialogTitle>Nouvelle la Pièce</DialogTitle>
+        <DialogTitle>Nouvelle Entrée</DialogTitle>
         <DialogContent>
-          <FormControl fullWidth sx={{ marginTop: "1em" }}>
-            <InputLabel id="clt-select-label">Catégorie</InputLabel>
-            <Select
-              labelId="clt-select-label"
-              id="clt-select"
-              value={formData.partCategoryId}
-              error={!formData.partCategoryId}
-              label="Catégorie"
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  partCategoryId: e.target.value,
-                }))
-              }
-            >
-              {categories?.map((cat) => (
-                <MenuItem key={`cat-${cat.id}`} value={cat.id}>
-                  {cat.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
           <TextField
             autoFocus
             margin="dense"
@@ -97,29 +71,54 @@ export const CreateDialog = ({ open, categories, handleClose }) => {
               sx={{ flex: 2 }}
               autoFocus
               margin="dense"
-              label="Prix Unitaire*"
-              error={touchedFields.includes("price") && !formData.price}
+              label="Valeur*"
+              error={touchedFields.includes("amount") && !formData.amount}
               type="number"
-              value={formData.price}
+              value={formData.amount}
               onChange={(event) => {
-                setTouchedFields((prev) => [...prev, "price"]);
-                setFormData((prev) => ({ ...prev, price: event.target.value }));
+                setTouchedFields((prev) => [...prev, "amount"]);
+                setFormData((prev) => ({
+                  ...prev,
+                  amount: event.target.value,
+                }));
               }}
               fullWidth
               variant="standard"
             />
-            <FormControlLabel
-              control={<Switch />}
-              checked={formData.isLineEditAllowed}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  isLineEditAllowed: e.target.checked,
-                }))
-              }
-              label="Modifiable"
-            />
           </Stack>
+          <FormControlLabel
+            control={<Switch />}
+            checked={!formData.isBonus}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                isBonus: !e.target.checked,
+              }))
+            }
+            label="A Déduire"
+          />
+          <FormControlLabel
+            control={<Switch />}
+            checked={formData.isPercentage}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                isPercentage: e.target.checked,
+              }))
+            }
+            label="En pourcentage"
+          />
+          <FormControlLabel
+            control={<Switch />}
+            checked={formData.isEnabled}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                isEnabled: e.target.checked,
+              }))
+            }
+            label="Activer"
+          />
         </DialogContent>
         <DialogActions>
           <Button
@@ -131,11 +130,7 @@ export const CreateDialog = ({ open, categories, handleClose }) => {
           </Button>
           <Button
             onClick={() => {
-              if (
-                !formData.name ||
-                !formData.price ||
-                !formData.partCategoryId
-              ) {
+              if (!formData.name || !formData.amount) {
                 return;
               } else {
                 console.log(formData);

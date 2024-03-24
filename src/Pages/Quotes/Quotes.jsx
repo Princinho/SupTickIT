@@ -34,14 +34,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RightSidedButton } from "../../Components/RightSidedButton";
 import { sortAndFilterData } from "../../utils";
 import { toast } from "react-toastify";
+import { DetailsDialog } from "./DetailsDialog";
 
 export const Quotes = () => {
   const BASE_QUERY_KEY = "quotes";
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [entryToEdit, setEntryToEdit] = useState(null);
+  const [entryToDetail, setEntryToDetail] = useState(null);
   const [entryToDelete, setEntryToDelete] = useState(null);
   const [sortOption, setSortOption] = useState({ option: "name" });
   // const navigate = useNavigate();
@@ -89,6 +92,10 @@ export const Quotes = () => {
   function showEditDialog(entry) {
     setIsEditDialogOpen(true);
     setEntryToEdit(entry);
+  }
+  function showDetailDialog(entry) {
+    setIsDetailDialogOpen(true);
+    setEntryToDetail(entry);
   }
   function showDeleteDialog(entry) {
     setIsDeleteDialogOpen(true);
@@ -235,6 +242,7 @@ export const Quotes = () => {
           vehicles={vehicles}
           customers={customers}
           showEditDialog={showEditDialog}
+          showDetailsDialog={showDetailDialog}
           showDeleteDialog={showDeleteDialog}
         />
       </Box>
@@ -268,6 +276,18 @@ export const Quotes = () => {
               });
             }
             setIsEditDialogOpen(false);
+          }}
+        />
+      )}
+      {entryToDetail && (
+        <DetailsDialog
+          open={isDetailDialogOpen}
+          customers={customers}
+          entry={entryToDetail}
+          vehicles={vehicles}
+          parts={parts}
+          handleClose={() => {
+            setIsDetailDialogOpen(false);
           }}
         />
       )}

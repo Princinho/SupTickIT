@@ -18,11 +18,9 @@ import { Delete, Edit, MoreVert } from "@mui/icons-material";
 import { useState } from "react";
 
 export const MainTable = ({
-  services,
-  categories,
+  services: taxOrBonuses,
   showEditDialog,
   showDeleteDialog,
-  showDetailsDialog,
   options,
 }) => {
   function handleClose() {
@@ -35,7 +33,7 @@ export const MainTable = ({
   const { page, rowsPerPage, handlePageChange, handleRowsPerPageChange } =
     options;
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - services.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - taxOrBonuses.length) : 0;
   return (
     <>
       <TableContainer>
@@ -46,16 +44,17 @@ export const MainTable = ({
         >
           <TableHead>
             <TableRow>
-              <TableCell align="left">Service</TableCell>
-              <TableCell align="left">Catégorie</TableCell>
-              <TableCell align="left">Prix Unitaire</TableCell>
-              <TableCell align="left">Prix Modifiable</TableCell>
+              <TableCell align="left">Designation</TableCell>
+              <TableCell align="left">Type</TableCell>
+              <TableCell align="left">Valeur</TableCell>
+              <TableCell align="left">En Pourcentage</TableCell>
+              <TableCell align="left">Activé</TableCell>
               <TableCell align="left">Options</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {services?.length > 0 ? (
-              services.map((entry) => {
+            {taxOrBonuses?.length > 0 ? (
+              taxOrBonuses.map((entry) => {
                 return (
                   <TableRow
                     key={"appli" + entry.id}
@@ -78,28 +77,24 @@ export const MainTable = ({
                         {entry.description}
                       </Typography>
                     </TableCell>
-                    <TableCell component="th" scope="row">
-                      {
-                        categories?.find((c) => c.id == entry.partCategoryId)
-                          ?.name
-                      }
-                    </TableCell>
-                    <TableCell
-                      align="left"
-                      onClick={() => showDetailsDialog(entry)}
-                    >
+                    <TableCell align="left">
                       <Typography
                         variant="span"
-                        sx={{ my: 0, fontWeight: "bold" }}
+                        color={entry.isBonus ? "success" : "error"}
+                        sx={{ my: 0 }}
                       >
-                        {entry.price}
+                        {entry.isBonus ? "Avantage" : "Taxe"}
                       </Typography>
                       <br />
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      <Typography>
-                        {entry.isLineEditAllowed ? "Oui" : "Non"}
-                      </Typography>
+                      <Typography>{entry.amount}</Typography>
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      <Typography>{entry.isPercentage ? "%" : "-"}</Typography>
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      <Typography>{entry.enabled ? "Oui" : "Non"}</Typography>
                     </TableCell>
                     <TableCell>
                       <IconButton
@@ -144,7 +139,7 @@ export const MainTable = ({
                 rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
                 labelRowsPerPage="Eléments par page"
                 colSpan={6}
-                count={services?.length || 0}
+                count={taxOrBonuses?.length || 0}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 SelectProps={{
@@ -226,9 +221,7 @@ export const MainTable = ({
 };
 MainTable.propTypes = {
   services: PropTypes.array.isRequired,
-  categories: PropTypes.array.isRequired,
   showEditDialog: PropTypes.func.isRequired,
   options: PropTypes.object.isRequired,
-  showDetailsDialog: PropTypes.func.isRequired,
   showDeleteDialog: PropTypes.func.isRequired,
 };

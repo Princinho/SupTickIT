@@ -287,7 +287,7 @@ async function deletePartAsync(id) {
   await remove(id, "Parts");
 }
 async function getAllTaxOrBonuses() {
-  return await getAsync("TaxOrBonuses");
+  return await getAsync("TaxOrBonuses/true");
 }
 async function createTaxOrBonusAsync(data) {
   await create(data, "TaxOrBonuses");

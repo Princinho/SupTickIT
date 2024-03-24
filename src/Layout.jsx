@@ -103,6 +103,20 @@ export const Layout = (props) => {
           </ListItem>
           <ListItem disablePadding>
             <ListItemButton
+              selected={matchPath("/taxOrBonuses/*", path) || false}
+              onClick={() => navigate("taxOrBonuses")}
+            >
+              <ListItemIcon sx={{ minWidth: menuIconWidth }}>
+                <ListAltIcon sx={{ color: menuItemColor }} />
+              </ListItemIcon>
+              <ListItemText
+                primary={"Taxes & Avantages"}
+                sx={{ ...listItemStyles, textDecoration: "none" }}
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton
               selected={matchPath("/services/*", path) || false}
               onClick={() => navigate("services")}
             >

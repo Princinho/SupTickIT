@@ -22,17 +22,16 @@ import { DeleteDialog } from "./DeleteDialog";
 
 import {
   runWithProgress,
-  getAllParts,
-  createPartAsync,
-  editPartAsync,
-  deletePartAsync,
-  getAllPartCategories,
+  getAllTaxOrBonuses,
+  createTaxOrBonusAsync,
+  editTaxOrBonusAsync,
+  deleteTaxOrBonusAsync,
 } from "../../Api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RightSidedButton } from "../../Components/RightSidedButton";
 import { sortAndFilterData } from "../../utils";
 
-export const Parts = () => {
+export const TaxOrBonuses = () => {
   const BASE_QUERY_KEY = "services";
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(false);
@@ -45,13 +44,7 @@ export const Parts = () => {
   const queryClient = useQueryClient();
   const { data: services } = useQuery({
     queryKey: [BASE_QUERY_KEY],
-    queryFn: getAllParts,
-  });
-
-  const { data: categories } = useQuery({
-    queryKey: ["servicecategories"],
-    //TODO: Renommer servicecategories en partscategories
-    queryFn: getAllPartCategories,
+    queryFn: getAllTaxOrBonuses,
   });
 
   const [tableOptions, setTableOptions] = useState({
@@ -220,7 +213,6 @@ export const Parts = () => {
       <Box sx={{ marginRight: "1em", mt: 2 }}>
         <MainTable
           options={tableOptions}
-          categories={categories}
           services={sortAndFilterData(services, searchTerm, sortOption)}
           showEditDialog={showEditDialog}
           showDeleteDialog={showDeleteDialog}
@@ -229,12 +221,11 @@ export const Parts = () => {
       <CreateDialog
         open={isCreateDialogOpen}
         services={services}
-        categories={categories}
         handleClose={(cat) => {
           if (cat) {
             createMutation.mutate({
               data: cat,
-              func: createPartAsync,
+              func: createTaxOrBonusAsync,
             });
           }
           setIsCreateDialogOpen(false);
@@ -244,13 +235,12 @@ export const Parts = () => {
         <EditDialog
           open={isEditDialogOpen}
           services={services}
-          categories={categories}
           entry={entryToEdit}
           handleClose={(cat) => {
             if (cat) {
               editMutation.mutate({
                 data: cat,
-                func: editPartAsync,
+                func: editTaxOrBonusAsync,
               });
             }
             setIsEditDialogOpen(false);
@@ -261,12 +251,11 @@ export const Parts = () => {
         <DeleteDialog
           open={isDeleteDialogOpen}
           entry={entryToDelete}
-          categories={categories}
           handleClose={(confirm) => {
             if (confirm) {
               deleteMutation.mutate({
                 data: entryToDelete.id,
-                func: deletePartAsync,
+                func: deleteTaxOrBonusAsync,
               });
             }
             setIsDeleteDialogOpen(false);

@@ -15,7 +15,9 @@ import {
 import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
 import { formatToInput } from "../../utils";
-export const DeleteDialog = ({
+import { PictureAsPdfSharp, Print } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+export const DetailsDialog = ({
   open,
   entry,
   customers,
@@ -31,6 +33,7 @@ export const DeleteDialog = ({
   const [formData, setFormData] = useState({
     ...init,
   });
+  const navigate = useNavigate();
   const [touchedFields, setTouchedFields] = useState([]);
   const [partsIncluded] = useState([...entry.quoteDetails]);
   useEffect(() => {
@@ -58,16 +61,16 @@ export const DeleteDialog = ({
     () => customers?.find((c) => c.id == formData?.customerId),
     [customers, formData?.customerId]
   );
-  console.log("included", partsIncluded);
+  console.log("parts", parts);
   return (
     <Box>
       <Dialog open={open} fullScreen onClose={() => handleClose()}>
-        <DialogTitle>Supprimer le devis</DialogTitle>
+        <DialogTitle>Details du devis</DialogTitle>
         <DialogContent>
-          <Stack direction={{ sm: "row" }} gap={2}>
+          <Stack direction={{ sm: "row" }} alignItems="flex-end" gap={2}>
             <Autocomplete
               size="small"
-              sx={{ marginTop: "1em" }}
+              sx={{ marginBottom: ".2em" }}
               disabled
               value={{
                 id: formData.vehicleId,
@@ -152,6 +155,17 @@ export const DeleteDialog = ({
               variant="standard"
               fullWidth
             />
+            <Button
+              size="large"
+              variant="contained"
+              onClick={() =>
+                navigate("/exportquotepdf", {
+                  state: { entry, vehicle, customer, parts },
+                })
+              }
+            >
+              <Print sx={{ width: "1em", height: "1em" }} />
+            </Button>
           </Stack>
           <Divider />
           <Stack
@@ -213,21 +227,14 @@ export const DeleteDialog = ({
               handleClose();
             }}
           >
-            Annuler
-          </Button>
-          <Button
-            onClick={() => {
-              handleClose(true);
-            }}
-          >
-            Supprimer
+            Fermer
           </Button>
         </DialogActions>
       </Dialog>
     </Box>
   );
 };
-DeleteDialog.propTypes = {
+DetailsDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   entry: PropTypes.object.isRequired,
   handleClose: PropTypes.func.isRequired,

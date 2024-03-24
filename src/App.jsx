@@ -36,6 +36,8 @@ import { Vehicles } from "./Pages/Vehicles/Vehicles.jsx";
 import { Customers } from "./Pages/Customers/Customers.jsx";
 import { Quotes } from "./Pages/Quotes/Quotes.jsx";
 import { Parts } from "./Pages/Parts/Parts.jsx";
+import { TaxOrBonuses } from "./Pages/TaxOrBonuses/TaxOrBonuses.jsx";
+import ExportPDF from "./Pages/Quotes/ExportPDF.jsx";
 function App() {
   const [user, setUser] = useState(null);
   const [sampleData, setSampleData] = useState(null);
@@ -67,6 +69,7 @@ function App() {
       <Route path="/" element={<Outlet />}>
         <Route path="accessdenied" element={<AccessDenied />} />
         <Route path="login" element={<LoginRegister />} />
+        <Route path="exportquotepdf" element={<ExportPDF />} />
         <Route path="/" element={<Layout />}>
           <Route path="projects" element={<Projects />} />
           <Route path="companies" element={<Companies />} />
@@ -75,6 +78,7 @@ function App() {
           <Route path="users/:id" element={<UserDetails />} />
           <Route path="categories" element={<Categories />} />
           <Route path="servicecategories" element={<ServiceCategories />} />
+          <Route path="taxOrBonuses" element={<TaxOrBonuses />} />
           <Route path="services" element={<Parts />} />
           <Route path="vehicles" element={<Vehicles />} />
           <Route path="customers" element={<Customers />} />
