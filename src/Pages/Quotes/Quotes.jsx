@@ -29,6 +29,7 @@ import {
   createQuoteAsync,
   editQuoteAsync,
   deleteQuoteAsync,
+  getAllTaxOrBonuses,
 } from "../../Api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RightSidedButton } from "../../Components/RightSidedButton";
@@ -47,6 +48,10 @@ export const Quotes = () => {
   const [entryToDetail, setEntryToDetail] = useState(null);
   const [entryToDelete, setEntryToDelete] = useState(null);
   const [sortOption, setSortOption] = useState({ option: "name" });
+  const { data: taxOrBonuses } = useQuery({
+    queryKey: ["taxOrBonuses"],
+    queryFn: getAllTaxOrBonuses,
+  });
   // const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: quotes } = useQuery({
@@ -288,7 +293,9 @@ export const Quotes = () => {
           parts={parts}
           handleClose={() => {
             setIsDetailDialogOpen(false);
+            setEntryToDetail(null);
           }}
+          taxOrBonuses={taxOrBonuses}
         />
       )}
       {/* {entryToDetail && (

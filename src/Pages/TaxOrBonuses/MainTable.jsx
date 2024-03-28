@@ -94,7 +94,7 @@ export const MainTable = ({
                       <Typography>{entry.isPercentage ? "%" : "-"}</Typography>
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      <Typography>{entry.enabled ? "Oui" : "Non"}</Typography>
+                      <Typography>{entry.isEnabled ? "Oui" : "Non"}</Typography>
                     </TableCell>
                     <TableCell>
                       <IconButton

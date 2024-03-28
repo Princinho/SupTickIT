@@ -26,13 +26,14 @@ import {
   createTaxOrBonusAsync,
   editTaxOrBonusAsync,
   deleteTaxOrBonusAsync,
+  getAllParts,
 } from "../../Api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RightSidedButton } from "../../Components/RightSidedButton";
 import { sortAndFilterData } from "../../utils";
 
 export const TaxOrBonuses = () => {
-  const BASE_QUERY_KEY = "services";
+  const BASE_QUERY_KEY = "taxOrBonuses";
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -42,21 +43,25 @@ export const TaxOrBonuses = () => {
   const [sortOption, setSortOption] = useState({ option: "name" });
   // const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { data: services } = useQuery({
+  const { data: taxOrBonuses } = useQuery({
     queryKey: [BASE_QUERY_KEY],
     queryFn: getAllTaxOrBonuses,
+  });
+  const { data: parts } = useQuery({
+    queryKey: ["parts"],
+    queryFn: getAllParts,
   });
 
   const [tableOptions, setTableOptions] = useState({
     rowsPerPage: 5,
     page: 0,
-    count: services?.length || 0,
+    count: taxOrBonuses?.length || 0,
     handlePageChange: setCurrentPage,
     handleRowsPerPageChange: changeRowsPerPage,
   });
   useEffect(() => {
-    setTableOptions((prev) => ({ ...prev, count: services?.length || 0 }));
-  }, [services]);
+    setTableOptions((prev) => ({ ...prev, count: taxOrBonuses?.length || 0 }));
+  }, [taxOrBonuses]);
   // const { isUserAuthorized } = useAuthorization();
   // useEffect(() => {
   //   if (!isUserAuthorized()) {
@@ -103,14 +108,14 @@ export const TaxOrBonuses = () => {
   return (
     <Paper sx={{ padding: "1em", paddingRight: 0, flexGrow: 1 }} elevation={2}>
       <Typography variant="h5" component="span" sx={{ fontWeight: "bold" }}>
-        Pièces
+        Taxes & Avantages
       </Typography>
       <Stack direction="row" mb={2}>
         <Typography color="text.secondary" sx={{ fontWeight: "bold" }}>
           Menu /
         </Typography>
         <Typography color="primary.light" sx={{ fontWeight: "bold" }}>
-          &nbsp;Pièces
+          &nbsp;Taxes & Avantages
         </Typography>
       </Stack>
 
@@ -213,14 +218,15 @@ export const TaxOrBonuses = () => {
       <Box sx={{ marginRight: "1em", mt: 2 }}>
         <MainTable
           options={tableOptions}
-          services={sortAndFilterData(services, searchTerm, sortOption)}
+          services={sortAndFilterData(taxOrBonuses, searchTerm, sortOption)}
           showEditDialog={showEditDialog}
           showDeleteDialog={showDeleteDialog}
         />
       </Box>
       <CreateDialog
         open={isCreateDialogOpen}
-        services={services}
+        services={taxOrBonuses}
+        parts={parts}
         handleClose={(cat) => {
           if (cat) {
             createMutation.mutate({
@@ -234,15 +240,17 @@ export const TaxOrBonuses = () => {
       {entryToEdit && (
         <EditDialog
           open={isEditDialogOpen}
-          services={services}
+          services={taxOrBonuses}
           entry={entryToEdit}
-          handleClose={(cat) => {
-            if (cat) {
+          parts={parts}
+          handleClose={(entry) => {
+            if (entry) {
               editMutation.mutate({
-                data: cat,
+                data: entry,
                 func: editTaxOrBonusAsync,
               });
             }
+            setEntryToEdit(null);
             setIsEditDialogOpen(false);
           }}
         />

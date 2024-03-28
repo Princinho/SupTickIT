@@ -1,3 +1,4 @@
+import { Remove } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -5,49 +6,103 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
+  Divider,
   FormControlLabel,
-  InputLabel,
-  MenuItem,
-  Select,
   Stack,
   Switch,
+  Table,
+  TableBody,
+  TableContainer,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  IconButton,
+  Paper,
+  TableRow,
+  Typography,
+  styled,
+  Autocomplete,
 } from "@mui/material";
+import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
-export const EditDialog = ({ open, handleClose, entry, categories }) => {
-  const [formData, setFormData] = useState({ ...entry });
+import { useMemo, useState } from "react";
+export const EditDialog = ({ open, entry, parts, handleClose }) => {
+  const init = {
+    name: "",
+    description: "",
+    isBonus: false,
+    isEnabled: false,
+    isPercentage: false,
+    amount: 0,
+  };
+  const [partsSearchTerm, setPartsSearchTerm] = useState("");
+  const [selectionMode, setSelectionMode] = useState("exclude");
+  const [selectedPartIds, setSelectedPartIds] = useState(
+    entry?.exclusionList?.split(",")
+  );
+  console.log(selectedPartIds);
+  const [formData, setFormData] = useState({
+    ...entry,
+  });
   const [touchedFields, setTouchedFields] = useState([]);
-  useEffect(() => setFormData({ ...entry }), [entry]);
+  function reset() {
+    setFormData({
+      ...init,
+    });
+    setTouchedFields([]);
+  }
+  const availableParts = useMemo(
+    () =>
+      parts
+        ?.filter((part) => !selectedPartIds?.some((pId) => pId == part.id))
+        .map((p) => ({ label: p.name, id: p.id })) || [],
+    [selectedPartIds, parts]
+  );
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: theme.palette.common.black,
+      color: theme.palette.common.white,
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 14,
+    },
+  }));
+  function getNormalizedData() {
+    return formData.isForAllProducts
+      ? formData
+      : {
+          ...formData,
+          exclusionList:
+            selectionMode == "exclude"
+              ? selectedPartIds?.toString()
+              : parts
+                  .filter(
+                    (part) => !selectedPartIds?.some((id) => id == part.id)
+                  )
+                  .map((p) => p.id)
+                  .join(",")
+                  .toString(),
+        };
+  }
+
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    "&:last-child td, &:last-child th": {
+      border: 0,
+    },
+  }));
+  if (!parts) {
+    return <Typography>Liste des produits inaccessible</Typography>;
+  }
+  console.log(parts);
   return (
     <Box>
       <Dialog open={open} onClose={() => handleClose()}>
-        <DialogTitle>Modifier le Véhicule</DialogTitle>
+        <DialogTitle>Modifier la taxe</DialogTitle>
         <DialogContent>
-          <FormControl fullWidth sx={{ marginTop: "1em" }}>
-            <InputLabel id="clt-select-label">Catégorie</InputLabel>
-            <Select
-              labelId="clt-select-label"
-              id="clt-select"
-              value={formData.partCategoryId}
-              error={!formData.partCategoryId}
-              label="Catégorie"
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  partCategoryId: e.target.value,
-                }))
-              }
-            >
-              {categories?.map((cat) => (
-                <MenuItem key={`cat-${cat.id}`} value={cat.id}>
-                  {cat.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
           <TextField
             autoFocus
             margin="dense"
@@ -83,29 +138,165 @@ export const EditDialog = ({ open, handleClose, entry, categories }) => {
               sx={{ flex: 2 }}
               autoFocus
               margin="dense"
-              label="Prix Unitaire*"
-              error={touchedFields.includes("price") && !formData.price}
-              type="text"
-              value={formData.price}
+              label="Valeur*"
+              error={touchedFields.includes("amount") && !formData.amount}
+              type="number"
+              value={formData.amount}
               onChange={(event) => {
-                setTouchedFields((prev) => [...prev, "price"]);
-                setFormData((prev) => ({ ...prev, price: event.target.value }));
+                setTouchedFields((prev) => [...prev, "amount"]);
+                setFormData((prev) => ({
+                  ...prev,
+                  amount: event.target.value,
+                }));
               }}
               fullWidth
               variant="standard"
             />
-            <FormControlLabel
-              control={<Switch />}
-              checked={formData.isLineEditAllowed}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  isLineEditAllowed: e.target.checked,
-                }))
-              }
-              label="Modifiable"
-            />
           </Stack>
+          <FormControlLabel
+            control={<Switch />}
+            checked={!formData.isBonus}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                isBonus: !e.target.checked,
+              }))
+            }
+            label="A Déduire"
+          />
+          <FormControlLabel
+            control={<Switch />}
+            checked={formData.isPercentage}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                isPercentage: e.target.checked,
+              }))
+            }
+            label="En pourcentage"
+          />
+          <FormControlLabel
+            control={<Switch />}
+            checked={formData.isEnabled}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                isEnabled: e.target.checked,
+              }))
+            }
+            label="Activer"
+          />
+          <FormControlLabel
+            control={<Switch />}
+            checked={formData.isForAllProducts}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                isForAllProducts: e.target.checked,
+              }))
+            }
+            label="Appliquer a tous les produits"
+          />
+          {!formData.isForAllProducts && (
+            <>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                gap={2}
+              >
+                <Autocomplete
+                  size="small"
+                  disabled={!parts}
+                  value={null}
+                  isOptionEqualToValue={(opt, val) => opt.id == val.id}
+                  inputValue={partsSearchTerm}
+                  onInputChange={(event, searchTerm) => {
+                    setPartsSearchTerm(searchTerm);
+                  }}
+                  onChange={(e, newValue) => {
+                    setSelectedPartIds((prev) => {
+                      setPartsSearchTerm("");
+                      return prev ? [...prev, newValue.id] : [newValue.id];
+                    });
+                  }}
+                  getOptionLabel={(option) => option?.label || ""}
+                  fullWidth
+                  disablePortal
+                  id="parts-dropdown"
+                  options={availableParts}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Produits" />
+                  )}
+                />
+                <ToggleButtonGroup
+                  color="primary"
+                  value={selectionMode}
+                  size="small"
+                  exclusive
+                  onChange={(event) => {
+                    setSelectionMode(event.target.value);
+                    setSelectedPartIds(
+                      parts
+                        .filter(
+                          (part) =>
+                            !selectedPartIds?.some((id) => id == part.id)
+                        )
+                        .map((p) => p.id)
+                    );
+                    console.log(selectedPartIds);
+                    console.log(parts);
+                    console.log(
+                      parts.filter(
+                        (part) => !selectedPartIds?.some((id) => id == part.id)
+                      )
+                    );
+                  }}
+                  aria-label="Platform"
+                >
+                  <ToggleButton value="exclude">Exclure</ToggleButton>
+                  <ToggleButton value="include">Inlcure</ToggleButton>
+                </ToggleButtonGroup>
+              </Stack>
+              <Divider sx={{ marginBlock: "1em" }} />
+              <Typography>Produits exclus</Typography>
+              <Divider sx={{ marginBlock: "1em" }} />
+              <TableContainer sx={{ marginTop: 2 }} component={Paper}>
+                <Table size="small" aria-label="selected parts table">
+                  {/* <TableHead>
+                  <TableRow>
+                    <StyledTableCell>Pièce</StyledTableCell>
+                    <StyledTableCell></StyledTableCell>
+                  </TableRow>
+                </TableHead> */}
+                  <TableBody>
+                    {selectedPartIds?.map((pId) => (
+                      <StyledTableRow key={"selected-part-table-row" + pId}>
+                        <StyledTableCell
+                          component="th"
+                          sx={{ width: "80%" }}
+                          scope="row"
+                        >
+                          {parts && parts.find((part) => part.id == pId).name}
+                        </StyledTableCell>
+                        <StyledTableCell component="th" scope="row">
+                          <IconButton
+                            onClick={() =>
+                              setSelectedPartIds((prev) =>
+                                prev?.filter((id) => id != pId)
+                              )
+                            }
+                          >
+                            <Remove />
+                          </IconButton>
+                        </StyledTableCell>
+                      </StyledTableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </>
+          )}
         </DialogContent>
         <DialogActions>
           <Button
@@ -117,10 +308,13 @@ export const EditDialog = ({ open, handleClose, entry, categories }) => {
           </Button>
           <Button
             onClick={() => {
-              if (touchedFields.some((f) => !formData[f])) {
+              if (!formData.name || !formData.amount) {
                 return;
               } else {
-                handleClose(formData);
+                const data = getNormalizedData();
+                console.log(formData);
+                handleClose(data);
+                reset();
               }
             }}
           >
@@ -133,7 +327,8 @@ export const EditDialog = ({ open, handleClose, entry, categories }) => {
 };
 EditDialog.propTypes = {
   open: PropTypes.bool.isRequired,
+  entry: PropTypes.object.isRequired,
   handleClose: PropTypes.func.isRequired,
-  entry: PropTypes.object,
   categories: PropTypes.array,
+  parts: PropTypes.array,
 };

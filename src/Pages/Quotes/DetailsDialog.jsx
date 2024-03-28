@@ -15,7 +15,7 @@ import {
 import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
 import { formatToInput } from "../../utils";
-import { PictureAsPdfSharp, Print } from "@mui/icons-material";
+import { Print } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 export const DetailsDialog = ({
   open,
@@ -23,6 +23,7 @@ export const DetailsDialog = ({
   customers,
   vehicles,
   parts,
+  taxOrBonuses,
   handleClose,
 }) => {
   const init = {
@@ -220,6 +221,33 @@ export const DetailsDialog = ({
           <Stack direction="row" justifyContent="flex-end">
             <Typography>Total HT: {total}</Typography>
           </Stack>
+          <Divider />
+          <Typography>Taxes</Typography>
+          {entry.quoteDetails
+            .reduce((acc, d) => [...d.taxOrBonusesApplied, ...acc], [])
+            .reduce((prev, tob) => {
+              if (prev.some((t) => t.tobId == tob.taxOrBonusId))
+                return prev.map((p) =>
+                  p.tobId == tob.taxOrBonusId
+                    ? { ...p, amount: p.amount + tob.amountCalculated }
+                    : p
+                );
+              else
+                return [
+                  ...prev,
+                  {
+                    tobId: tob.taxOrBonusId,
+                    name: taxOrBonuses?.find((t) => t.id == tob.taxOrBonusId)
+                      .name,
+                    amount: tob.amountCalculated,
+                  },
+                ];
+            }, [])
+            .map((t) => (
+              <Typography textAlign="right" key={"tax-summary" + t.tobId}>
+                {t.name} {t.amount}
+              </Typography>
+            ))}
         </DialogContent>
         <DialogActions>
           <Button
@@ -240,5 +268,6 @@ DetailsDialog.propTypes = {
   handleClose: PropTypes.func.isRequired,
   customers: PropTypes.array,
   vehicles: PropTypes.array,
+  taxOrBonuses: PropTypes.array,
   parts: PropTypes.array,
 };

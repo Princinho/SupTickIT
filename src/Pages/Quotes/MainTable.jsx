@@ -79,7 +79,10 @@ export const MainTable = ({
                       align="left"
                       sx={{ cursor: "pointer", maxWidth: "30%" }}
                       width="30%"
-                      onClick={() => showDetailsDialog(entry)}
+                      onClick={() => {
+                        console.log(entry);
+                        showDetailsDialog(entry);
+                      }}
                     >
                       <Typography
                         variant="span"
@@ -106,7 +109,7 @@ export const MainTable = ({
                       </Typography>
                     </TableCell>
                     <TableCell component="th" scope="row">
-                      {entry.total}
+                      {entry.totalWithTaxOrBonuses}
                     </TableCell>
 
                     <TableCell>

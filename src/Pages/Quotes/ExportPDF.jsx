@@ -1,37 +1,43 @@
-import {
-  Page,
-  Text,
-  View,
-  Document,
-  StyleSheet,
-  PDFViewer,
-} from "@react-pdf/renderer";
+import { Button, Paper } from "@mui/material";
+import { Page, Text, View, Document, PDFViewer } from "@react-pdf/renderer";
 import PropTypes from "prop-types";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 export default function ExportPDF() {
   const navigate = useNavigate();
   const location = useLocation();
   return (
-    <div style={{ width: "100%", height: "800px" }}>
-      <div className="d-flex justify-content-end py-2">
-        <button
+    <div style={{ width: "100%", minHeight: "100vh" }}>
+      <Paper
+        style={{
+          padding: 4,
+          display: "flex",
+          justifyContent: "center",
+          gap: 2,
+        }}
+      >
+        <Button
           type="button"
           onClick={() =>
-            navigate(-1, {
+            navigate(-2, {
               state: location.state,
             })
           }
           className="btn m-0 p-2 mx-2 btn-xs btn bg-gradient-info "
         >
           <i className="bi bi-arrow-bar-left"></i> Retour
-        </button>
-      </div>
+        </Button>
+        <Button>
+          <Link to={"/"} style={{ color: "white" }}>
+            Accueil
+          </Link>
+        </Button>
+      </Paper>
       {/* <div className="flex-row-reverse">
             <button className="btn bg-gradient-info w-20 mb-0" onClick={() => navigate('/clients', {
                 state: location.state
             })}>Retour</button>
         </div> */}
-      <PDFViewer width={"100%"} height={700}>
+      <PDFViewer width={"100%"} height={1200} style={{ flex: 1 }}>
         <Exporter data={location.state} />
       </PDFViewer>
     </div>
@@ -45,7 +51,7 @@ function Exporter({ data }) {
   const { entry, vehicle, customer, parts } = data;
   console.log(parts);
 
-  const styles = StyleSheet.create({});
+  // const styles = StyleSheet.create({});
   console.log(data, "state");
   return (
     <Document>
@@ -142,15 +148,15 @@ function Exporter({ data }) {
           </View>
           <View style={{ flex: 1, flexDirection: "column", padding: "5px" }}>
             <Text style={{ fontSize: "10px", marginBottom: "5px" }}>
-              Marque/Modèle/Année/Couleur :
+              Marque / Modèle / Année / Couleur :
             </Text>
             <Text style={{ fontSize: "12px" }}>
               {vehicle.make}
-              {"/"}
+              {" / "}
               {vehicle.model}
-              {"/"}
+              {" / "}
               {vehicle.year}
-              {"/"}
+              {" / "}
               {vehicle.color}
             </Text>
           </View>
@@ -203,7 +209,7 @@ function Exporter({ data }) {
             </View>
           </View>
           <View style={{ flex: 2, flexDirection: "column", padding: "5px" }}>
-            <Text style={{ fontSize: "10px", marginBottom: "5px" }}>VIN</Text>
+            <Text style={{ fontSize: "10px", marginBottom: "5px" }}>VIN:</Text>
             <Text style={{ fontSize: "12px" }}>{vehicle?.vin}</Text>
           </View>
         </View>
@@ -255,7 +261,7 @@ function Exporter({ data }) {
               <Text style={{ color: "white" }}>Montant HT</Text>
             </View>
           </View>
-          {entry?.quoteDetails?.map((detail, index) => (
+          {entry?.quoteDetails?.map((detail) => (
             <View
               key={detail?.partId}
               style={{
@@ -299,6 +305,129 @@ function Exporter({ data }) {
               </View>
             </View>
           ))}
+          <View
+            style={{
+              flexDirection: "row",
+              borderBottom: "1px solid black",
+            }}
+          >
+            <View
+              style={{
+                flex: 9,
+                textAlign: "center",
+                paddingRight: "2px",
+              }}
+            ></View>
+            <View
+              style={{
+                flex: 3,
+                textAlign: "center",
+                borderRight: "1px solid black",
+              }}
+            >
+              <Text style={{ fontSize: "16px" }}>Total HT</Text>
+            </View>
+            <View
+              style={{
+                flex: 4,
+                textAlign: "center",
+              }}
+            >
+              <Text style={{ fontSize: "16px" }}>{entry.total}</Text>
+            </View>
+          </View>
+        </View>
+        <View
+          style={{
+            flexDirection: "column",
+            borderRight: "1px solid black",
+            borderBottom: "none",
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+            }}
+          >
+            <View
+              style={{
+                flex: 8,
+              }}
+            ></View>
+            <View
+              style={{
+                flex: 1,
+              }}
+            ></View>
+            <View
+              style={{
+                flex: 3,
+                textAlign: "center",
+                borderRight: "1px solid black",
+                borderBottom: "1px solid black",
+                borderLeft: "1px solid black",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ fontSize: "16px" }}>TVA 18%</Text>
+            </View>
+            <View
+              style={{
+                flex: 4,
+                textAlign: "center",
+                borderBottom: "1px solid black",
+              }}
+            >
+              <Text>29000</Text>
+            </View>
+          </View>
+        </View>
+        <View
+          style={{
+            flexDirection: "column",
+            borderRight: "1px solid black",
+            borderBottom: "none",
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+            }}
+          >
+            <View
+              style={{
+                flex: 8,
+              }}
+            ></View>
+            <View
+              style={{
+                flex: 1,
+              }}
+            ></View>
+            <View
+              style={{
+                flex: 3,
+                textAlign: "center",
+                borderRight: "1px solid black",
+                borderBottom: "1px solid black",
+                borderLeft: "1px solid black",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text style={{ fontSize: "16px" }}>Total TTC</Text>
+            </View>
+            <View
+              style={{
+                flex: 4,
+                textAlign: "center",
+                borderBottom: "1px solid black",
+              }}
+            >
+              <Text>99000</Text>
+            </View>
+          </View>
         </View>
       </Page>
     </Document>
