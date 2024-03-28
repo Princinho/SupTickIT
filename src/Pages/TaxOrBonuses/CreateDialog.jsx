@@ -36,9 +36,11 @@ export const CreateDialog = ({ open, parts, handleClose }) => {
     isPercentage: false,
     isForAllProducts: true,
     amount: 0,
+    particularTaxOrBonusValues: [],
   };
+  const selectModes = { INCLUDE: "include", EXCLUDE: "exclude" };
   const [partsSearchTerm, setPartsSearchTerm] = useState("");
-  const [selectionMode, setSelectionMode] = useState("exclude");
+  const [selectionMode, setSelectionMode] = useState(selectModes.INCLUDE);
   const [selectedPartIds, setSelectedPartIds] = useState([]);
   const [formData, setFormData] = useState({
     ...init,
@@ -71,16 +73,22 @@ export const CreateDialog = ({ open, parts, handleClose }) => {
       ? formData
       : {
           ...formData,
+          //If the user is in inclusion mode, then we invert his inclusion list to get the exclusion one
           exclusionList:
-            selectionMode == "exclude"
+            selectionMode == selectModes.EXCLUDE
               ? selectedPartIds.toString()
               : parts
                   ?.filter((p) => !selectedPartIds.includes(p))
                   .map((p) => p.id)
                   .join(",")
                   .toString(),
+          particularTaxOrBonusValues:
+            selectionMode == selectModes.INCLUDE
+              ? formData.particularTaxOrBonusValues
+              : [],
         };
   }
+
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     "&:nth-of-type(odd)": {
       backgroundColor: theme.palette.action.hover,
@@ -90,13 +98,13 @@ export const CreateDialog = ({ open, parts, handleClose }) => {
       border: 0,
     },
   }));
+  console.log(formData.particularTaxOrBonusValues);
   return (
     <Box>
       <Dialog open={open} onClose={() => handleClose()}>
         <DialogTitle>Nouvelle Entrée</DialogTitle>
         <DialogContent>
           <TextField
-            autoFocus
             margin="dense"
             label="Nom*"
             error={touchedFields.includes("name") && !formData.name}
@@ -110,7 +118,6 @@ export const CreateDialog = ({ open, parts, handleClose }) => {
             variant="standard"
           />
           <TextField
-            autoFocus
             margin="dense"
             label="Description*"
             type="text"
@@ -128,7 +135,6 @@ export const CreateDialog = ({ open, parts, handleClose }) => {
           <Stack direction="row" alignItems="center" gap={2}>
             <TextField
               sx={{ flex: 2 }}
-              autoFocus
               margin="dense"
               label="Valeur*"
               error={touchedFields.includes("amount") && !formData.amount}
@@ -229,13 +235,24 @@ export const CreateDialog = ({ open, parts, handleClose }) => {
                   onChange={(event) => setSelectionMode(event.target.value)}
                   aria-label="Platform"
                 >
-                  <ToggleButton value="exclude">Exclure</ToggleButton>
-                  <ToggleButton value="include">Inlcure</ToggleButton>
+                  <ToggleButton value={selectModes.EXCLUDE}>
+                    Exclure
+                  </ToggleButton>
+                  <ToggleButton value={selectModes.INCLUDE}>
+                    Inlcure
+                  </ToggleButton>
                 </ToggleButtonGroup>
               </Stack>
               <Divider sx={{ marginBlock: "1em" }} />
               <Typography>Produits selectionnés</Typography>
               <Divider sx={{ marginBlock: "1em" }} />
+              {formData.particularTaxOrBonusValues?.length > 0 &&
+                selectionMode == selectModes.EXCLUDE && (
+                  <Typography color="error" fontSize=".8em">
+                    *En mode exclusion, valeurs particulieres ne seront pas
+                    prise en compte
+                  </Typography>
+                )}
               <TableContainer sx={{ marginTop: 2 }} component={Paper}>
                 <Table size="small" aria-label="selected parts table">
                   {/* <TableHead>
@@ -252,15 +269,77 @@ export const CreateDialog = ({ open, parts, handleClose }) => {
                           sx={{ width: "80%" }}
                           scope="row"
                         >
-                          {parts.find((part) => part.id == pId).name}
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            justifyContent="space-between"
+                          >
+                            <Typography sx={{ flex: 0.5 }}>
+                              {parts.find((part) => part.id == pId).name}
+                            </Typography>
+
+                            <TextField
+                              sx={{ flex: 0.5 }}
+                              variant="standard"
+                              margin="dense"
+                              disabled={selectionMode == selectModes.EXCLUDE}
+                              label={`Valeur taxe ${
+                                formData.isPercentage ? "(%)" : ""
+                              }`}
+                              type="number"
+                              value={
+                                formData.particularTaxOrBonusValues?.find(
+                                  (p) => p.partId == pId
+                                )?.value || formData.amount
+                              }
+                              onChange={({ target: { value } }) => {
+                                if (value != formData.amount) {
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    particularTaxOrBonusValues:
+                                      prev.particularTaxOrBonusValues?.some(
+                                        (p) => p.partId == pId
+                                      )
+                                        ? prev.particularTaxOrBonusValues?.map(
+                                            (p) =>
+                                              p.partId == pId
+                                                ? { ...p, value }
+                                                : p
+                                          )
+                                        : prev.particularTaxOrBonusValues
+                                        ? [
+                                            ...prev.particularTaxOrBonusValues,
+                                            { partId: pId, value },
+                                          ]
+                                        : [{ partId: pId, value }],
+                                  }));
+                                } else {
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    particularTaxOrBonusValues:
+                                      prev.particularTaxOrBonusValues.filter(
+                                        (pVal) => pVal.partId != pId
+                                      ),
+                                  }));
+                                }
+                              }}
+                            />
+                          </Stack>
                         </StyledTableCell>
                         <StyledTableCell component="th" scope="row">
                           <IconButton
-                            onClick={() =>
+                            onClick={() => {
                               setSelectedPartIds((prev) =>
                                 prev.filter((id) => id != pId)
-                              )
-                            }
+                              );
+                              setFormData((prev) => ({
+                                ...prev,
+                                particularTaxOrBonusValues:
+                                  prev.particularTaxOrBonusValues?.filter(
+                                    (p) => p.partId != pId
+                                  ),
+                              }));
+                            }}
                           >
                             <Remove />
                           </IconButton>
